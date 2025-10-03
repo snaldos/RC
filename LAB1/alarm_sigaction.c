@@ -14,6 +14,8 @@
 
 int alarmEnabled = FALSE;
 int alarmCount = 0;
+int max_alarm_count = 3;
+int timeout = 3;
 
 // Alarm function handler.
 // This function will run whenever the signal SIGALRM is received.
@@ -40,13 +42,11 @@ int main()
 
     printf("Alarm configured\n");
 
-    while (alarmCount < 4)
-    {
-        if (alarmEnabled == FALSE)
-        {
-            alarm(3); // Set alarm to be triggered in 3s
-            alarmEnabled = TRUE;
-        }
+    while (alarmCount <= max_alarm_count) {
+      if (alarmEnabled == FALSE) {
+        alarm(timeout); // Set alarm to be triggered in 3s
+        alarmEnabled = TRUE;
+      }
     }
 
     printf("Ending program\n");

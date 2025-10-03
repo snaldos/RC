@@ -11,6 +11,8 @@
 #include <termios.h>
 #include <unistd.h>
 
+#include "supervision_state.h"
+
 #define _POSIX_SOURCE 1 // POSIX compliant source
 
 #define FALSE 0
@@ -25,7 +27,6 @@
 #define C_SET 0x03
 #define C_UA 0x07
 
-enum SUPERVISION_STATE { START, FLAG_RCV, A_RCV, C_RCV, BCC_OK, SUCCESS };
 enum SUPERVISION_STATE supervision_state = START;
 
 int fd = -1;           // File descriptor for open serial port
@@ -41,10 +42,10 @@ int writeBytesSerialPort(const unsigned char *bytes, int nBytes);
 // MAIN
 // ---------------------------------------------------
 int main(int argc, char *argv[]) {
-  if (argc < 2) {
+  if (argc < 3) {
     printf("Incorrect program usage\n"
-           "Usage: %s <SerialPort>\n"
-           "Example: %s /dev/ttyS0\n",
+           "Usage: %s <SerialPort> <Baudrate>\n"
+           "Example: %s /dev/ttyUSB0 9600\n",
            argv[0], argv[0]);
     exit(1);
   }
@@ -54,8 +55,9 @@ int main(int argc, char *argv[]) {
   //
   // NOTE: See the implementation of the serial port library in "serial_port/".
   const char *serialPort = argv[1];
+  const int baudrate = atoi(argv[2]);
 
-  if (openSerialPort(serialPort, BAUDRATE) < 0) {
+  if (openSerialPort(serialPort, baudrate) < 0) {
     perror("openSerialPort");
     exit(-1);
   }
