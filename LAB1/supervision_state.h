@@ -1,6 +1,12 @@
 #ifndef SUPERVISION_STATE_H
 #define SUPERVISION_STATE_H
 
+#define FLAG 0x7e
+#define A_SENDER 0x03
+#define A_RECEIVER 0x01
+#define C_SET 0x03
+#define C_UA 0x07
+
 enum SUPERVISION_STATE { START, FLAG_RCV, A_RCV, C_RCV, BCC_OK, SUCCESS };
 
 #endif

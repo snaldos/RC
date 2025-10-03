@@ -18,12 +18,6 @@
 #define BAUDRATE 38400
 #define BUF_SIZE 256
 
-#define FLAG 0x7e
-#define A_SENDER 0x03
-#define A_RECEIVER 0x01
-#define C_SET 0x03
-#define C_UA 0x07
-
 enum SUPERVISION_STATE supervision_state = START;
 
 int fd = -1;           // File descriptor for open serial port
@@ -39,7 +33,7 @@ int main(int argc, char *argv[]) {
            "Usage: %s <SerialPort> <Baudrate>\n"
            "Example: %s /dev/ttyS0 9600\n",
            argv[0], argv[0]);
-    exit(1);
+    exit(-1);
   }
 
   // Open serial port device for reading and writing, and not as controlling tty

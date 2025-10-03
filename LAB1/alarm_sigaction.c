@@ -4,16 +4,24 @@
 // Modified by: Eduardo Nuno Almeida [enalmeida@fe.up.pt]
 //              Rui Prior [rcprior@fc.up.pt]
 
-#include "serialport.h"
+// TODO: should i clear buf memory?
+
+#include <errno.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "serialport.h"
+#include "supervision_state.h"
+
 #define FALSE 0
 #define TRUE 1
 
 #define BAUDRATE 38400
+#define BUF_SIZE 256
+
+enum SUPERVISION_STATE supervision_state = START;
 
 const char *tx_serial_port;
 const char *rx_serial_port;
@@ -21,6 +29,8 @@ int tx_fd = -1;
 int rx_fd = -1;
 struct termios tx_oldtio;
 struct termios rx_oldtio;
+unsigned char set_frame[5] = {FLAG, A_SENDER, C_SET, A_SENDER ^ C_SET, FLAG};
+unsigned char ua_frame[5] = {FLAG, A_RECEIVER, C_UA, A_RECEIVER ^ C_UA, FLAG};
 
 int alarmEnabled = FALSE;
 int alarmCount = 0;
@@ -36,7 +46,17 @@ void alarmHandler(int signal) {
   printf("Alarm #%d received\n", alarmCount);
 }
 
-// int
+int send_set_frame() {
+  int bytes = writeBytesSerialPort(set_frame, 5, tx_fd);
+  printf("%d bytes transmitted\n", bytes);
+  return bytes;
+}
+
+int send_ua_frame() {
+  int bytes = writeBytesSerialPort(ua_frame, 5, rx_fd);
+  printf("%d bytes transmitted\n", bytes);
+  return bytes;
+}
 
 int main(int argc, char *argv[]) {
 
@@ -45,7 +65,7 @@ int main(int argc, char *argv[]) {
            "Usage: %s <tx_serial_port> <rx_serial_port>\n"
            "Example: %s /dev/ttyS0 /dev/ttyUSB0\n",
            argv[0], argv[0]);
-    exit(1);
+    exit(-1);
   }
 
   tx_serial_port = argv[1];
@@ -65,6 +85,9 @@ int main(int argc, char *argv[]) {
 
   printf("rx_serial_port %s opened\n", rx_serial_port);
 
+  unsigned char buf[BUF_SIZE] = {0};
+  int cur_num_bytes = 0;
+
   // Set alarm function handler.
   // Install the function signal to be automatically invoked when the timer
   // expires, invoking in its turn the user function alarmHandler
@@ -72,19 +95,90 @@ int main(int argc, char *argv[]) {
   act.sa_handler = &alarmHandler;
   if (sigaction(SIGALRM, &act, NULL) == -1) {
     perror("sigaction");
-    exit(1);
+    exit(-1);
   }
 
   printf("Alarm configured\n");
 
   while (alarmCount <= max_alarm_count) {
     if (alarmEnabled == FALSE) {
+      memset(buf, 0, BUF_SIZE);
+      cur_num_bytes = 0;
+      if (send_set_frame() < 0) {
+        perror("send_set_frame");
+        exit(-1);
+      }
       alarm(timeout); // Set alarm to be triggered in 3s
       alarmEnabled = TRUE;
     }
-  }
 
-  printf("Ending program\n");
+    unsigned char byte;
+    int bytes = readByteSerialPort(&byte, rx_fd);
+    printf("byte = 0x%02X\n", byte);
+
+    if (bytes < 0) {
+      if (errno == EINTR) {
+        // read was interrupted by signal, just continue
+        continue;
+      }
+      perror("readByteSerialPort");
+      exit(-1);
+    } else if (bytes == 0) {
+      continue; // No byte received, try again
+    }
+
+    buf[cur_num_bytes] = byte;
+    cur_num_bytes += bytes;
+
+    if (supervision_state == START) {
+      if (byte == FLAG) {
+        supervision_state = FLAG_RCV;
+      }
+    } else if (supervision_state == FLAG_RCV) {
+      if (byte == A_SENDER) {
+        supervision_state = A_RCV;
+      } else if (byte == FLAG) {
+        supervision_state = FLAG_RCV;
+      } else {
+        supervision_state = START;
+      }
+    } else if (supervision_state == A_RCV) {
+      if (byte == C_SET) {
+        supervision_state = C_RCV;
+      } else if (byte == FLAG) {
+        supervision_state = FLAG_RCV;
+      } else {
+        supervision_state = START;
+      }
+    } else if (supervision_state == C_RCV) {
+      if (byte == (buf[1] ^ buf[2])) {
+        supervision_state = BCC_OK;
+      } else if (byte == FLAG) {
+        supervision_state = FLAG_RCV;
+      } else {
+        supervision_state = START;
+      }
+    } else if (supervision_state == BCC_OK) {
+      if (byte == FLAG) {
+        supervision_state = SUCCESS;
+
+      } else {
+        supervision_state = START;
+      }
+    }
+    if (supervision_state == SUCCESS) {
+      printf("SET frame received successfully\n");
+      unsigned char ua_frame[5] = {FLAG, A_RECEIVER, C_UA, A_RECEIVER ^ C_UA,
+                                   FLAG};
+
+      bytes = writeBytesSerialPort(ua_frame, 5, rx_fd);
+      printf("UA frame sent\n");
+
+      // Disable pending alarms, if any
+      alarm(0);
+      break;
+    }
+  }
 
   // Close serial port
   if (closeSerialPort(tx_fd, &tx_oldtio) < 0) {
