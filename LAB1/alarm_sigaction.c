@@ -5,11 +5,13 @@
 //              Rui Prior [rcprior@fc.up.pt]
 
 // TODO: should i clear buf memory?
+// TODO: check VMIN and VTIME to maybe read more than 1 byte at a time
 
 #include <errno.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 #include "serialport.h"
@@ -21,7 +23,8 @@
 #define BAUDRATE 38400
 #define BUF_SIZE 256
 
-enum SUPERVISION_STATE supervision_state = START;
+enum SUPERVISION_STATE set_frame_state = START;
+enum SUPERVISION_STATE ua_frame_state = START;
 
 const char *tx_serial_port;
 const char *rx_serial_port;
@@ -47,14 +50,16 @@ void alarmHandler(int signal) {
 }
 
 int send_set_frame() {
+  set_frame_state = START;
   int bytes = writeBytesSerialPort(set_frame, 5, tx_fd);
-  printf("%d bytes transmitted\n", bytes);
+  printf("%d set_bytes sent\n", bytes);
   return bytes;
 }
 
 int send_ua_frame() {
+  ua_frame_state = START;
   int bytes = writeBytesSerialPort(ua_frame, 5, rx_fd);
-  printf("%d bytes transmitted\n", bytes);
+  printf("%d ua_bytes sent\n", bytes);
   return bytes;
 }
 
@@ -87,6 +92,7 @@ int main(int argc, char *argv[]) {
 
   unsigned char buf[BUF_SIZE] = {0};
   int cur_num_bytes = 0;
+  unsigned char byte;
 
   // Set alarm function handler.
   // Install the function signal to be automatically invoked when the timer
@@ -112,13 +118,16 @@ int main(int argc, char *argv[]) {
       alarmEnabled = TRUE;
     }
 
-    unsigned char byte;
+    // TODO: check VMIN and VTIME to maybe read more than 1 byte at a time
+    byte = '\0';
     int bytes = readByteSerialPort(&byte, rx_fd);
-    printf("byte = 0x%02X\n", byte);
 
     if (bytes < 0) {
       if (errno == EINTR) {
-        // read was interrupted by signal, just continue
+        // read was interrupted by the alarm signal, just continue
+        if (alarmEnabled == FALSE) {
+          printf("UA verification interrupted by alarm\n");
+        }
         continue;
       }
       perror("readByteSerialPort");
@@ -127,56 +136,126 @@ int main(int argc, char *argv[]) {
       continue; // No byte received, try again
     }
 
+    printf("set_byte = 0x%02X\n", byte);
+
     buf[cur_num_bytes] = byte;
     cur_num_bytes += bytes;
 
-    if (supervision_state == START) {
+    if (set_frame_state == START) {
       if (byte == FLAG) {
-        supervision_state = FLAG_RCV;
+        set_frame_state = FLAG_RCV;
       }
-    } else if (supervision_state == FLAG_RCV) {
+    } else if (set_frame_state == FLAG_RCV) {
       if (byte == A_SENDER) {
-        supervision_state = A_RCV;
+        set_frame_state = A_RCV;
       } else if (byte == FLAG) {
-        supervision_state = FLAG_RCV;
+        set_frame_state = FLAG_RCV;
+        continue;
       } else {
-        supervision_state = START;
+        set_frame_state = START;
       }
-    } else if (supervision_state == A_RCV) {
+    } else if (set_frame_state == A_RCV) {
       if (byte == C_SET) {
-        supervision_state = C_RCV;
+        set_frame_state = C_RCV;
       } else if (byte == FLAG) {
-        supervision_state = FLAG_RCV;
+        set_frame_state = FLAG_RCV;
       } else {
-        supervision_state = START;
+        set_frame_state = START;
       }
-    } else if (supervision_state == C_RCV) {
+    } else if (set_frame_state == C_RCV) {
       if (byte == (buf[1] ^ buf[2])) {
-        supervision_state = BCC_OK;
+        set_frame_state = BCC_OK;
       } else if (byte == FLAG) {
-        supervision_state = FLAG_RCV;
+        set_frame_state = FLAG_RCV;
       } else {
-        supervision_state = START;
+        set_frame_state = START;
       }
-    } else if (supervision_state == BCC_OK) {
+    } else if (set_frame_state == BCC_OK) {
       if (byte == FLAG) {
-        supervision_state = SUCCESS;
+        set_frame_state = SUCCESS;
 
       } else {
-        supervision_state = START;
+        set_frame_state = START;
       }
     }
-    if (supervision_state == SUCCESS) {
-      printf("SET frame received successfully\n");
-      unsigned char ua_frame[5] = {FLAG, A_RECEIVER, C_UA, A_RECEIVER ^ C_UA,
-                                   FLAG};
+    if (set_frame_state == SUCCESS) {
+      bytes = send_ua_frame();
+      memset(buf, 0, BUF_SIZE);
+      cur_num_bytes = 0;
 
-      bytes = writeBytesSerialPort(ua_frame, 5, rx_fd);
-      printf("UA frame sent\n");
+      while (alarmEnabled) {
 
-      // Disable pending alarms, if any
-      alarm(0);
-      break;
+        // TODO: check VMIN and VTIME to maybe read more than 1 byte at a time
+        byte = '\0';
+        int bytes = readByteSerialPort(&byte, tx_fd);
+
+        if (bytes < 0) {
+          if (errno == EINTR) {
+            // read was interrupted by the alarm signal, just continue
+            if (alarmEnabled == FALSE) {
+              printf("UA verification interrupted by alarm\n");
+              break;
+            }
+            continue;
+          }
+          perror("readByteSerialPort");
+          exit(-1);
+        } else if (bytes == 0) {
+          continue; // No byte received, try again
+        }
+
+        printf("ua_byte = 0x%02X\n", byte);
+
+        buf[cur_num_bytes] = byte;
+        cur_num_bytes += bytes;
+
+        if (ua_frame_state == START) {
+          if (byte == FLAG) {
+            ua_frame_state = FLAG_RCV;
+          }
+        } else if (ua_frame_state == FLAG_RCV) {
+          if (byte == A_RECEIVER) {
+            ua_frame_state = A_RCV;
+          } else if (byte == FLAG) {
+            ua_frame_state = FLAG_RCV;
+          } else {
+            ua_frame_state = START;
+          }
+        } else if (ua_frame_state == A_RCV) {
+          if (byte == C_UA) {
+            ua_frame_state = C_RCV;
+          } else if (byte == FLAG) {
+            ua_frame_state = FLAG_RCV;
+          } else {
+            ua_frame_state = START;
+          }
+        } else if (ua_frame_state == C_RCV) {
+          if (byte == (buf[1] ^ buf[2])) {
+            ua_frame_state = BCC_OK;
+          } else if (byte == FLAG) {
+            ua_frame_state = FLAG_RCV;
+          } else {
+            ua_frame_state = START;
+          }
+        } else if (ua_frame_state == BCC_OK) {
+          if (byte == FLAG) {
+            ua_frame_state = SUCCESS;
+
+          } else {
+            ua_frame_state = START;
+          }
+        }
+        if (ua_frame_state == SUCCESS) {
+          printf("SUCCESS\n");
+          break;
+        }
+      }
+
+      if (ua_frame_state == SUCCESS) {
+        // Disable pending alarms, if any
+        alarm(0);
+        break;
+      }
     }
   }
 

@@ -18,7 +18,7 @@
 #define BAUDRATE 38400
 #define BUF_SIZE 256
 
-enum SUPERVISION_STATE supervision_state = START;
+enum SUPERVISION_STATE set_frame_state = START;
 
 int fd = -1;           // File descriptor for open serial port
 struct termios oldtio; // Serial port settings to restore on closing
@@ -91,45 +91,45 @@ int main(int argc, char *argv[]) {
     buf[nBytesBuf] = byte;
     nBytesBuf += bytes;
 
-    if (supervision_state == START) {
+    if (set_frame_state == START) {
       if (byte == FLAG) {
         printf("Tracking UA FRAME...\n");
-        supervision_state = FLAG_RCV;
+        set_frame_state = FLAG_RCV;
       } else {
-        supervision_state = START;
+        set_frame_state = START;
         STOP = TRUE;
       }
-    } else if (supervision_state == FLAG_RCV) {
+    } else if (set_frame_state == FLAG_RCV) {
       if (byte == A_RECEIVER) {
-        supervision_state = A_RCV;
+        set_frame_state = A_RCV;
       } else {
-        supervision_state = START;
+        set_frame_state = START;
         STOP = TRUE;
       }
-    } else if (supervision_state == A_RCV) {
+    } else if (set_frame_state == A_RCV) {
       if (byte == C_UA) {
-        supervision_state = C_RCV;
+        set_frame_state = C_RCV;
       } else {
-        supervision_state = START;
+        set_frame_state = START;
         STOP = TRUE;
       }
-    } else if (supervision_state == C_RCV) {
+    } else if (set_frame_state == C_RCV) {
       if (byte == (buf[1] ^ buf[2])) {
-        supervision_state = BCC_OK;
+        set_frame_state = BCC_OK;
       } else {
-        supervision_state = START;
+        set_frame_state = START;
         STOP = TRUE;
       }
-    } else if (supervision_state == BCC_OK) {
+    } else if (set_frame_state == BCC_OK) {
       if (byte == FLAG) {
-        supervision_state = SUCCESS;
+        set_frame_state = SUCCESS;
 
       } else {
-        supervision_state = START;
+        set_frame_state = START;
         STOP = TRUE;
       }
     }
-    if (supervision_state == SUCCESS) {
+    if (set_frame_state == SUCCESS) {
       printf("UA frame received successfully\n");
       STOP = TRUE;
     }
