@@ -34,6 +34,10 @@ run_read: read
 run_write: write
 	./write $(TX_SERIAL_PORT) $(BAUD_RATE)
 
+.PHONY: run_alarm
+run_alarm: alarm
+	./alarm $(TX_SERIAL_PORT) $(RX_SERIAL_PORT)
+
 .PHONY: run_cable
 run_cable: cable
 	@which socat || { echo "Error: Could not find socat. Install socat and try again."; exit 1; }
