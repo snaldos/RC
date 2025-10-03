@@ -27,6 +27,8 @@ void alarmHandler(int signal)
     printf("Alarm #%d received\n", alarmCount);
 }
 
+// int
+
 int main()
 {
     // Set alarm function handler.
