@@ -30,12 +30,41 @@ void applicationLayer(const char *serialPort, const char *role, int baudRate,
         return;
     }
 
-    /*if (ll.role == LlTx) {
-        //ler o gif
+    if (ll.role == LlTx) {
+        FILE *file = fopen(filename, "rb");
+        if (file == NULL) {
+            fprintf(stderr, "Failed to open file %s\n", filename);
+            llclose();
+            return;
+        }
+
+        // Buffer para armazenar chunks de 1000 bytes
+        unsigned char buffer[MAX_PAYLOAD_SIZE]; // MAX_PAYLOAD_SIZE = 1000
+        int bytesRead;
+
+        printf("Starting file transmission: %s\n", filename);
+
+        // Ler arquivo em chunks de 1000 bytes
+        while ((bytesRead = fread(buffer, 1, MAX_PAYLOAD_SIZE, file)) > 0) {
+            printf("Read %d bytes from file\n", bytesRead);
+            
+            // Enviar chunk via link layer
+            if (llwrite(buffer, bytesRead) < 0) {
+                fprintf(stderr, "Failed to send data chunk\n");
+                fclose(file);
+                llclose();
+                return;
+            }
+            
+            printf("Sent %d bytes\n", bytesRead);
+        }
+
+        fclose(file);
+        printf("File transmission completed\n");
 
     } else if (role == LlRx) {
 
-    }*/
+    }
 
     if (llclose(ll) < 0) {
         fprintf(stderr, "Failed to close link layer\n");
