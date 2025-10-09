@@ -199,6 +199,8 @@ int llwrite(const unsigned char *buf, int bufSize)
 {
     // TODO: Implement this function
 
+    // TODO: Byte stuffing?????
+
     return 0;
 }
 
