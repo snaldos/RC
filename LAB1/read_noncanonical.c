@@ -15,7 +15,7 @@
 #define FALSE 0
 #define TRUE 1
 
-#define BAUDRATE 38400
+#define BAUDRATE 0
 #define BUF_SIZE 256
 
 enum SUPERVISION_STATE set_frame_state = START;
