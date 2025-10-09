@@ -4,12 +4,12 @@
 #include "link_layer.h"
 
 #include <stdio.h>
+#include <string.h>
 
 void applicationLayer(const char *serialPort, const char *role, int baudRate,
                       int nTries, int timeout, const char *filename)
 {
     LinkLayer ll;
-    int i = 0;
     strncpy(ll.serialPort, serialPort, sizeof(ll.serialPort) - 1);
     ll.serialPort[sizeof(ll.serialPort) - 1] = '\0';
     ll.baudRate = baudRate;

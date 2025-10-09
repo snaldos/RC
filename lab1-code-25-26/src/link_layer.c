@@ -4,6 +4,10 @@
 #include "serial_port.h"
 #include "utils.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
 // MISC
 #define _POSIX_SOURCE 1 // POSIX compliant source
 
