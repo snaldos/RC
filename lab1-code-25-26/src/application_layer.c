@@ -49,12 +49,24 @@ void applicationLayer(const char *serialPort, const char *role, int baudRate,
             printf("Read %d bytes from file\n", bytesRead);
             
             // Enviar chunk via link layer
-            if (llwrite(buffer, bytesRead) < 0) {
-                fprintf(stderr, "Failed to send data chunk\n");
-                fclose(file);
-                llclose();
-                return;
+            int bytesWritten = llwrite(buffer, bytesRead);
+
+            while (bytesWritten != bytesRead) {
+                if (bytesWritten < 0) {
+                    fprintf(stderr, "Failed to send data chunk\n");
+                    return;
+                } else if (bytesWritten < bytesRead) {
+                    ll.nRetransmissions--;
+                     if (ll.nRetransmissions < 0) {
+                        fprintf(stderr, "Maximum retransmissions reached\n");
+                        fclose(file);
+                        llclose();
+                        return;
+                    }
+                }
+                bytesWritten = llwrite(buffer, bytesRead);
             }
+ 
             
             printf("Sent %d bytes\n", bytesRead);
         }
