@@ -47,7 +47,7 @@ void applicationLayer(const char *serialPort, const char *role, int baudRate,
         // Ler arquivo em chunks de 1000 bytes
         while ((bytesRead = fread(buffer, 1, MAX_PAYLOAD_SIZE, file)) > 0) {
             printf("Read %d bytes from file\n", bytesRead);
-            
+
             // Enviar chunk via link layer
             int bytesWritten = llwrite(buffer, bytesRead);
 
@@ -66,20 +66,18 @@ void applicationLayer(const char *serialPort, const char *role, int baudRate,
                 }
                 bytesWritten = llwrite(buffer, bytesRead);
             }
- 
-            
+
             printf("Sent %d bytes\n", bytesRead);
         }
 
         fclose(file);
         printf("File transmission completed\n");
 
-    } else if (role == LlRx) {
-
+    } else if (ll.role == LlRx) {
     }
 
-    if (llclose(ll) < 0) {
-        fprintf(stderr, "Failed to close link layer\n");
-        return;
+    if (llclose() < 0) {
+      fprintf(stderr, "Failed to close link layer\n");
+      return;
     }
 }
