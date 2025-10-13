@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 // MISC
@@ -17,6 +18,36 @@ static int ll_opened = 0;
 // TODO: decide when N(s) = 0 or N(s) = 1
 // Global sequence number for I-frames
 static unsigned char next_seq_num = 0;
+
+// Pseudocode for destuffing
+// for (int i = 0; i < stuffed_len; ) {
+//     if (stuffed[i] == 0x7D) {
+//         destuffed[dst_len++] = stuffed[i+1] ^ 0x20;
+//         i += 2;
+//     } else {
+//         destuffed[dst_len++] = stuffed[i];
+//         i += 1;
+//     }
+// }
+
+static int apply_byte_stuffing(const unsigned char *src, int len,
+                               unsigned char *dest) {
+
+  if (src == NULL || len < 0 || dest == NULL) {
+    return -1;
+  }
+  int dest_len = 0;
+  for (int i = 0; i < len; i++) {
+    const unsigned char cur_byte = src[i];
+    if (cur_byte == FLAG || cur_byte == ESCAPE_OCTET) {
+      dest[dest_len++] = ESCAPE_OCTET;
+      dest[dest_len++] = cur_byte ^ XOR_OCTET;
+    } else {
+      dest[dest_len++] = cur_byte;
+    }
+  }
+  return dest_len;
+}
 
 static int create_sframe(unsigned char *frame) {
   if (frame == NULL) {
@@ -79,32 +110,35 @@ static int create_iframe(const unsigned char *data, int dataSize,
 
 static int transmit_frame(const unsigned char *buf, int bufSize) {
 
-  int max_iframe_size = (2 * (4 + MAX_PAYLOAD_SIZE) + 2);
+  const unsigned int max_iframe_size = (2 * (4 + MAX_PAYLOAD_SIZE) + 2);
   unsigned char raw_frame[max_iframe_size]; // you'll define this macro next
   int raw_len = create_iframe(buf, bufSize, raw_frame);
   if (raw_len < 0) {
     return -1;
   }
 
-  int bytesWritten = writeBytesSerialPort(raw_frame, raw_len);
+  // byte stuffing
+  int body_len = raw_len - 2;
+  unsigned char *body = &raw_frame[1];
+
+  // note: in theory int max_stuffed_body_len = max_iframe_size - 2;
+  unsigned char stuffed_body[max_iframe_size];
+  int stuffed_body_len = apply_byte_stuffing(body, body_len, stuffed_body);
+  if (stuffed_body_len < 0) {
+    return -1;
+  }
+
+  // note: in theory int final_iframe_len = stuffed_body_len + 2;
+
+  unsigned char final_iframe[max_iframe_size];
+  final_iframe[0] = FLAG;
+  memcpy(&final_iframe[1], stuffed_body, stuffed_body_len);
+  final_iframe[1 + stuffed_body_len] = FLAG;
+  int final_iframe_len = 1 + stuffed_body_len + 1;
+
+  int bytesWritten = writeBytesSerialPort(final_iframe, final_iframe_len);
   printf("LL: Sent %d bytes\n", bytesWritten);
   return bytesWritten;
-
-  // pseudo code
-  // int body_len = raw_len - 2;
-  // unsigned char *body = &raw_frame[1];
-
-  // unsigned char stuffed_body[MAX_IFRAME_SIZE];
-  // int stuffed_len = apply_stuffing(body, body_len, stuffed_body);
-
-  // unsigned char final_frame[MAX_IFRAME_SIZE];
-  // final_frame[0] = FLAG;
-  // memcpy(&final_frame[1], stuffed_body, stuffed_len);
-  // final_frame[1 + stuffed_len] = FLAG;
-  // int final_len = 1 + stuffed_len + 1;
-
-  // int written = writeBytesSerialPort(final_frame, final_len);
-  // return written;
 }
 
 ////////////////////////////////////////////////
@@ -299,7 +333,6 @@ int llwrite(const unsigned char *buf, int bufSize) {
   // TODO: Dont send only data, put it in a format frame
   // TODO: the check bytesWritten must be changes since iframe will  have size
   // greater than bufSize
-  // TODO: Byte stuffing?????
 
   int maxAttempts = ll_config.nRetransmissions + 1;
   for (int attempts = 0; attempts < maxAttempts; attempts++) {
@@ -307,6 +340,10 @@ int llwrite(const unsigned char *buf, int bufSize) {
     if (bytesSent > 0) {
       // TODO (M4): wait for RR/REJ here
       // For M3, just return success
+      // TODO: maybe not return buff size but bytesSent instead and change the
+      // error handling because of that
+      // TODO: i need to do a check that guarantees that all bytes in data were
+      // written to iframe
       return bufSize;
     }
   }

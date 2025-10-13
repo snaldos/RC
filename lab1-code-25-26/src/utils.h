@@ -15,6 +15,10 @@
 // bytes (unstuffed)
 // = 2010 when MAX_PAYLOAD_SIZE = 1000
 
+// For byte stuffing
+#define ESCAPE_OCTET 0x7D
+#define XOR_OCTET 0x20
+
 // Supervision (S) and Unnumbered (U) Frames
 
 #define FLAG 0x7E
