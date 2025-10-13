@@ -11,14 +11,100 @@
 // MISC
 #define _POSIX_SOURCE 1 // POSIX compliant source
 
-// TODO: may have to change exits to return -1
-
 static LinkLayer ll_config;
-static int ll_opened = 0; // flag to check if llopen() was called
+static int ll_opened = 0;
+
+// TODO: decide when N(s) = 0 or N(s) = 1
+// Global sequence number for I-frames
+static unsigned char next_seq_num = 0;
+
+static int create_sframe(unsigned char *frame) {
+  if (frame == NULL) {
+    return -1;
+  }
+
+  // Supervision Frame format: F | A | C | BCC | F
+
+  int idx = 0;
+  frame[idx++] = FLAG;
+  if (ll_config.role == LlTx) {
+    frame[idx++] = A_SENDER;
+    frame[idx++] = C_SET;
+    frame[idx++] = A_SENDER ^ C_SET;
+  } else if (ll_config.role == LlRx) {
+    frame[idx++] = A_RECEIVER;
+    frame[idx++] = C_UA;
+    frame[idx++] = A_RECEIVER ^ C_UA;
+  }
+  frame[idx++] = FLAG;
+
+  return idx;
+}
+
+static int create_iframe(const unsigned char *data, int dataSize,
+                         unsigned char *frame) {
+
+  if (data == NULL || frame == NULL || dataSize <= 0 ||
+      dataSize > MAX_PAYLOAD_SIZE) {
+    return -1;
+  }
+
+  // Information Frame format: F | A | C | BCC1 | D1 ... DN | BCC2 | F
+
+  int idx = 0;
+  frame[idx++] = FLAG;
+  frame[idx++] = A_SENDER;
+
+  unsigned char C = (next_seq_num == 0) ? C_0 : C_1;
+  frame[idx++] = C;
+
+  frame[idx++] = A_SENDER ^ C;
+
+  // Copy data into frame (payload)
+  for (int i = 0; i < dataSize; i++) {
+    frame[idx++] = data[i];
+  }
+
+  unsigned char bcc2 = 0;
+  for (int i = 0; i < dataSize; i++) {
+    bcc2 ^= data[i];
+  }
+  frame[idx++] = bcc2;
+
+  frame[idx++] = FLAG;
+
+  // total unstuffed frame length
+  return idx;
+}
 
 static int transmit_frame(const unsigned char *buf, int bufSize) {
-  int bytesWritten = writeBytesSerialPort(buf, bufSize);
+
+  int max_iframe_size = (2 * (4 + MAX_PAYLOAD_SIZE) + 2);
+  unsigned char raw_frame[max_iframe_size]; // you'll define this macro next
+  int raw_len = create_iframe(buf, bufSize, raw_frame);
+  if (raw_len < 0) {
+    return -1;
+  }
+
+  int bytesWritten = writeBytesSerialPort(raw_frame, raw_len);
+  printf("LL: Sent %d bytes\n", bytesWritten);
   return bytesWritten;
+
+  // pseudo code
+  // int body_len = raw_len - 2;
+  // unsigned char *body = &raw_frame[1];
+
+  // unsigned char stuffed_body[MAX_IFRAME_SIZE];
+  // int stuffed_len = apply_stuffing(body, body_len, stuffed_body);
+
+  // unsigned char final_frame[MAX_IFRAME_SIZE];
+  // final_frame[0] = FLAG;
+  // memcpy(&final_frame[1], stuffed_body, stuffed_len);
+  // final_frame[1 + stuffed_len] = FLAG;
+  // int final_len = 1 + stuffed_len + 1;
+
+  // int written = writeBytesSerialPort(final_frame, final_len);
+  // return written;
 }
 
 ////////////////////////////////////////////////
@@ -39,20 +125,18 @@ int llopen(LinkLayer connectionParameters) {
   volatile int STOP = FALSE;
   enum SUPERVISION_STATE set_frame_state = START;
 
-  if (connectionParameters.role == LlTx) {
-    unsigned char buf[BUF_SIZE] = {0};
+  if (ll_config.role == LlTx) {
+    unsigned char set_frame[SFRAME_SIZE] = {0};
 
-    buf[0] = FLAG;
-    buf[1] = A_SENDER;
-    buf[2] = C_SET;
-    buf[3] = A_SENDER ^ C_SET;
-    buf[4] = FLAG;
+    if (create_sframe(set_frame) != SFRAME_SIZE) {
+      return -1;
+    }
 
     // In non-canonical mode, '\n' does not end the writing.
     // Test this condition by placing a '\n' in the middle of the buffer.
     // The whole buffer must be sent even with the '\n'.
 
-    int bytes = writeBytesSerialPort(buf, BUF_SIZE);
+    int bytes = writeBytesSerialPort(set_frame, SFRAME_SIZE);
     printf("%d bytes written to serial port\n", bytes);
 
     // Wait until all bytes have been written to the serial port
@@ -78,7 +162,7 @@ int llopen(LinkLayer connectionParameters) {
         continue; // No byte received, try again
       }
 
-      buf[nBytesBuf] = byte;
+      set_frame[nBytesBuf] = byte;
       nBytesBuf += bytes;
 
       if (set_frame_state == START) {
@@ -104,7 +188,7 @@ int llopen(LinkLayer connectionParameters) {
           STOP = TRUE;
         }
       } else if (set_frame_state == C_RCV) {
-        if (byte == (buf[1] ^ buf[2])) {
+        if (byte == (set_frame[1] ^ set_frame[2])) {
           set_frame_state = BCC_OK;
         } else {
           set_frame_state = START;
@@ -124,8 +208,8 @@ int llopen(LinkLayer connectionParameters) {
         STOP = TRUE;
       }
     }
-  } else if (connectionParameters.role == LlRx) {
-    unsigned char buf[BUF_SIZE] = {0};
+  } else if (ll_config.role == LlRx) {
+    unsigned char buf[SFRAME_SIZE] = {0};
 
     int nBytesBuf = 0;
 
@@ -183,8 +267,11 @@ int llopen(LinkLayer connectionParameters) {
       }
       if (set_frame_state == SUCCESS) {
         printf("SET frame received successfully\n");
-        unsigned char ua_frame[5] = {FLAG, A_RECEIVER, C_UA, A_RECEIVER ^ C_UA,
-                                     FLAG};
+        unsigned char ua_frame[SFRAME_SIZE] = {0};
+
+        if (create_sframe(ua_frame) != SFRAME_SIZE) {
+          return -1;
+        }
 
         bytes = writeBytesSerialPort(ua_frame, 5);
         printf("UA frame sent\n");
@@ -210,23 +297,18 @@ int llwrite(const unsigned char *buf, int bufSize) {
   }
   // TODO: Implement this function
   // TODO: Dont send only data, put it in a format frame
+  // TODO: the check bytesWritten must be changes since iframe will  have size
+  // greater than bufSize
   // TODO: Byte stuffing?????
 
-  int attempts = 0;
   int maxAttempts = ll_config.nRetransmissions + 1;
-  int bytesWritten = 0;
-
-  while (attempts < maxAttempts) {
-    bytesWritten = transmit_frame(buf, bufSize);
-    printf("%d\n", bytesWritten);
-    if (bytesWritten < 0) {
-      fprintf(stderr, "Failed to send data chunk\n");
-      return -1;
+  for (int attempts = 0; attempts < maxAttempts; attempts++) {
+    int bytesSent = transmit_frame(buf, bufSize);
+    if (bytesSent > 0) {
+      // TODO (M4): wait for RR/REJ here
+      // For M3, just return success
+      return bufSize;
     }
-    if (bytesWritten == bufSize) {
-      return bytesWritten; // success
-    }
-    attempts++;
   }
   return -1;
 

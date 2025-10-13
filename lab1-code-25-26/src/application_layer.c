@@ -50,7 +50,7 @@ void applicationLayer(const char *serialPort, const char *role, int baudRate,
       // Send chunk via link layer
       int bytesWritten = llwrite(buffer, bytesRead);
 
-      // TODO: do not do retransmissions in application layer do it in ll
+      // TODO: bytesWritten != (bytesRead + bytes occupied by frame format)
 
       if (bytesWritten != bytesRead) {
         // TODO: think of the print better
@@ -59,8 +59,6 @@ void applicationLayer(const char *serialPort, const char *role, int baudRate,
         llclose();
         return;
       }
-
-      printf("Sent %d bytes\n", bytesRead);
     }
 
     fclose(file);
