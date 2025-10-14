@@ -12,6 +12,14 @@
 // MISC
 #define _POSIX_SOURCE 1 // POSIX compliant source
 
+/*
+    TODO: note about sleep():
+    Slide 15: "I, SET and DISC frames are protected by a timer"
+    Your sleep(1) is a temporary hack — for M4, you must use alarm() + signal
+   handler with ll_config.timeout
+
+*/
+
 static LinkLayer ll_config;
 static int ll_opened = 0;
 
@@ -177,6 +185,7 @@ int llopen(LinkLayer connectionParameters) {
     }
     printf("%d bytes written to serial port\n", bytes_written);
 
+    // TODO: validate the use of sleep 1
     // Wait until all bytes have been written to the serial port
     sleep(1);
 
@@ -257,17 +266,17 @@ int llopen(LinkLayer connectionParameters) {
       // return value. In this example, we assume that the byte is always read,
       // which may not be true.
       unsigned char byte;
-      int bytes = readByteSerialPort(&byte);
+      int bytes_read = readByteSerialPort(&byte);
 
-      if (bytes < 0) {
+      if (bytes_read < 0) {
         perror("readByteSerialPort");
         return -1;
-      } else if (bytes == 0) {
+      } else if (bytes_read == 0) {
         continue; // No byte received, try again
       }
 
       buf[idx] = byte;
-      idx += bytes;
+      idx += bytes_read;
 
       if (set_frame_state == START) {
         if (byte == FLAG) {
@@ -311,9 +320,14 @@ int llopen(LinkLayer connectionParameters) {
           return -1;
         }
 
-        bytes = writeBytesSerialPort(ua_frame, SFRAME_SIZE);
+        int bytes_written = writeBytesSerialPort(ua_frame, SFRAME_SIZE);
+
+        if (bytes_written < 0) {
+          return -1;
+        }
         printf("UA frame sent\n");
 
+        // TODO: validate the use of sleep
         // Wait until all bytes have been written to the serial port
         sleep(1);
         STOP = TRUE;
@@ -334,9 +348,6 @@ int llwrite(const unsigned char *buf, int bufSize) {
     return -1;
   }
   // TODO: Implement this function
-  // TODO: Dont send only data, put it in a format frame
-  // TODO: the check bytesWritten must be changes since iframe will  have size
-  // greater than bufSize
 
   int max_attempts = ll_config.nRetransmissions + 1;
   for (int attempts = 0; attempts < max_attempts; attempts++) {
@@ -344,10 +355,8 @@ int llwrite(const unsigned char *buf, int bufSize) {
     if (bytes_sent > 0) {
       // TODO (M4): wait for RR/REJ here
       // For M3, just return success
-      // TODO: understand if the return value should be bufSize or bytesSent
-      // error handling because of that
-      // TODO: i need to do a check that guarantees that all bytes in data were
-      // written to iframe
+      // TODO: understand if the return value should be bufSize or bytesSent ( i
+      // think it should return bufSize in order to achieve layer independence)
       return bufSize;
     }
   }
