@@ -72,11 +72,11 @@ static int create_sframe(unsigned char *frame) {
   return idx;
 }
 
-static int create_iframe(const unsigned char *data, int dataSize,
+static int create_iframe(const unsigned char *data, int data_size,
                          unsigned char *frame) {
 
-  if (data == NULL || frame == NULL || dataSize <= 0 ||
-      dataSize > MAX_PAYLOAD_SIZE) {
+  if (data == NULL || frame == NULL || data_size <= 0 ||
+      data_size > MAX_PAYLOAD_SIZE) {
     return -1;
   }
 
@@ -92,12 +92,12 @@ static int create_iframe(const unsigned char *data, int dataSize,
   frame[idx++] = A_SENDER ^ C;
 
   // Copy data into frame (payload)
-  for (int i = 0; i < dataSize; i++) {
+  for (int i = 0; i < data_size; i++) {
     frame[idx++] = data[i];
   }
 
   unsigned char bcc2 = 0;
-  for (int i = 0; i < dataSize; i++) {
+  for (int i = 0; i < data_size; i++) {
     bcc2 ^= data[i];
   }
   frame[idx++] = bcc2;
@@ -108,11 +108,11 @@ static int create_iframe(const unsigned char *data, int dataSize,
   return idx;
 }
 
-static int transmit_frame(const unsigned char *buf, int bufSize) {
+static int transmit_frame(const unsigned char *buf, int buf_size) {
 
   const unsigned int max_iframe_size = (2 * (4 + MAX_PAYLOAD_SIZE) + 2);
   unsigned char raw_frame[max_iframe_size]; // you'll define this macro next
-  int raw_len = create_iframe(buf, bufSize, raw_frame);
+  int raw_len = create_iframe(buf, buf_size, raw_frame);
   if (raw_len < 0) {
     return -1;
   }
@@ -136,9 +136,9 @@ static int transmit_frame(const unsigned char *buf, int bufSize) {
   final_iframe[1 + stuffed_body_len] = FLAG;
   int final_iframe_len = 1 + stuffed_body_len + 1;
 
-  int bytesWritten = writeBytesSerialPort(final_iframe, final_iframe_len);
-  printf("LL: Sent %d bytes\n", bytesWritten);
-  return bytesWritten;
+  int bytes_written = writeBytesSerialPort(final_iframe, final_iframe_len);
+  printf("LL: Sent %d bytes\n", bytes_written);
+  return bytes_written;
 }
 
 ////////////////////////////////////////////////
@@ -170,13 +170,17 @@ int llopen(LinkLayer connectionParameters) {
     // Test this condition by placing a '\n' in the middle of the buffer.
     // The whole buffer must be sent even with the '\n'.
 
-    int bytes = writeBytesSerialPort(set_frame, SFRAME_SIZE);
-    printf("%d bytes written to serial port\n", bytes);
+    int bytes_written = writeBytesSerialPort(set_frame, SFRAME_SIZE);
+    if (bytes_written < 0) {
+      perror("writeBytesSerialPort");
+      return -1;
+    }
+    printf("%d bytes written to serial port\n", bytes_written);
 
     // Wait until all bytes have been written to the serial port
     sleep(1);
 
-    int nBytesBuf = 0;
+    int idx = 0;
 
     while (STOP == FALSE) {
       // NOTE: This while() cycle is a simple example showing how to read from
@@ -187,17 +191,17 @@ int llopen(LinkLayer connectionParameters) {
       // NOTE: This function may return even if no byte was received, which may
       // not be true.
       unsigned char byte;
-      int bytes = readByteSerialPort(&byte);
+      int bytes_read = readByteSerialPort(&byte);
 
-      if (bytes < 0) {
+      if (bytes_read < 0) {
         perror("readByteSerialPort");
         return -1;
-      } else if (bytes == 0) {
+      } else if (bytes_read == 0) {
         continue; // No byte received, try again
       }
 
-      set_frame[nBytesBuf] = byte;
-      nBytesBuf += bytes;
+      set_frame[idx] = byte;
+      idx += bytes_read;
 
       if (set_frame_state == START) {
         if (byte == FLAG) {
@@ -245,7 +249,7 @@ int llopen(LinkLayer connectionParameters) {
   } else if (ll_config.role == LlRx) {
     unsigned char buf[SFRAME_SIZE] = {0};
 
-    int nBytesBuf = 0;
+    int idx = 0;
 
     while (STOP == FALSE) {
       // Read one byte from serial port.
@@ -262,8 +266,8 @@ int llopen(LinkLayer connectionParameters) {
         continue; // No byte received, try again
       }
 
-      buf[nBytesBuf] = byte;
-      nBytesBuf += bytes;
+      buf[idx] = byte;
+      idx += bytes;
 
       if (set_frame_state == START) {
         if (byte == FLAG) {
@@ -307,7 +311,7 @@ int llopen(LinkLayer connectionParameters) {
           return -1;
         }
 
-        bytes = writeBytesSerialPort(ua_frame, 5);
+        bytes = writeBytesSerialPort(ua_frame, SFRAME_SIZE);
         printf("UA frame sent\n");
 
         // Wait until all bytes have been written to the serial port
@@ -316,7 +320,7 @@ int llopen(LinkLayer connectionParameters) {
       }
     }
 
-    printf("Total bytes received: %d\n", nBytesBuf);
+    printf("Total bytes received: %d\n", idx);
   }
 
   return 0;
@@ -334,13 +338,13 @@ int llwrite(const unsigned char *buf, int bufSize) {
   // TODO: the check bytesWritten must be changes since iframe will  have size
   // greater than bufSize
 
-  int maxAttempts = ll_config.nRetransmissions + 1;
-  for (int attempts = 0; attempts < maxAttempts; attempts++) {
-    int bytesSent = transmit_frame(buf, bufSize);
-    if (bytesSent > 0) {
+  int max_attempts = ll_config.nRetransmissions + 1;
+  for (int attempts = 0; attempts < max_attempts; attempts++) {
+    int bytes_sent = transmit_frame(buf, bufSize);
+    if (bytes_sent > 0) {
       // TODO (M4): wait for RR/REJ here
       // For M3, just return success
-      // TODO: maybe not return buff size but bytesSent instead and change the
+      // TODO: understand if the return value should be bufSize or bytesSent
       // error handling because of that
       // TODO: i need to do a check that guarantees that all bytes in data were
       // written to iframe

@@ -39,20 +39,20 @@ void applicationLayer(const char *serialPort, const char *role, int baudRate,
 
     // Buffer to store chunks of 1000 bytes
     unsigned char buffer[MAX_PAYLOAD_SIZE]; // MAX_PAYLOAD_SIZE = 1000
-    int bytesRead;
+    int bytes_read;
 
     printf("Starting file transmission: %s\n", filename);
 
     // Read file in chunks of 1000 bytes
-    while ((bytesRead = fread(buffer, 1, MAX_PAYLOAD_SIZE, file)) > 0) {
-      printf("Read %d bytes from file\n", bytesRead);
+    while ((bytes_read = fread(buffer, 1, MAX_PAYLOAD_SIZE, file)) > 0) {
+      printf("Read %d bytes from file\n", bytes_read);
 
       // Send chunk via link layer
-      int bytesWritten = llwrite(buffer, bytesRead);
+      int bytes_written = llwrite(buffer, bytes_read);
 
       // TODO: bytesWritten != (bytesRead + bytes occupied by frame format)
 
-      if (bytesWritten != bytesRead) {
+      if (bytes_written != bytes_read) {
         // TODO: think of the print better
         fprintf(stderr, "Maximum retransmissions reached\n");
         fclose(file);
