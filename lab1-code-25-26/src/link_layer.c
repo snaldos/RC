@@ -34,7 +34,7 @@ static unsigned char expected_iframe_nr =
 static volatile int alarm_triggered = FALSE;
 static volatile int alarm_count = 0;
 
-const unsigned int max_iframe_size = (2 * (4 + MAX_PAYLOAD_SIZE) + 2);
+const unsigned int MAX_IFRAME_SIZE = (2 * (4 + MAX_PAYLOAD_SIZE) + 2);
 // Pseudocode for destuffing
 // for (int i = 0; i < stuffed_len; ) {
 //     if (stuffed[i] == 0x7D) {
@@ -175,7 +175,7 @@ static int send_sframe(unsigned char control) {
 
 static int send_iframe(const unsigned char *buf, int buf_size) {
 
-  unsigned char raw_frame[max_iframe_size]; // you'll define this macro next
+  unsigned char raw_frame[MAX_IFRAME_SIZE]; // you'll define this macro next
   int raw_len = create_iframe(buf, buf_size, raw_frame);
   if (raw_len < 0) {
     return -1;
@@ -186,7 +186,7 @@ static int send_iframe(const unsigned char *buf, int buf_size) {
   unsigned char *body = &raw_frame[1];
 
   // note: in theory int max_stuffed_body_len = max_iframe_size - 2;
-  unsigned char stuffed_body[max_iframe_size];
+  unsigned char stuffed_body[MAX_IFRAME_SIZE];
   int stuffed_body_len = apply_byte_stuffing(body, body_len, stuffed_body);
   if (stuffed_body_len < 0) {
     return -1;
@@ -194,7 +194,7 @@ static int send_iframe(const unsigned char *buf, int buf_size) {
 
   // note: in theory int final_iframe_len = stuffed_body_len + 2;
 
-  unsigned char final_iframe[max_iframe_size];
+  unsigned char final_iframe[MAX_IFRAME_SIZE];
   final_iframe[0] = FLAG;
   memcpy(&final_iframe[1], stuffed_body, stuffed_body_len);
   final_iframe[1 + stuffed_body_len] = FLAG;
@@ -226,7 +226,6 @@ int llopen(LinkLayer connectionParameters) {
 
   printf("Alarm handler set up\n");
 
-  volatile int STOP = FALSE;
   enum SUPERVISION_STATE sframe_state = START;
 
   if (ll_config.role == LlTx) {
@@ -254,7 +253,7 @@ int llopen(LinkLayer connectionParameters) {
     int idx = 0;
     unsigned char ua_frame[SFRAME_SIZE] = {0};
 
-    while (STOP == FALSE) {
+    while (sframe_state != SUCCESS) {
       // NOTE: This while() cycle is a simple example showing how to read from
       // the serial port. It must be changed in order to respect the
       // specifications of the protocol indicated in the Lab guide.
@@ -321,7 +320,6 @@ int llopen(LinkLayer connectionParameters) {
 
       if (sframe_state == SUCCESS) {
         printf("UA frame received successfully\n");
-        STOP = TRUE;
       }
     }
   } else if (ll_config.role == LlRx) {
@@ -329,7 +327,7 @@ int llopen(LinkLayer connectionParameters) {
     int idx = 0;
     unsigned char set_frame[SFRAME_SIZE] = {0};
 
-    while (STOP == FALSE) {
+    while (sframe_state != SUCCESS) {
       // Read one byte from serial port.
       // NOTE: You must check how many bytes were actually read by reading the
       // return value. In this example, we assume that the byte is always read,
@@ -406,7 +404,6 @@ int llopen(LinkLayer connectionParameters) {
         // TODO: validate the use of sleep
         // Wait until all bytes have been written to the serial port
         sleep(1);
-        STOP = TRUE;
       }
     }
 
@@ -444,9 +441,6 @@ int llwrite(const unsigned char *buf, int bufSize) {
     if (bytes_sent < 0) {
       return -1;
     }
-    // TODO (M4): wait for RR/REJ here
-    // For M3, just return success
-    // TODO: understand if the return value should be bufSize or bytesSent
 
     while (!alarm_triggered || ack_frame_state != SUCCESS) {
       unsigned char byte;
@@ -575,6 +569,39 @@ int llwrite(const unsigned char *buf, int bufSize) {
 int llread(unsigned char *packet) {
   if (!ll_opened || ll_config.role != LlRx || packet == NULL) {
     return -1;
+  }
+
+  enum SUPERVISION_STATE iframe_state = START;
+  unsigned char raw_frame[MAX_IFRAME_SIZE]; // stuffed body
+  int idx = 0;
+
+  while (iframe_state != SUCCESS) {
+    unsigned char byte;
+    int bytes_read = readByteSerialPort(&byte);
+
+    if (bytes_read < 0) {
+      perror("readByteSerialPort");
+      return -1;
+    } else if (bytes_read == 0) {
+      continue; // No byte received, try again
+    }
+
+    if (iframe_state == START) {
+      idx = 0;
+      if (byte == FLAG) {
+        printf("start of stuffed FRAME...\n");
+        iframe_state = FLAG_RCV;
+      }
+    } else if (iframe_state == FLAG_RCV) {
+      if (byte == FLAG) {
+        printf("end of stuffed FRAME...\n");
+        iframe_state = SUCCESS;
+      }
+    }
+
+    if (iframe_state != START) {
+      raw_frame[idx++] = byte;
+    }
   }
 
   return 0;
