@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
+#include <errno.h>
 
 // MISC
 #define _POSIX_SOURCE 1 // POSIX compliant source
@@ -27,6 +29,10 @@ static int ll_opened = 0;
 // Global sequence number for I-frames
 static unsigned char next_seq_num = 0;
 
+
+static volatile int alarm_triggered = FALSE;
+static volatile int alarm_count = 0;
+
 // Pseudocode for destuffing
 // for (int i = 0; i < stuffed_len; ) {
 //     if (stuffed[i] == 0x7D) {
@@ -37,6 +43,25 @@ static unsigned char next_seq_num = 0;
 //         i += 1;
 //     }
 // }
+
+// Signal handler for alarm (timeout)
+static void alarm_handler(int signal) {
+    alarm_triggered = TRUE;
+    alarm_count++;
+}
+
+// Function to setup alarm signal handler
+static int setup_alarm_handler() {
+    struct sigaction sa;
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler = alarm_handler;
+    
+    if (sigaction(SIGALRM, &sa, NULL) == -1) {
+        perror("sigaction");
+        return -1;
+    }
+    return 0;
+}
 
 static int apply_byte_stuffing(const unsigned char *src, int len,
                                unsigned char *dest) {
@@ -56,6 +81,26 @@ static int apply_byte_stuffing(const unsigned char *src, int len,
   }
   return dest_len;
 }
+
+static int apply_byte_destuffing(const unsigned char *src, int len, 
+                                  unsigned char *dest) {
+    if (src == NULL || len < 0 || dest == NULL) {
+        return -1;
+    }
+    
+    int dest_len = 0;
+    for (int i = 0; i < len; ) {
+        if (src[i] == ESCAPE_OCTET && i + 1 < len) {
+            dest[dest_len++] = src[i + 1] ^ XOR_OCTET;
+            i += 2;
+        } else {
+            dest[dest_len++] = src[i];
+            i++;
+        }
+    }
+    return dest_len;
+}
+
 
 static int create_sframe(unsigned char *frame) {
   if (frame == NULL) {
@@ -116,6 +161,17 @@ static int create_iframe(const unsigned char *data, int data_size,
   return idx;
 }
 
+static int send_supervision_frame(unsigned char control) {
+    unsigned char frame[SFRAME_SIZE];
+    frame[0] = FLAG;
+    frame[1] = A_RECEIVER;
+    frame[2] = control;
+    frame[3] = frame[1] ^ frame[2];
+    frame[4] = FLAG;
+    
+    return writeBytesSerialPort(frame, SFRAME_SIZE);
+}
+
 static int transmit_frame(const unsigned char *buf, int buf_size) {
 
   const unsigned int max_iframe_size = (2 * (4 + MAX_PAYLOAD_SIZE) + 2);
@@ -163,6 +219,12 @@ int llopen(LinkLayer connectionParameters) {
   printf("Serial port %s opened\n", connectionParameters.serialPort);
   ll_config = connectionParameters;
   ll_opened = 1;
+
+  if (setup_alarm_handler() < 0) {
+      return -1;
+  }
+
+  printf("Alarm handler set up\n");
 
   volatile int STOP = FALSE;
   enum SUPERVISION_STATE set_frame_state = START;
@@ -347,22 +409,124 @@ int llwrite(const unsigned char *buf, int bufSize) {
   if (!ll_opened || ll_config.role != LlTx) {
     return -1;
   }
+
+  if (buf == NULL || bufSize <= 0 || bufSize > MAX_PAYLOAD_SIZE) {
+    return -1;
+  }
   // TODO: Implement this function
 
-  int max_attempts = ll_config.nRetransmissions + 1;
+  int max_attempts = ll_config.nRetransmissions;
   for (int attempts = 0; attempts < max_attempts; attempts++) {
-    int bytes_sent = transmit_frame(buf, bufSize);
-    if (bytes_sent > 0) {
-      // TODO (M4): wait for RR/REJ here
-      // For M3, just return success
-      // TODO: understand if the return value should be bufSize or bytesSent ( i
-      // think it should return bufSize in order to achieve layer independence)
-      return bufSize;
-    }
-  }
-  return -1;
+    alarm_triggered = FALSE;
 
-  // NOTE: PSEUDOCODE
+    // Start timeout timer
+    alarm(ll_config.timeout);
+
+    enum SUPERVISION_STATE rr_frame_state = START;
+    unsigned char rr_frame[SFRAME_SIZE] = {0};
+    int idx = 0;
+
+    int bytes_sent = transmit_frame(buf, bufSize);
+    if (bytes_sent < 0) {
+      return -1;
+    }
+    // TODO (M4): wait for RR/REJ here
+    // For M3, just return success
+    // TODO: understand if the return value should be bufSize or bytesSent 
+    
+    while (!alarm_triggered) {
+      unsigned char byte;
+      int bytes_read = readByteSerialPort(&byte);
+      if (bytes_read < 0) {
+        if (errno == EINTR) {
+          if (alarm_triggered)
+            break;
+          
+          continue;
+        }
+        
+        alarm(0);
+        perror("readByteSerialPort");
+        return -1;
+      }
+      else if (bytes_read == 0) continue;
+      
+      if (idx < SFRAME_SIZE) {
+        rr_frame[idx++] = byte;
+      }
+
+      // (REPEATED CODE REFACTOR LATER)
+      if (rr_frame_state == START) {
+        if (byte == FLAG) {
+            rr_frame_state = FLAG_RCV;
+        }
+      } else if (rr_frame_state == FLAG_RCV) {
+        if (byte == A_RECEIVER) {
+            rr_frame_state = A_RCV;
+        } else if (byte == FLAG) {
+            rr_frame_state = FLAG_RCV;
+        } else {
+            rr_frame_state = START;
+            idx = 0;
+        }
+      } else if (rr_frame_state == A_RCV) {
+        // Check for RR or REJ
+        if (byte == C_RR0 || byte == C_RR1 || 
+            byte == C_REJ0 || byte == C_REJ1) {
+            rr_frame_state = C_RCV;
+        } else if (byte == FLAG) {
+            rr_frame_state = FLAG_RCV;
+        } else {
+            rr_frame_state = START;
+            idx = 0;
+        }
+      } else if (rr_frame_state == C_RCV) {
+        // Verify BCC1
+        if (byte == (rr_frame[1] ^ rr_frame[2])) {
+            rr_frame_state = BCC_OK;
+        } else if (byte == FLAG) {
+            rr_frame_state = FLAG_RCV;
+        } else {
+            rr_frame_state = START;
+            idx = 0;
+        }
+      } else if (rr_frame_state == BCC_OK) {
+          if (byte == FLAG) {
+              rr_frame_state = SUCCESS;
+              break;
+          } else {
+              rr_frame_state = START;
+              idx = 0;
+          }
+      }
+    }
+    // Stop timeout timer
+    alarm(0); 
+    if (rr_frame_state == SUCCESS) {
+      unsigned char control = rr_frame[2];
+            
+      // Extract N(r) from control byte
+      unsigned char nr = (control >> 7) & 0x01;
+            
+      if ((control == C_RR0 && nr == 0) || 
+          (control == C_RR1 && nr == 1)) {
+          
+          unsigned char expected_nr = (next_seq_num + 1) % 2;
+          if (nr == expected_nr) {
+            printf("LL: Received RR%d - Frame acknowledged\n", nr);
+
+            next_seq_num = (next_seq_num + 1) % 2;
+            return bufSize;
+          } else printf("LL: Received RR but with wrong N(r), expected %d\n", expected_nr);
+      } else if (control == C_REJ0 || control == C_REJ1) {
+          printf("LL: Received REJ%d - Retransmitting immediately\n", nr);
+          continue;
+      }
+    } else if (alarm_triggered) {
+      printf ("LL: Timeout occurred, retransmitting (attempt %d of %d)\n", attempts + 1, max_attempts);
+    }
+
+  // NOTE: PSEUDACODE
   // while (attempts < max_attempts) {
   //   send_frame(); // full stuffed I-frame
 
@@ -379,8 +543,11 @@ int llwrite(const unsigned char *buf, int bufSize) {
   // }
 
   // return -1; // all retries failed
-}
+  }
 
+  printf("LL: Maximum retransmissions reached, giving up\n");
+  return -1;
+}
 ////////////////////////////////////////////////
 // LLREAD
 ////////////////////////////////////////////////
