@@ -28,10 +28,13 @@ static int ll_opened = 0;
 // TODO: decide when N(s) = 0 or N(s) = 1
 
 static unsigned char next_iframe_nr = 0; // N(s) for next I-frame to send
+static unsigned char expected_iframe_nr =
+    0; // N(r) for expected I-frame to receive
 
 static volatile int alarm_triggered = FALSE;
 static volatile int alarm_count = 0;
 
+const unsigned int max_iframe_size = (2 * (4 + MAX_PAYLOAD_SIZE) + 2);
 // Pseudocode for destuffing
 // for (int i = 0; i < stuffed_len; ) {
 //     if (stuffed[i] == 0x7D) {
@@ -172,7 +175,6 @@ static int send_sframe(unsigned char control) {
 
 static int send_iframe(const unsigned char *buf, int buf_size) {
 
-  const unsigned int max_iframe_size = (2 * (4 + MAX_PAYLOAD_SIZE) + 2);
   unsigned char raw_frame[max_iframe_size]; // you'll define this macro next
   int raw_len = create_iframe(buf, buf_size, raw_frame);
   if (raw_len < 0) {
@@ -571,7 +573,9 @@ int llwrite(const unsigned char *buf, int bufSize) {
 // LLREAD
 ////////////////////////////////////////////////
 int llread(unsigned char *packet) {
-  // TODO: Implement this function
+  if (!ll_opened || ll_config.role != LlRx || packet == NULL) {
+    return -1;
+  }
 
   return 0;
 }

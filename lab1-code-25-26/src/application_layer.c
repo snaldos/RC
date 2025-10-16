@@ -62,6 +62,28 @@ void applicationLayer(const char *serialPort, const char *role, int baudRate,
     fclose(file);
     printf("File transmission completed\n");
   } else if (ll.role == LlRx) {
+    FILE *file = fopen(filename, "wb");
+    if (file == NULL) {
+      fprintf(stderr, "Failed to create file %s\n", filename);
+      llclose();
+      return;
+    }
+
+    printf("Starting file reception: %s\n", filename);
+
+    unsigned char buffer[MAX_PAYLOAD_SIZE];
+    int bytes_read;
+
+    // Receive packets until END packet (for M5, you'll parse packet type)
+    // For M3/M4, just receive until connection closed (simplified)
+    while ((bytes_read = llread(buffer)) > 0) {
+      printf("Received %d bytes\n", bytes_read);
+      fwrite(buffer, 1, bytes_read, file);
+      // TODO (M5): Check for END packet to break
+    }
+
+    fclose(file);
+    printf("File reception completed\n");
   }
 
   if (llclose() < 0) {
