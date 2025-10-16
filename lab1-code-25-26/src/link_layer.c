@@ -22,14 +22,15 @@
 
 */
 
+// TODO: maybe MAX_IFRAME_SIZE doesnt have a finite value since IFRAME CAN HAVE
+// REPEATED FLAGS
 static LinkLayer ll_config;
 static int ll_opened = 0;
 
 // TODO: decide when N(s) = 0 or N(s) = 1
 
-static unsigned char next_iframe_nr = 0; // N(s) for next I-frame to send
-static unsigned char expected_iframe_nr =
-    0; // N(r) for expected I-frame to receive
+static unsigned char next_iframe_ns = 0;     // next N(s) for Tx to send
+static unsigned char expected_iframe_ns = 0; // expected N(s) for Rx to receive
 
 static volatile int alarm_triggered = FALSE;
 static volatile int alarm_count = 0;
@@ -92,6 +93,7 @@ static int apply_byte_destuffing(const unsigned char *src, int len,
 
   int dest_len = 0;
   for (int i = 0; i < len;) {
+    // i + 1 < len shouldnt happen in theory when src[i] = ESCAPE_OCTET
     if (src[i] == ESCAPE_OCTET && i + 1 < len) {
       dest[dest_len++] = src[i + 1] ^ XOR_OCTET;
       i += 2;
@@ -140,7 +142,7 @@ static int create_iframe(const unsigned char *data, int data_size,
   frame[idx++] = FLAG;
   frame[idx++] = A_SENDER;
 
-  unsigned char C = (next_iframe_nr == 0) ? C_I0 : C_I1;
+  unsigned char C = (next_iframe_ns == 0) ? C_I0 : C_I1;
   frame[idx++] = C;
 
   frame[idx++] = A_SENDER ^ C;
@@ -162,11 +164,11 @@ static int create_iframe(const unsigned char *data, int data_size,
   return idx;
 }
 
-static int send_sframe(unsigned char control) {
+static int send_sframe(unsigned char control_field) {
   unsigned char frame[SFRAME_SIZE];
   frame[0] = FLAG;
   frame[1] = A_RECEIVER;
-  frame[2] = control;
+  frame[2] = control_field;
   frame[3] = frame[1] ^ frame[2];
   frame[4] = FLAG;
 
@@ -513,26 +515,26 @@ int llwrite(const unsigned char *buf, int bufSize) {
     // Stop timeout timer
     alarm(0);
     if (ack_frame_state == SUCCESS) {
-      unsigned char ack_frame_c = ack_frame[2];
+      unsigned char control_field = ack_frame[2];
 
       // Extract N(r) from control byte
-      unsigned char nr = (ack_frame_c >> 7) & 0x01;
+      unsigned char nr = (control_field >> 7) & 0x01;
 
-      if ((ack_frame_c == C_RR0) || (ack_frame_c == C_RR1)) {
+      if ((control_field == C_RR0) || (control_field == C_RR1)) {
 
-        unsigned char expected_next_iframe_nr = (next_iframe_nr + 1) % 2;
-        if (nr == expected_next_iframe_nr) {
+        unsigned char expected_next_iframe_ns = (next_iframe_ns + 1) % 2;
+        if (nr == expected_next_iframe_ns) {
           // Should always happen if RR received
           printf("LL: Received RR%d - Frame acknowledged\n", nr);
-          next_iframe_nr = (next_iframe_nr + 1) % 2;
+          next_iframe_ns = (next_iframe_ns + 1) % 2;
           return bufSize;
         } else
           // In theory never happens but who knows...
           // Why? Because next_iframe_nr gets updated solely on RR received
           // which prooves correctness assuming RR sends are correct
           printf("LL: Received RR but with wrong N(r), expected %d\n",
-                 expected_next_iframe_nr);
-      } else if (ack_frame_c == C_REJ0 || ack_frame_c == C_REJ1) {
+                 expected_next_iframe_ns);
+      } else if (control_field == C_REJ0 || control_field == C_REJ1) {
         printf("LL: Received REJ%d - Retransmitting immediately\n", nr);
         continue;
       }
@@ -572,7 +574,7 @@ int llread(unsigned char *packet) {
   }
 
   enum SUPERVISION_STATE iframe_state = START;
-  unsigned char raw_frame[MAX_IFRAME_SIZE]; // stuffed body
+  unsigned char stuffed_body[MAX_IFRAME_SIZE];
   int idx = 0;
 
   while (iframe_state != SUCCESS) {
@@ -594,17 +596,47 @@ int llread(unsigned char *packet) {
       }
     } else if (iframe_state == FLAG_RCV) {
       if (byte == FLAG) {
-        printf("end of stuffed FRAME...\n");
-        iframe_state = SUCCESS;
+        // Repeated flag — stay in FLAG_RCV
+        continue;
+      } else {
+        stuffed_body[idx++] = byte;
+        iframe_state = DATA_RCV; // optional but clearer
       }
-    }
-
-    if (iframe_state != START) {
-      raw_frame[idx++] = byte;
+    } else if (iframe_state == DATA_RCV) {
+      if (byte == FLAG) {
+        iframe_state = SUCCESS;
+        printf("end of stuffed FRAME...\n");
+      } else {
+        stuffed_body[idx++] = byte;
+      }
     }
   }
 
-  return 0;
+  unsigned char destuffed_body[MAX_IFRAME_SIZE];
+
+  int destuffed_len = apply_byte_destuffing(stuffed_body, idx, destuffed_body);
+  if (destuffed_len < MIN_IFRAME_BODY_SIZE)
+    return -1; // Min: A, C, BCC1, 1 data, BCC2
+
+  unsigned char A = destuffed_body[0];
+  unsigned char C = destuffed_body[1];
+  unsigned char bcc1 = destuffed_body[2];
+
+  // body length without A C BCC1 and BCC2
+  int payload_len = destuffed_len - 4;
+  unsigned char *payload = &destuffed_body[3];
+  unsigned char received_bcc2 = destuffed_body[destuffed_len - 1];
+  unsigned char computed_bcc2 = 0;
+  for (int i = 0; i < payload_len; i++) {
+    computed_bcc2 ^= payload[i];
+  }
+  unsigned char ns = (C == C_I0) ? 0 : 1;
+
+  // TODO: now write RR/REJ with values based on the variables defined
+
+  // currently returning positive for the while in application layer to never
+  // end
+  return 1;
 }
 
 ////////////////////////////////////////////////
