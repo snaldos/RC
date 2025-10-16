@@ -27,7 +27,7 @@ static int ll_opened = 0;
 
 // TODO: decide when N(s) = 0 or N(s) = 1
 
-static unsigned char tx_seq_num = 0; // N(s) for next I-frame to send
+static unsigned char next_iframe_nr = 0; // N(s) for next I-frame to send
 
 static volatile int alarm_triggered = FALSE;
 static volatile int alarm_count = 0;
@@ -137,7 +137,7 @@ static int create_iframe(const unsigned char *data, int data_size,
   frame[idx++] = FLAG;
   frame[idx++] = A_SENDER;
 
-  unsigned char C = (tx_seq_num == 0) ? C_I0 : C_I1;
+  unsigned char C = (next_iframe_nr == 0) ? C_I0 : C_I1;
   frame[idx++] = C;
 
   frame[idx++] = A_SENDER ^ C;
@@ -446,7 +446,7 @@ int llwrite(const unsigned char *buf, int bufSize) {
     // For M3, just return success
     // TODO: understand if the return value should be bufSize or bytesSent
 
-    while (!alarm_triggered) {
+    while (!alarm_triggered || ack_frame_state != SUCCESS) {
       unsigned char byte;
       int bytes_read = readByteSerialPort(&byte);
       if (bytes_read < 0) {
@@ -504,7 +504,6 @@ int llwrite(const unsigned char *buf, int bufSize) {
       } else if (ack_frame_state == BCC_OK) {
         if (byte == FLAG) {
           ack_frame_state = SUCCESS;
-          break;
         } else {
           ack_frame_state = START;
         }
@@ -514,25 +513,30 @@ int llwrite(const unsigned char *buf, int bufSize) {
         ack_frame[idx++] = byte;
       }
     }
+
     // Stop timeout timer
     alarm(0);
     if (ack_frame_state == SUCCESS) {
-      unsigned char control = ack_frame[2];
+      unsigned char ack_frame_c = ack_frame[2];
 
       // Extract N(r) from control byte
-      unsigned char nr = (control >> 7) & 0x01;
+      unsigned char nr = (ack_frame_c >> 7) & 0x01;
 
-      if ((control == C_RR0) || (control == C_RR1)) {
+      if ((ack_frame_c == C_RR0) || (ack_frame_c == C_RR1)) {
 
-        unsigned char expected_nr = (tx_seq_num + 1) % 2;
-        if (nr == expected_nr) {
+        unsigned char expected_next_iframe_nr = (next_iframe_nr + 1) % 2;
+        if (nr == expected_next_iframe_nr) {
+          // Should always happen if RR received
           printf("LL: Received RR%d - Frame acknowledged\n", nr);
-          tx_seq_num = (tx_seq_num + 1) % 2;
+          next_iframe_nr = (next_iframe_nr + 1) % 2;
           return bufSize;
         } else
+          // In theory never happens but who knows...
+          // Why? Because next_iframe_nr gets updated solely on RR received
+          // which prooves correctness assuming RR sends are correct
           printf("LL: Received RR but with wrong N(r), expected %d\n",
-                 expected_nr);
-      } else if (control == C_REJ0 || control == C_REJ1) {
+                 expected_next_iframe_nr);
+      } else if (ack_frame_c == C_REJ0 || ack_frame_c == C_REJ1) {
         printf("LL: Received REJ%d - Retransmitting immediately\n", nr);
         continue;
       }
