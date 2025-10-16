@@ -26,9 +26,8 @@ static LinkLayer ll_config;
 static int ll_opened = 0;
 
 // TODO: decide when N(s) = 0 or N(s) = 1
-// Global sequence number for I-frames
-// TODO: get better name for next_seq_num
-static unsigned char next_seq_num = 0;
+
+static unsigned char tx_seq_num = 0; // N(s) for next I-frame to send
 
 static volatile int alarm_triggered = FALSE;
 static volatile int alarm_count = 0;
@@ -138,9 +137,7 @@ static int create_iframe(const unsigned char *data, int data_size,
   frame[idx++] = FLAG;
   frame[idx++] = A_SENDER;
 
-  unsigned char C =
-      (next_seq_num == 0) ? C_I0 : C_I1; // CONAS DE MERDA BURRO DA PIÇA COMEDOR
-                                         // DE CONA FAZEDOR DE MINETES
+  unsigned char C = (tx_seq_num == 0) ? C_I0 : C_I1;
   frame[idx++] = C;
 
   frame[idx++] = A_SENDER ^ C;
@@ -527,10 +524,10 @@ int llwrite(const unsigned char *buf, int bufSize) {
 
       if ((control == C_RR0) || (control == C_RR1)) {
 
-        unsigned char expected_nr = (next_seq_num + 1) % 2;
+        unsigned char expected_nr = (tx_seq_num + 1) % 2;
         if (nr == expected_nr) {
           printf("LL: Received RR%d - Frame acknowledged\n", nr);
-          next_seq_num = (next_seq_num + 1) % 2;
+          tx_seq_num = (tx_seq_num + 1) % 2;
           return bufSize;
         } else
           printf("LL: Received RR but with wrong N(r), expected %d\n",
