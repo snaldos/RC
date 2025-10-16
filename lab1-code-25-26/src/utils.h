@@ -44,8 +44,8 @@
 // #define A_RECEIVER 0x01
 
 // N(s) and N(r) - STOP AND WAIT
-#define C_0 0x00
-#define C_1 0x80
+#define C_I0 0x00
+#define C_I1 0x80
 
 // BCC1 A ^ C
 // BCC2 D1 ^ D2 ^ D3 ... ^ ^ Dn

@@ -94,7 +94,7 @@ static int create_iframe(const unsigned char *data, int data_size,
   frame[idx++] = FLAG;
   frame[idx++] = A_SENDER;
 
-  unsigned char C = (next_seq_num == 0) ? C_0 : C_1;
+  unsigned char C = (next_seq_num == 0) ? C_I0 : C_I1; // CONAS DE MERDA BURRO DA PIÇA COMEDOR DE CONA FAZEDOR DE MINETES
   frame[idx++] = C;
 
   frame[idx++] = A_SENDER ^ C;
