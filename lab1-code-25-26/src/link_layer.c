@@ -518,15 +518,15 @@ int llwrite(const unsigned char *buf, int bufSize) {
       unsigned char control_field = ack_frame[2];
 
       // Extract N(r) from control byte
-      unsigned char nr = (control_field >> 7) & 0x01;
+      unsigned char nr = control_field & 0x01;
 
       if ((control_field == C_RR0) || (control_field == C_RR1)) {
 
-        unsigned char expected_next_iframe_ns = (next_iframe_ns + 1) % 2;
+        unsigned char expected_next_iframe_ns = 1 - next_iframe_ns;
         if (nr == expected_next_iframe_ns) {
           // Should always happen if RR received
           printf("LL: Received RR%d - Frame acknowledged\n", nr);
-          next_iframe_ns = (next_iframe_ns + 1) % 2;
+          next_iframe_ns = expected_next_iframe_ns;
           return bufSize;
         } else
           // In theory never happens but who knows...
@@ -633,6 +633,35 @@ int llread(unsigned char *packet) {
   unsigned char ns = (C == C_I0) ? 0 : 1;
 
   // TODO: now write RR/REJ with values based on the variables defined
+
+  if (bcc1 != (A ^ C)) {
+    printf("LL: BCC1 error detected\n");
+    // Header error → ignore frame (Slide 15)
+  } else if (expected_iframe_ns != ns) {
+    // Unexpected N(s) takes precedence over BCC2 error
+    printf(
+        "LL: Unexpected N(s) received, expected %d but got %d. Sending RR%d\n",
+        expected_iframe_ns, ns, expected_iframe_ns);
+    // Send RR with expected_iframe_ns
+    unsigned char rr_control = (expected_iframe_ns == 0) ? C_RR0 : C_RR1;
+    if (send_sframe(rr_control) < 0) {
+      return -1;
+    }
+  } else if (received_bcc2 != computed_bcc2) {
+    printf("LL: BCC2 error detected, sending REJ%d\n", expected_iframe_ns);
+    // Send REJ with expected_iframe_ns
+    unsigned char rej_control = (expected_iframe_ns == 0) ? C_REJ0 : C_REJ1;
+    if (send_sframe(rej_control) < 0) {
+      return -1;
+    }
+  } else {
+    printf("LL: I-frame received correctly, N(s)=%d, payload size=%d\n", ns,
+           payload_len);
+    memcpy(packet, payload, payload_len);
+    expected_iframe_ns = 1 - expected_iframe_ns;
+    send_sframe(expected_iframe_ns == 0 ? C_RR0 : C_RR1);
+    return payload_len;
+  }
 
   // currently returning positive for the while in application layer to never
   // end
