@@ -21,7 +21,7 @@
    handler with ll_config.timeout
 
 */
-
+// TODO: maybe look at see if twaeking is possible for Vmin and Vtime
 // TODO: maybe MAX_IFRAME_SIZE doesnt have a finite value since IFRAME CAN HAVE
 // REPEATED FLAGS
 static LinkLayer ll_config;
@@ -36,16 +36,6 @@ static volatile int alarm_triggered = FALSE;
 static volatile int alarm_count = 0;
 
 const unsigned int MAX_IFRAME_SIZE = (2 * (4 + MAX_PAYLOAD_SIZE) + 2);
-// Pseudocode for destuffing
-// for (int i = 0; i < stuffed_len; ) {
-//     if (stuffed[i] == 0x7D) {
-//         destuffed[dst_len++] = stuffed[i+1] ^ 0x20;
-//         i += 2;
-//     } else {
-//         destuffed[dst_len++] = stuffed[i];
-//         i += 1;
-//     }
-// }
 
 // Signal handler for alarm (timeout)
 static void alarm_handler(int signal) {
@@ -164,7 +154,7 @@ static int create_iframe(const unsigned char *data, int data_size,
   return idx;
 }
 
-static int send_sframe(unsigned char control_field) {
+static int send_ack_frame(unsigned char control_field) {
   unsigned char frame[SFRAME_SIZE];
   frame[0] = FLAG;
   frame[1] = A_RECEIVER;
@@ -248,21 +238,14 @@ int llopen(LinkLayer connectionParameters) {
     }
     printf("%d bytes written to serial port\n", bytes_written);
 
-    // TODO: validate the use of sleep 1
     // Wait until all bytes have been written to the serial port
-    sleep(1);
+    // sleep(1);
 
-    int idx = 0;
-    unsigned char ua_frame[SFRAME_SIZE] = {0};
+    // Tx tries to parse UA frame
+    unsigned char ua_a;
+    unsigned char ua_c;
 
     while (sframe_state != SUCCESS) {
-      // NOTE: This while() cycle is a simple example showing how to read from
-      // the serial port. It must be changed in order to respect the
-      // specifications of the protocol indicated in the Lab guide.
-
-      // Read one byte from serial port
-      // NOTE: This function may return even if no byte was received, which may
-      // not be true.
       unsigned char byte;
       int bytes_read = readByteSerialPort(&byte);
 
@@ -274,7 +257,9 @@ int llopen(LinkLayer connectionParameters) {
       }
 
       if (sframe_state == START) {
-        idx = 0;
+        // Ensure ua_a and ua_c are reset
+        ua_a = 0;
+        ua_c = 0;
         if (byte == FLAG) {
           printf("Tracking UA FRAME...\n");
           sframe_state = FLAG_RCV;
@@ -284,27 +269,26 @@ int llopen(LinkLayer connectionParameters) {
       } else if (sframe_state == FLAG_RCV) {
         if (byte == A_RECEIVER) {
           sframe_state = A_RCV;
+          ua_a = byte;
         } else if (byte == FLAG) {
           sframe_state = FLAG_RCV;
-          idx = 0;
         } else {
           sframe_state = START;
         }
       } else if (sframe_state == A_RCV) {
         if (byte == C_UA) {
           sframe_state = C_RCV;
+          ua_c = byte;
         } else if (byte == FLAG) {
           sframe_state = FLAG_RCV;
-          idx = 0;
         } else {
           sframe_state = START;
         }
       } else if (sframe_state == C_RCV) {
-        if (byte == (ua_frame[1] ^ ua_frame[2])) {
+        if (byte == (ua_a ^ ua_c)) {
           sframe_state = BCC_OK;
         } else if (byte == FLAG) {
           sframe_state = FLAG_RCV;
-          idx = 0;
         } else {
           sframe_state = START;
         }
@@ -316,18 +300,15 @@ int llopen(LinkLayer connectionParameters) {
         }
       }
 
-      if (sframe_state != START) {
-        ua_frame[idx++] = byte;
-      }
-
       if (sframe_state == SUCCESS) {
         printf("UA frame received successfully\n");
       }
     }
   } else if (ll_config.role == LlRx) {
 
-    int idx = 0;
-    unsigned char set_frame[SFRAME_SIZE] = {0};
+    // Rx tries to parse SET frame
+    unsigned char set_a;
+    unsigned char set_c;
 
     while (sframe_state != SUCCESS) {
       // Read one byte from serial port.
@@ -345,33 +326,35 @@ int llopen(LinkLayer connectionParameters) {
       }
 
       if (sframe_state == START) {
+        // Ensure set_a and set_c are reset
+        set_a = 0;
+        set_c = 0;
         if (byte == FLAG) {
           sframe_state = FLAG_RCV;
         }
       } else if (sframe_state == FLAG_RCV) {
         if (byte == A_SENDER) {
           sframe_state = A_RCV;
+          set_a = byte;
         } else if (byte == FLAG) {
           sframe_state = FLAG_RCV;
-          idx = 0;
         } else {
           sframe_state = START;
         }
       } else if (sframe_state == A_RCV) {
         if (byte == C_SET) {
           sframe_state = C_RCV;
+          set_c = byte;
         } else if (byte == FLAG) {
           sframe_state = FLAG_RCV;
-          idx = 0;
         } else {
           sframe_state = START;
         }
       } else if (sframe_state == C_RCV) {
-        if (byte == (set_frame[1] ^ set_frame[2])) {
+        if (byte == (set_a ^ set_c)) {
           sframe_state = BCC_OK;
         } else if (byte == FLAG) {
           sframe_state = FLAG_RCV;
-          idx = 0;
         } else {
           sframe_state = START;
         }
@@ -382,10 +365,6 @@ int llopen(LinkLayer connectionParameters) {
         } else {
           sframe_state = START;
         }
-      }
-
-      if (sframe_state != START) {
-        set_frame[idx++] = byte;
       }
 
       if (sframe_state == SUCCESS) {
@@ -403,13 +382,10 @@ int llopen(LinkLayer connectionParameters) {
         }
         printf("UA frame sent\n");
 
-        // TODO: validate the use of sleep
         // Wait until all bytes have been written to the serial port
-        sleep(1);
+        // sleep(1);
       }
     }
-
-    printf("Total bytes received: %d\n", idx);
   }
 
   return 0;
@@ -436,13 +412,14 @@ int llwrite(const unsigned char *buf, int bufSize) {
     alarm(ll_config.timeout);
 
     enum SUPERVISION_STATE ack_frame_state = START;
-    unsigned char ack_frame[SFRAME_SIZE] = {0};
-    int idx = 0;
 
     int bytes_sent = send_iframe(buf, bufSize);
     if (bytes_sent < 0) {
       return -1;
     }
+
+    unsigned char ack_a;
+    unsigned char ack_c;
 
     while (!alarm_triggered || ack_frame_state != SUCCESS) {
       unsigned char byte;
@@ -459,23 +436,26 @@ int llwrite(const unsigned char *buf, int bufSize) {
         alarm(0);
         perror("readByteSerialPort");
         return -1;
-      }
-      // No byte received, try again
-      else if (bytes_read == 0)
+      } else if (bytes_read == 0) {
         continue;
+      }
 
+      // Tx tries to parse ACK frame
       // (REPEATED CODE REFACTOR LATER)
+
       if (ack_frame_state == START) {
-        idx = 0;
+        // Ensure ack_a and ack_c are reset
+        ack_a = 0;
+        ack_c = 0;
         if (byte == FLAG) {
           ack_frame_state = FLAG_RCV;
         }
       } else if (ack_frame_state == FLAG_RCV) {
         if (byte == A_RECEIVER) {
           ack_frame_state = A_RCV;
+          ack_a = byte;
         } else if (byte == FLAG) {
           ack_frame_state = FLAG_RCV;
-          idx = 0;
         } else {
           ack_frame_state = START;
         }
@@ -484,18 +464,17 @@ int llwrite(const unsigned char *buf, int bufSize) {
         if (byte == C_RR0 || byte == C_RR1 || byte == C_REJ0 ||
             byte == C_REJ1) {
           ack_frame_state = C_RCV;
+          ack_c = byte;
         } else if (byte == FLAG) {
           ack_frame_state = FLAG_RCV;
-          idx = 0;
         } else {
           ack_frame_state = START;
         }
       } else if (ack_frame_state == C_RCV) {
-        if (byte == (ack_frame[1] ^ ack_frame[2])) {
+        if (byte == (ack_a ^ ack_c)) {
           ack_frame_state = BCC_OK;
         } else if (byte == FLAG) {
           ack_frame_state = FLAG_RCV;
-          idx = 0;
         } else {
           ack_frame_state = START;
         }
@@ -506,21 +485,17 @@ int llwrite(const unsigned char *buf, int bufSize) {
           ack_frame_state = START;
         }
       }
-
-      if (ack_frame_state != START) {
-        ack_frame[idx++] = byte;
-      }
     }
 
-    // Stop timeout timer
+    // TODO: check statemachine from here to bottom (what is upwards seems to be
+    // correct) Stop timeout timer
     alarm(0);
     if (ack_frame_state == SUCCESS) {
-      unsigned char control_field = ack_frame[2];
 
-      // Extract N(r) from control byte
-      unsigned char nr = control_field & 0x01;
+      // Extract N(r) from control byte (rightmost bit)
+      unsigned char nr = ack_c & 0x01;
 
-      if ((control_field == C_RR0) || (control_field == C_RR1)) {
+      if ((ack_c == C_RR0) || (ack_c == C_RR1)) {
 
         unsigned char expected_next_iframe_ns = 1 - next_iframe_ns;
         if (nr == expected_next_iframe_ns) {
@@ -534,7 +509,7 @@ int llwrite(const unsigned char *buf, int bufSize) {
           // which prooves correctness assuming RR sends are correct
           printf("LL: Received RR but with wrong N(r), expected %d\n",
                  expected_next_iframe_ns);
-      } else if (control_field == C_REJ0 || control_field == C_REJ1) {
+      } else if (ack_c == C_REJ0 || ack_c == C_REJ1) {
         printf("LL: Received REJ%d - Retransmitting immediately\n", nr);
         continue;
       }
@@ -577,6 +552,8 @@ int llread(unsigned char *packet) {
   unsigned char stuffed_body[MAX_IFRAME_SIZE];
   int idx = 0;
 
+  // Rx tries to parse I-frame
+
   while (iframe_state != SUCCESS) {
     unsigned char byte;
     int bytes_read = readByteSerialPort(&byte);
@@ -597,10 +574,12 @@ int llread(unsigned char *packet) {
     } else if (iframe_state == FLAG_RCV) {
       if (byte == FLAG) {
         // Repeated flag — stay in FLAG_RCV
+        idx = 0;
+        printf("Found repeated flag, still at start of stuffed FRAME...\n");
         continue;
       } else {
         stuffed_body[idx++] = byte;
-        iframe_state = DATA_RCV; // optional but clearer
+        iframe_state = DATA_RCV;
       }
     } else if (iframe_state == DATA_RCV) {
       if (byte == FLAG) {
@@ -632,7 +611,8 @@ int llread(unsigned char *packet) {
   }
   unsigned char ns = (C == C_I0) ? 0 : 1;
 
-  // TODO: now write RR/REJ with values based on the variables defined
+  // now write RR/REJ with values based on the variables defined
+  // TODO IMPLEMENT THIS IN A STATE MACHINE WAY
 
   if (bcc1 != (A ^ C)) {
     printf("LL: BCC1 error detected\n");
@@ -644,14 +624,14 @@ int llread(unsigned char *packet) {
         expected_iframe_ns, ns, expected_iframe_ns);
     // Send RR with expected_iframe_ns
     unsigned char rr_control = (expected_iframe_ns == 0) ? C_RR0 : C_RR1;
-    if (send_sframe(rr_control) < 0) {
+    if (send_ack_frame(rr_control) < 0) {
       return -1;
     }
   } else if (received_bcc2 != computed_bcc2) {
     printf("LL: BCC2 error detected, sending REJ%d\n", expected_iframe_ns);
     // Send REJ with expected_iframe_ns
     unsigned char rej_control = (expected_iframe_ns == 0) ? C_REJ0 : C_REJ1;
-    if (send_sframe(rej_control) < 0) {
+    if (send_ack_frame(rej_control) < 0) {
       return -1;
     }
   } else {
@@ -659,7 +639,7 @@ int llread(unsigned char *packet) {
            payload_len);
     memcpy(packet, payload, payload_len);
     expected_iframe_ns = 1 - expected_iframe_ns;
-    send_sframe(expected_iframe_ns == 0 ? C_RR0 : C_RR1);
+    send_ack_frame(expected_iframe_ns == 0 ? C_RR0 : C_RR1);
     return payload_len;
   }
 
