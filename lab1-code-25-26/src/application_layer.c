@@ -73,14 +73,23 @@ void applicationLayer(const char *serialPort, const char *role, int baudRate,
 
     unsigned char buffer[MAX_PAYLOAD_SIZE];
     int bytes_read;
+    int total_bytes_received = 0;
 
     // Receive packets until END packet (for M5, you'll parse packet type)
     // For M3/M4, just receive until connection closed (simplified)
     while ((bytes_read = llread(buffer)) > 0) {
       printf("Received %d bytes\n", bytes_read);
-      fwrite(buffer, 1, bytes_read, file);
-      // TODO (M5): Check for END packet to break
+      int writen = fwrite(buffer, 1, bytes_read, file);
+      total_bytes_received += writen;
+      printf("Written %d bytes to file, total received: %d bytes\n", writen,
+             total_bytes_received);
+      // i think we can remove this fflush when m5 is done since fclose will
+      // flush
+      fflush(file); // Force write to disk immediately
+                    // TODO (M5): Check for END packet to break
     }
+
+    printf("Total bytes received: %d\n", total_bytes_received);
 
     fclose(file);
     printf("File reception completed\n");

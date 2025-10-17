@@ -421,7 +421,7 @@ int llwrite(const unsigned char *buf, int bufSize) {
     unsigned char ack_a;
     unsigned char ack_c;
 
-    while (!alarm_triggered || ack_frame_state != SUCCESS) {
+    while (!alarm_triggered && ack_frame_state != SUCCESS) {
       unsigned char byte;
       int bytes_read = readByteSerialPort(&byte);
       if (bytes_read < 0) {
@@ -497,7 +497,7 @@ int llwrite(const unsigned char *buf, int bufSize) {
 
       if ((ack_c == C_RR0) || (ack_c == C_RR1)) {
 
-        unsigned char expected_next_iframe_ns = 1 - next_iframe_ns;
+        unsigned char expected_next_iframe_ns = (next_iframe_ns + 1) % 2;
         if (nr == expected_next_iframe_ns) {
           // Should always happen if RR received
           printf("LL: Received RR%d - Frame acknowledged\n", nr);
@@ -574,19 +574,22 @@ int llread(unsigned char *packet) {
     } else if (iframe_state == FLAG_RCV) {
       if (byte == FLAG) {
         // Repeated flag — stay in FLAG_RCV
-        idx = 0;
         printf("Found repeated flag, still at start of stuffed FRAME...\n");
         continue;
       } else {
-        stuffed_body[idx++] = byte;
         iframe_state = DATA_RCV;
       }
-    } else if (iframe_state == DATA_RCV) {
+    }
+
+    if (iframe_state == DATA_RCV) {
       if (byte == FLAG) {
         iframe_state = SUCCESS;
         printf("end of stuffed FRAME...\n");
-      } else {
+      } else if (idx < MAX_IFRAME_SIZE - 1) {
         stuffed_body[idx++] = byte;
+      } else {
+        printf("LL: Frame too long, restarting\n");
+        iframe_state = START;
       }
     }
   }
@@ -612,7 +615,6 @@ int llread(unsigned char *packet) {
   unsigned char ns = (C == C_I0) ? 0 : 1;
 
   // now write RR/REJ with values based on the variables defined
-  // TODO IMPLEMENT THIS IN A STATE MACHINE WAY
 
   if (bcc1 != (A ^ C)) {
     printf("LL: BCC1 error detected\n");
@@ -638,7 +640,7 @@ int llread(unsigned char *packet) {
     printf("LL: I-frame received correctly, N(s)=%d, payload size=%d\n", ns,
            payload_len);
     memcpy(packet, payload, payload_len);
-    expected_iframe_ns = 1 - expected_iframe_ns;
+    expected_iframe_ns = (expected_iframe_ns + 1) % 2;
     send_ack_frame(expected_iframe_ns == 0 ? C_RR0 : C_RR1);
     return payload_len;
   }
