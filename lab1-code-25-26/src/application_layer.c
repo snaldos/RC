@@ -3,8 +3,42 @@
 #include "application_layer.h"
 #include "link_layer.h"
 
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+
+/*
+   TODO: think about migrating static functions to application_layer_utils.h and
+   create a cpp
+
+*/
+
+static void to_big_endian_uint32(uint32_t value, unsigned char out[4]) {
+  // Most significant byte
+  out[0] = (value >> 24) & 0xFF;
+  out[1] = (value >> 16) & 0xFF;
+  out[2] = (value >> 8) & 0xFF;
+  // Least significant byte
+  out[3] = value & 0xFF;
+}
+
+static int create_tlv(unsigned char *buf, unsigned char type, unsigned char len,
+                      const unsigned char *value) {
+
+  // len tells how many bytes value has
+  if (buf == NULL || value == NULL || len == 0) {
+    return -1;
+  }
+
+  // T
+  buf[0] = type;
+  // L
+  buf[1] = len;
+  // V
+  memcpy(&buf[2], value, len);
+
+  return 2 + len;
+}
 
 void applicationLayer(const char *serialPort, const char *role, int baudRate,
                       int nTries, int timeout, const char *filename) {

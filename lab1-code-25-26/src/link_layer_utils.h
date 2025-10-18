@@ -1,5 +1,3 @@
-// link_layer_utils header.
-
 #ifndef _LINK_LAYER_UTILS_H_
 #define _LINK_LAYER_UTILS_H_
 

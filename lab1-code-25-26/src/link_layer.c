@@ -7,7 +7,6 @@
 #include <errno.h>
 #include <signal.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -18,6 +17,8 @@
     TODO: try to reduce code repetition, specially in state machines (ex: create
    a function that parses frames and stuff)
    TODO: decide if you should or not allow I frames where payload is 0 bytes
+   TODO: think about migrating static functions to link_layer_utils.h and create
+   a cpp
    TODO: maybe look at see if tweaking is possible for Vmin and Vtime
 
 */
