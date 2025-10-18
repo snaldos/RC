@@ -568,7 +568,7 @@ int llwrite(const unsigned char *buf, int bufSize) {
 
   printf("LL: Maximum retransmissions reached, giving up\n");
   alarm(0);
-  return -1;
+  return 0;
 }
 ////////////////////////////////////////////////
 // LLREAD
@@ -703,9 +703,8 @@ int llread(unsigned char *packet) {
     }
   }
 
-  // currently returning positive for the while in application layer to never
-  // end
-  return 1;
+  // packet not filled, meaning 0 length
+  return 0;
 }
 
 ////////////////////////////////////////////////
