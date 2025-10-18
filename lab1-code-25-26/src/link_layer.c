@@ -1,8 +1,8 @@
 // Link layer protocol implementation
 
 #include "link_layer.h"
+#include "link_layer_utils.h"
 #include "serial_port.h"
-#include "utils.h"
 
 #include <errno.h>
 #include <signal.h>
@@ -15,13 +15,10 @@
 #define _POSIX_SOURCE 1 // POSIX compliant source
 
 /*
-    TODO: note about sleep():
-    Slide 15: "I, SET and DISC frames are protected by a timer"
-    Your sleep(1) is a temporary hack — for M4, you must use alarm() + signal
-   handler with ll_config.timeout
-    TODO: maybe look at see if tweaking is possible for Vmin and Vtime
     TODO: try to reduce code repetition, specially in state machines (ex: create
    a function that parses frames and stuff)
+   TODO: decide if you should or not allow I frames where payload is 0 bytes
+   TODO: maybe look at see if tweaking is possible for Vmin and Vtime
 
 */
 

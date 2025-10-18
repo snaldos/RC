@@ -1,7 +1,7 @@
-// Utils header.
+// link_layer_utils header.
 
-#ifndef _UTILS_H_
-#define _UTILS_H_
+#ifndef _LINK_LAYER_UTILS_H_
+#define _LINK_LAYER_UTILS_H_
 
 
 // A | C | BCC1
@@ -57,4 +57,4 @@
 
 enum SUPERVISION_STATE { START, FLAG_RCV, A_RCV, C_RCV, BCC_OK, DATA_RCV, SUCCESS };
 
-#endif // _UTILS_H_
+#endif // _LINK_LAYER_UTILS_H_
