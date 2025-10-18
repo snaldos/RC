@@ -20,7 +20,8 @@
     Your sleep(1) is a temporary hack — for M4, you must use alarm() + signal
    handler with ll_config.timeout
     TODO: maybe look at see if tweaking is possible for Vmin and Vtime
-    TODO: try to reduce code repetition, specially in state machines
+    TODO: try to reduce code repetition, specially in state machines (ex: create
+   a function that parses frames and stuff)
 
 */
 
@@ -418,7 +419,7 @@ int llwrite(const unsigned char *buf, int bufSize) {
     unsigned char ack_a;
     unsigned char ack_c;
 
-    while (!alarm_triggered && ack_frame_state != SUCCESS) {
+    while (!alarm_triggered) {
       unsigned char byte;
       int bytes_read = readByteSerialPort(&byte);
       if (bytes_read < 0) {
@@ -427,10 +428,8 @@ int llwrite(const unsigned char *buf, int bufSize) {
           if (alarm_triggered) {
             break;
           }
-
           continue;
         }
-
         alarm(0);
         perror("readByteSerialPort");
         return -1;
@@ -482,45 +481,51 @@ int llwrite(const unsigned char *buf, int bufSize) {
           ack_frame_state = START;
         }
       }
-    }
 
-    // Cancel the alarm
-    alarm(0);
+      if (ack_frame_state == SUCCESS) {
 
-    // Check if timeout occurred
-    if (alarm_triggered) {
-      printf("LL: Timeout occurred, retransmitting (attempt %d of %d)\n",
-             attempts + 1, max_attempts);
-      continue; // Skip to next iteration (retry)
-    } else if (ack_frame_state == SUCCESS) {
+        if (alarm_triggered) {
+          printf("LL: Timeout occurred, retransmitting (attempt %d of %d)\n",
+                 attempts + 1, max_attempts);
+          break;
+        }
 
-      //
-
-      // Extract N(r) from control byte (rightmost bit)
-      unsigned char nr = ack_c & 0x01;
-
-      if ((ack_c == C_RR0) || (ack_c == C_RR1)) {
+        // Extract N(r) from control byte (rightmost bit)
+        unsigned char nr = ack_c & 0x01;
 
         unsigned char expected_next_iframe_ns = (next_iframe_ns + 1) % 2;
-        if (nr == expected_next_iframe_ns) {
-          // Should always happen if RR received
-          printf("LL: Received RR%d - Frame acknowledged\n", nr);
-          next_iframe_ns = expected_next_iframe_ns;
-          return bufSize;
-        } else {
-          // Ignore RR with wrong N(r) - can happen if duplicate RR received
-          // because of duplicate iframe sent to Rx
+
+        if (nr != expected_next_iframe_ns) {
+          // Ignore duplicate ACKs because of duplicate iframe sent to Rx
           printf("LL: Received RR but with wrong N(r), expected %d\n",
                  expected_next_iframe_ns);
+
+          // Reset state machine to parse next frame
+          ack_frame_state = START;
+          ack_a = ack_c = 0;
+          continue;
         }
-      } else if (ack_c == C_REJ0 || ack_c == C_REJ1) {
-        printf("LL: Received REJ%d - Retransmitting immediately\n", nr);
-        continue;
+
+        if ((ack_c == C_RR0) || (ack_c == C_RR1)) {
+          printf("LL: Received RR%d - Frame acknowledged\n", nr);
+          next_iframe_ns = expected_next_iframe_ns;
+          alarm(0);
+          return bufSize;
+
+        } else if (ack_c == C_REJ0 || ack_c == C_REJ1) {
+          // Exit while loop to retransmit immediately
+          printf("LL: Received REJ%d - Retransmitting immediately\n", nr);
+          alarm(0);
+          break;
+        }
       }
     }
+    // ensure timer is off before next attempt
+    alarm(0);
   }
 
   printf("LL: Maximum retransmissions reached, giving up\n");
+  alarm(0);
   return -1;
 }
 ////////////////////////////////////////////////
