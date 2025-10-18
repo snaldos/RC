@@ -3,6 +3,10 @@
 #ifndef _UTILS_H_
 #define _UTILS_H_
 
+
+// A | C | BCC1
+#define HEADER_SIZE 3
+
 // F | A | C | BCC1 | F
 #define SFRAME_SIZE 5
 

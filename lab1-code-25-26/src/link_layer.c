@@ -74,6 +74,33 @@ static int apply_byte_stuffing(const unsigned char *src, int len,
   return dest_len;
 }
 
+static int apply_byte_destuffing_header(const unsigned char *src, int len,
+                                        unsigned char *dest) {
+
+  // returns next position from where it stopped
+  if (src == NULL || len < 0 || dest == NULL) {
+    return -1;
+  }
+
+  int dest_len = 0;
+  int next = 0;
+  while (dest_len < HEADER_SIZE && next < len) {
+    if (src[next] == ESCAPE_OCTET) {
+      if (next + 1 >= len) {
+        // next + 1 >= len shouldnt happen in theory when src[next] =
+        // ESCAPE_OCTET
+        return -1;
+      }
+      dest[dest_len++] = src[next + 1] ^ XOR_OCTET;
+      next += 2;
+    } else {
+      dest[dest_len++] = src[next];
+      next++;
+    }
+  }
+  return next;
+}
+
 static int apply_byte_destuffing(const unsigned char *src, int len,
                                  unsigned char *dest) {
   if (src == NULL || len < 0 || dest == NULL) {
@@ -82,8 +109,11 @@ static int apply_byte_destuffing(const unsigned char *src, int len,
 
   int dest_len = 0;
   for (int i = 0; i < len;) {
-    // i + 1 < len shouldnt happen in theory when src[i] = ESCAPE_OCTET
-    if (src[i] == ESCAPE_OCTET && i + 1 < len) {
+    if (src[i] == ESCAPE_OCTET) {
+      if (i + 1 >= len) {
+        // i + 1 >= len shouldnt happen in theory when src[i] = ESCAPE_OCTET
+        return -1;
+      }
       dest[dest_len++] = src[i + 1] ^ XOR_OCTET;
       i += 2;
     } else {
@@ -611,6 +641,9 @@ int llread(unsigned char *packet) {
   } else if (expected_iframe_ns != ns) {
     // Unexpected N(s) means we received a duplicated frame (our RR got lost)
     // Unexpected N(s) takes precedence over BCC2 error
+
+    // TO THINK ABOUT: couldnt i just ignore the duplicated frame instead of
+    // sending RR? sending RR increases complexity
     printf(
         "LL: Unexpected N(s) received, expected %d but got %d. Sending RR%d\n",
         expected_iframe_ns, ns, expected_iframe_ns);
