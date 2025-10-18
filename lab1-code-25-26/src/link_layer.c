@@ -34,7 +34,7 @@ static unsigned char expected_iframe_ns = 0; // expected N(s) for Rx to receive
 static volatile int alarm_triggered = FALSE;
 static volatile int alarm_count = 0;
 
-const unsigned int MAX_IFRAME_SIZE = (2 * (4 + MAX_PAYLOAD_SIZE) + 2);
+const unsigned int MAX_STUFFED_BODY_SIZE = 2 * (4 + MAX_PAYLOAD_SIZE);
 
 // Signal handler for alarm (timeout)
 static void alarm_handler(int signal) {
@@ -196,7 +196,8 @@ static int send_ack_frame(unsigned char control_field) {
 
 static int send_iframe(const unsigned char *buf, int buf_size) {
 
-  unsigned char raw_frame[MAX_IFRAME_SIZE]; // you'll define this macro next
+  unsigned char
+      raw_frame[MAX_STUFFED_BODY_SIZE]; // you'll define this macro next
   int raw_len = create_iframe(buf, buf_size, raw_frame);
   if (raw_len < 0) {
     return -1;
@@ -206,16 +207,15 @@ static int send_iframe(const unsigned char *buf, int buf_size) {
   int body_len = raw_len - 2;
   unsigned char *body = &raw_frame[1];
 
-  // note: in theory int max_stuffed_body_len = max_iframe_size - 2;
-  unsigned char stuffed_body[MAX_IFRAME_SIZE];
+  unsigned char stuffed_body[MAX_STUFFED_BODY_SIZE];
   int stuffed_body_len = apply_byte_stuffing(body, body_len, stuffed_body);
-  if (stuffed_body_len < 0) {
+  if (stuffed_body_len < MIN_IFRAME_BODY_SIZE) {
     return -1;
   }
 
   // note: in theory int final_iframe_len = stuffed_body_len + 2;
 
-  unsigned char final_iframe[MAX_IFRAME_SIZE];
+  unsigned char final_iframe[MAX_STUFFED_BODY_SIZE];
   final_iframe[0] = FLAG;
   memcpy(&final_iframe[1], stuffed_body, stuffed_body_len);
   final_iframe[1 + stuffed_body_len] = FLAG;
@@ -567,7 +567,7 @@ int llread(unsigned char *packet) {
   }
 
   enum SUPERVISION_STATE iframe_state = START;
-  unsigned char stuffed_body[MAX_IFRAME_SIZE];
+  unsigned char stuffed_body[MAX_STUFFED_BODY_SIZE];
   int idx = 0;
 
   // Rx tries to parse I-frame
@@ -603,7 +603,7 @@ int llread(unsigned char *packet) {
       if (byte == FLAG) {
         iframe_state = SUCCESS;
         printf("end of stuffed FRAME...\n");
-      } else if (idx < MAX_IFRAME_SIZE - 1) {
+      } else if (idx < MAX_STUFFED_BODY_SIZE - 1) {
         stuffed_body[idx++] = byte;
       } else {
         printf("LL: Frame too long, restarting\n");
@@ -612,30 +612,30 @@ int llread(unsigned char *packet) {
     }
   }
 
-  unsigned char destuffed_body[MAX_IFRAME_SIZE];
+  unsigned int max_stuffed_header_size =
+      2 * HEADER_SIZE; // All the header was stuffed
+  unsigned char destuffed_header[max_stuffed_header_size];
 
-  int destuffed_len = apply_byte_destuffing(stuffed_body, idx, destuffed_body);
-  if (destuffed_len < MIN_IFRAME_BODY_SIZE) {
-    return -1; // Min: A, C, BCC1, 1 data, BCC2
+  int stuffed_header_len =
+      apply_byte_destuffing_header(stuffed_body, idx, destuffed_header);
+
+  if (stuffed_header_len < HEADER_SIZE) {
+    return -1; // Header incomplete
   }
 
-  unsigned char A = destuffed_body[0];
-  unsigned char C = destuffed_body[1];
-  unsigned char bcc1 = destuffed_body[2];
+  unsigned char A = destuffed_header[0];
+  unsigned char C = destuffed_header[1];
+  unsigned char bcc1 = destuffed_header[2];
+  unsigned char ns = C == C_I0 ? 0 : 1;
 
-  // body length without A C BCC1 and BCC2
-  int payload_len = destuffed_len - 4;
-  unsigned char *payload = &destuffed_body[3];
-  unsigned char received_bcc2 = destuffed_body[destuffed_len - 1];
-  unsigned char computed_bcc2 = 0;
-  for (int i = 0; i < payload_len; i++) {
-    computed_bcc2 ^= payload[i];
-  }
-  unsigned char ns = (C == C_I0) ? 0 : 1;
-
-  // now write RR/REJ with values based on the variables defined
-
-  if (bcc1 != (A ^ C)) {
+  // First handle unexpected header values
+  if (C != C_I0 && C != C_I1) {
+    printf("LL: C field error detected\n");
+    // Header error → ignore frame (Slide 15)
+  } else if (A != A_SENDER) {
+    printf("LL: A field error detected\n");
+    // Header error → ignore frame (Slide 15)
+  } else if (bcc1 != (A ^ C)) {
     printf("LL: BCC1 error detected\n");
     // Header error → ignore frame (Slide 15)
   } else if (expected_iframe_ns != ns) {
@@ -652,20 +652,43 @@ int llread(unsigned char *packet) {
     if (send_ack_frame(rr_control) < 0) {
       return -1;
     }
-  } else if (received_bcc2 != computed_bcc2) {
-    printf("LL: BCC2 error detected, sending REJ%d\n", expected_iframe_ns);
-    // Send REJ with expected_iframe_ns
-    unsigned char rej_control = (expected_iframe_ns == 0) ? C_REJ0 : C_REJ1;
-    if (send_ack_frame(rej_control) < 0) {
-      return -1;
-    }
   } else {
-    printf("LL: I-frame received correctly, N(s)=%d, payload size=%d\n", ns,
-           payload_len);
-    memcpy(packet, payload, payload_len);
-    expected_iframe_ns = (expected_iframe_ns + 1) % 2;
-    send_ack_frame(expected_iframe_ns == 0 ? C_RR0 : C_RR1);
-    return payload_len;
+
+    // no unexpected header values, destuff payload_bcc2
+
+    unsigned char destuffed_payload_bcc2[MAX_STUFFED_BODY_SIZE];
+    unsigned char *stuffed_payload_bcc2 = &stuffed_body[stuffed_header_len];
+
+    int destuffed_len = apply_byte_destuffing(
+        stuffed_payload_bcc2, idx - stuffed_header_len, destuffed_payload_bcc2);
+
+    if (destuffed_len < MIN_IFRAME_BODY_SIZE - 3) {
+      return -1; // Min: 1 data, BCC2
+    }
+
+    // body length without A C BCC1 and BCC2
+    int payload_len = destuffed_len - 1;
+    unsigned char received_bcc2 = destuffed_payload_bcc2[payload_len];
+    unsigned char computed_bcc2 = 0;
+    for (int i = 0; i < payload_len; i++) {
+      computed_bcc2 ^= destuffed_payload_bcc2[i];
+    }
+
+    if (received_bcc2 != computed_bcc2) {
+      printf("LL: BCC2 error detected, sending REJ%d\n", expected_iframe_ns);
+      // Send REJ with expected_iframe_ns
+      unsigned char rej_control = (expected_iframe_ns == 0) ? C_REJ0 : C_REJ1;
+      if (send_ack_frame(rej_control) < 0) {
+        return -1;
+      }
+    } else {
+      printf("LL: I-frame received correctly, N(s)=%d, payload size=%d\n", ns,
+             payload_len);
+      memcpy(packet, destuffed_payload_bcc2, payload_len);
+      expected_iframe_ns = (expected_iframe_ns + 1) % 2;
+      send_ack_frame(expected_iframe_ns == 0 ? C_RR0 : C_RR1);
+      return payload_len;
+    }
   }
 
   // currently returning positive for the while in application layer to never
