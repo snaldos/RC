@@ -1,11 +1,13 @@
 // Application layer protocol implementation
 
 #include "application_layer.h"
+#include "application_layer_utils.h"
 #include "link_layer.h"
 
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/stat.h>
 
 /*
    TODO: think about migrating static functions to application_layer_utils.h and
@@ -70,6 +72,31 @@ void applicationLayer(const char *serialPort, const char *role, int baudRate,
       llclose();
       return;
     }
+
+    // Get file size
+    struct stat st;
+    if (stat(filename, &st) != 0) {
+      perror("stat");
+      fclose(file);
+      llclose();
+      return;
+    }
+    uint32_t filesize = (uint32_t)st.st_size;
+
+    // Build START packet (C=1)
+    unsigned char ctrl_pkt[512];
+    int pos = 0;
+    ctrl_pkt[pos++] = C_START;
+
+    // TLV: file size
+    unsigned char size_be[4];
+    to_big_endian_uint32(filesize, size_be);
+    pos += create_tlv(&ctrl_pkt[pos], 0, 4, size_be);
+
+    // TLV: file name
+    int name_len = strlen(filename);
+    pos += create_tlv(&ctrl_pkt[pos], 1, name_len,
+                      (const unsigned char *)filename);
 
     // Buffer to store chunks of 1000 bytes
     unsigned char buffer[MAX_PAYLOAD_SIZE]; // MAX_PAYLOAD_SIZE = 1000
