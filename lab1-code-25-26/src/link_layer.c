@@ -19,15 +19,13 @@
     Slide 15: "I, SET and DISC frames are protected by a timer"
     Your sleep(1) is a temporary hack — for M4, you must use alarm() + signal
    handler with ll_config.timeout
+    TODO: maybe look at see if tweaking is possible for Vmin and Vtime
+    TODO: try to reduce code repetition, specially in state machines
 
 */
-// TODO: maybe look at see if twaeking is possible for Vmin and Vtime
-// TODO: maybe MAX_IFRAME_SIZE doesnt have a finite value since IFRAME CAN HAVE
-// REPEATED FLAGS
+
 static LinkLayer ll_config;
 static int ll_opened = 0;
-
-// TODO: decide when N(s) = 0 or N(s) = 1
 
 static unsigned char next_iframe_ns = 0;     // next N(s) for Tx to send
 static unsigned char expected_iframe_ns = 0; // expected N(s) for Rx to receive
@@ -402,21 +400,20 @@ int llwrite(const unsigned char *buf, int bufSize) {
   if (buf == NULL || bufSize <= 0 || bufSize > MAX_PAYLOAD_SIZE) {
     return -1;
   }
-  // TODO: Implement this function
 
   int max_attempts = ll_config.nRetransmissions;
   for (int attempts = 0; attempts < max_attempts; attempts++) {
-    alarm_triggered = FALSE;
-
-    // Start timeout timer
-    alarm(ll_config.timeout);
-
-    enum SUPERVISION_STATE ack_frame_state = START;
 
     int bytes_sent = send_iframe(buf, bufSize);
     if (bytes_sent < 0) {
       return -1;
     }
+
+    // Only after sending the I frame should we set the alarm
+    alarm_triggered = FALSE;
+    alarm(ll_config.timeout);
+
+    enum SUPERVISION_STATE ack_frame_state = START;
 
     unsigned char ack_a;
     unsigned char ack_c;
@@ -427,8 +424,9 @@ int llwrite(const unsigned char *buf, int bufSize) {
       if (bytes_read < 0) {
         if (errno == EINTR) {
           // read was interrupted by the alarm signal, just continue
-          if (alarm_triggered)
+          if (alarm_triggered) {
             break;
+          }
 
           continue;
         }
@@ -441,7 +439,6 @@ int llwrite(const unsigned char *buf, int bufSize) {
       }
 
       // Tx tries to parse ACK frame
-      // (REPEATED CODE REFACTOR LATER)
 
       if (ack_frame_state == START) {
         // Ensure ack_a and ack_c are reset
@@ -487,10 +484,17 @@ int llwrite(const unsigned char *buf, int bufSize) {
       }
     }
 
-    // TODO: check statemachine from here to bottom (what is upwards seems to be
-    // correct) Stop timeout timer
+    // Cancel the alarm
     alarm(0);
-    if (ack_frame_state == SUCCESS) {
+
+    // Check if timeout occurred
+    if (alarm_triggered) {
+      printf("LL: Timeout occurred, retransmitting (attempt %d of %d)\n",
+             attempts + 1, max_attempts);
+      continue; // Skip to next iteration (retry)
+    } else if (ack_frame_state == SUCCESS) {
+
+      //
 
       // Extract N(r) from control byte (rightmost bit)
       unsigned char nr = ack_c & 0x01;
@@ -503,38 +507,17 @@ int llwrite(const unsigned char *buf, int bufSize) {
           printf("LL: Received RR%d - Frame acknowledged\n", nr);
           next_iframe_ns = expected_next_iframe_ns;
           return bufSize;
-        } else
-          // In theory never happens but who knows...
-          // Why? Because next_iframe_nr gets updated solely on RR received
-          // which prooves correctness assuming RR sends are correct
+        } else {
+          // Ignore RR with wrong N(r) - can happen if duplicate RR received
+          // because of duplicate iframe sent to Rx
           printf("LL: Received RR but with wrong N(r), expected %d\n",
                  expected_next_iframe_ns);
+        }
       } else if (ack_c == C_REJ0 || ack_c == C_REJ1) {
         printf("LL: Received REJ%d - Retransmitting immediately\n", nr);
         continue;
       }
-    } else if (alarm_triggered) {
-      printf("LL: Timeout occurred, retransmitting (attempt %d of %d)\n",
-             attempts + 1, max_attempts);
     }
-
-    // NOTE: PSEUDACODE
-    // while (attempts < max_attempts) {
-    //   send_frame(); // full stuffed I-frame
-
-    //   start_timer(saved_ll.timeout);
-
-    //   wait_for_ack_or_rej(); // block until RR/REJ or timeout
-
-    //   if (got_valid_RR_with_expected_Nr()) {
-    //     toggle_sequence_number();
-    //     return bufSize; // success
-    //   }
-    //   // else: retransmit (same seq num)
-    //   attempts++;
-    // }
-
-    // return -1; // all retries failed
   }
 
   printf("LL: Maximum retransmissions reached, giving up\n");
@@ -597,8 +580,9 @@ int llread(unsigned char *packet) {
   unsigned char destuffed_body[MAX_IFRAME_SIZE];
 
   int destuffed_len = apply_byte_destuffing(stuffed_body, idx, destuffed_body);
-  if (destuffed_len < MIN_IFRAME_BODY_SIZE)
+  if (destuffed_len < MIN_IFRAME_BODY_SIZE) {
     return -1; // Min: A, C, BCC1, 1 data, BCC2
+  }
 
   unsigned char A = destuffed_body[0];
   unsigned char C = destuffed_body[1];
@@ -620,6 +604,7 @@ int llread(unsigned char *packet) {
     printf("LL: BCC1 error detected\n");
     // Header error → ignore frame (Slide 15)
   } else if (expected_iframe_ns != ns) {
+    // Unexpected N(s) means we received a duplicated frame (our RR got lost)
     // Unexpected N(s) takes precedence over BCC2 error
     printf(
         "LL: Unexpected N(s) received, expected %d but got %d. Sending RR%d\n",
