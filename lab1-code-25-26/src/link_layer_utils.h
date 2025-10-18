@@ -8,9 +8,8 @@
 // F | A | C | BCC1 | F
 #define SFRAME_SIZE 5
 
-// F | A | C | BCC1 | D1 .. DN | BCC2 | F
-// 7 bytes - 2 flags = 5
-#define MIN_IFRAME_BODY_SIZE 5
+// A | C | BCC1 | no Di's | BCC2
+#define MIN_IFRAME_BODY_SIZE 4
 
 // Worst-case I-frame size after byte stuffing:
 // Body = A(1) + C(1) + BCC1(1) + payload(MAX_PAYLOAD_SIZE) + BCC2(1) = 4 +

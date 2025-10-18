@@ -16,10 +16,11 @@
 /*
     TODO: try to reduce code repetition, specially in state machines (ex: create
    a function that parses frames and stuff)
-   TODO: decide if you should or not allow I frames where payload is 0 bytes
+   ? decide if you should or not allow I frames where payload is 0 bytes
    TODO: think about migrating static functions to link_layer_utils.h and create
    a cpp
-   TODO: maybe look at see if tweaking is possible for Vmin and Vtime
+   ? maybe look at see if tweaking is possible for Vmin and Vtime
+   ? Should we make some arrays size more or less strict in size
 
 */
 
@@ -32,7 +33,10 @@ static unsigned char rx_expected_ns = 0; // expected N(s) for Rx to receive
 static volatile int alarm_triggered = FALSE;
 static volatile int alarm_count = 0;
 
+// F | A | C | BCC1 | D1...DN | BCC2 | F
+const unsigned int MAX_IFRAME_SIZE = MAX_PAYLOAD_SIZE + 6;
 const unsigned int MAX_STUFFED_BODY_SIZE = 2 * (4 + MAX_PAYLOAD_SIZE);
+const unsigned int MAX_STUFFED_IFRAME_SIZE = 2 + MAX_STUFFED_BODY_SIZE;
 
 // Signal handler for alarm (timeout)
 static void alarm_handler(int signal) {
@@ -72,8 +76,9 @@ static int apply_byte_stuffing(const unsigned char *src, int len,
   return dest_len;
 }
 
-static int apply_byte_destuffing_header(const unsigned char *src, int len,
-                                        unsigned char *dest) {
+static int apply_byte_destuffing_until(const unsigned char *src, int len,
+                                       unsigned char *dest,
+                                       const int unstuffed_len) {
 
   // returns next position from where it stopped
   if (src == NULL || len < 0 || dest == NULL) {
@@ -82,11 +87,12 @@ static int apply_byte_destuffing_header(const unsigned char *src, int len,
 
   int dest_len = 0;
   int next = 0;
-  while (dest_len < HEADER_SIZE && next < len) {
+  while (dest_len < unstuffed_len && next < len) {
+
     if (src[next] == ESCAPE_OCTET) {
       if (next + 1 >= len) {
-        // next + 1 >= len shouldnt happen in theory when src[next] =
-        // ESCAPE_OCTET
+        // if next = len - 1, src[next] = ESCAPE_OCTET shouldnt happen in
+        // theory
         return -1;
       }
       dest[dest_len++] = src[next + 1] ^ XOR_OCTET;
@@ -100,16 +106,23 @@ static int apply_byte_destuffing_header(const unsigned char *src, int len,
 }
 
 static int apply_byte_destuffing(const unsigned char *src, int len,
-                                 unsigned char *dest) {
+                                 unsigned char *dest,
+                                 const int max_unstuffed_len) {
   if (src == NULL || len < 0 || dest == NULL) {
     return -1;
   }
 
   int dest_len = 0;
   for (int i = 0; i < len;) {
+
+    if (dest_len >= max_unstuffed_len) {
+      // prevent overflow
+      return -1;
+    }
+
     if (src[i] == ESCAPE_OCTET) {
       if (i + 1 >= len) {
-        // i + 1 >= len shouldnt happen in theory when src[i] = ESCAPE_OCTET
+        // if i = len - 1, src[i] = ESCAPE_OCTET shouldnt happen in theory
         return -1;
       }
       dest[dest_len++] = src[i + 1] ^ XOR_OCTET;
@@ -148,7 +161,8 @@ static int create_sframe(unsigned char *frame) {
 static int create_iframe(const unsigned char *data, int data_size,
                          unsigned char *frame) {
 
-  if (data == NULL || frame == NULL || data_size <= 0 ||
+  // NOTE: Currently allowing data_size = 0
+  if (data == NULL || frame == NULL || data_size < 0 ||
       data_size > MAX_PAYLOAD_SIZE) {
     return -1;
   }
@@ -194,14 +208,15 @@ static int send_ack_frame(unsigned char control_field) {
 
 static int send_iframe(const unsigned char *buf, int buf_size) {
 
-  unsigned char
-      raw_frame[MAX_STUFFED_BODY_SIZE]; // you'll define this macro next
+  unsigned char raw_frame[MAX_IFRAME_SIZE];
   int raw_len = create_iframe(buf, buf_size, raw_frame);
   if (raw_len < 0) {
     return -1;
   }
 
   // byte stuffing
+
+  // exclude the two flags
   int body_len = raw_len - 2;
   unsigned char *body = &raw_frame[1];
 
@@ -211,9 +226,7 @@ static int send_iframe(const unsigned char *buf, int buf_size) {
     return -1;
   }
 
-  // note: in theory int final_iframe_len = stuffed_body_len + 2;
-
-  unsigned char final_iframe[MAX_STUFFED_BODY_SIZE];
+  unsigned char final_iframe[MAX_STUFFED_IFRAME_SIZE];
   final_iframe[0] = FLAG;
   memcpy(&final_iframe[1], stuffed_body, stuffed_body_len);
   final_iframe[1 + stuffed_body_len] = FLAG;
@@ -628,8 +641,8 @@ int llread(unsigned char *packet) {
       2 * HEADER_SIZE; // All the header was stuffed
   unsigned char destuffed_header[max_stuffed_header_size];
 
-  int stuffed_header_len =
-      apply_byte_destuffing_header(stuffed_body, idx, destuffed_header);
+  int stuffed_header_len = apply_byte_destuffing_until(
+      stuffed_body, idx, destuffed_header, HEADER_SIZE);
 
   if (stuffed_header_len < HEADER_SIZE) {
     return -1; // Header incomplete
@@ -668,14 +681,19 @@ int llread(unsigned char *packet) {
 
     // no unexpected header values, destuff payload_bcc2
 
-    unsigned char destuffed_payload_bcc2[MAX_STUFFED_BODY_SIZE];
+    // rest is payload + bcc2
+    int stuffed_payload_bcc2_size = idx - stuffed_header_len;
+    const int max_destuffed_payload_bcc2_size = MAX_PAYLOAD_SIZE + 1;
+
+    unsigned char destuffed_payload_bcc2[max_destuffed_payload_bcc2_size];
     unsigned char *stuffed_payload_bcc2 = &stuffed_body[stuffed_header_len];
 
     int destuffed_len = apply_byte_destuffing(
-        stuffed_payload_bcc2, idx - stuffed_header_len, destuffed_payload_bcc2);
+        stuffed_payload_bcc2, stuffed_payload_bcc2_size, destuffed_payload_bcc2,
+        max_destuffed_payload_bcc2_size);
 
     if (destuffed_len < MIN_IFRAME_BODY_SIZE - 3) {
-      return -1; // Min: 1 data, BCC2
+      return -1; // Min: No Di's | BCC2
     }
 
     // body length without A C BCC1 and BCC2
