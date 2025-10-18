@@ -28,8 +28,8 @@
 static LinkLayer ll_config;
 static int ll_opened = 0;
 
-static unsigned char next_iframe_ns = 0;     // next N(s) for Tx to send
-static unsigned char expected_iframe_ns = 0; // expected N(s) for Rx to receive
+static unsigned char tx_cur_ns = 0;      // cur N(s) Tx sends
+static unsigned char rx_expected_ns = 0; // expected N(s) for Rx to receive
 
 static volatile int alarm_triggered = FALSE;
 static volatile int alarm_count = 0;
@@ -161,7 +161,7 @@ static int create_iframe(const unsigned char *data, int data_size,
   frame[idx++] = FLAG;
   frame[idx++] = A_SENDER;
 
-  unsigned char C = (next_iframe_ns == 0) ? C_I0 : C_I1;
+  unsigned char C = (tx_cur_ns == 0) ? C_I0 : C_I1;
   frame[idx++] = C;
 
   frame[idx++] = A_SENDER ^ C;
@@ -523,26 +523,40 @@ int llwrite(const unsigned char *buf, int bufSize) {
         // Extract N(r) from control byte (rightmost bit)
         unsigned char nr = ack_c & 0x01;
 
-        unsigned char expected_next_iframe_ns = (next_iframe_ns + 1) % 2;
-
-        if (nr != expected_next_iframe_ns) {
-          // Ignore duplicate ACKs because of duplicate iframe sent to Rx
-          printf("LL: Received RR but with wrong N(r), expected %d\n",
-                 expected_next_iframe_ns);
-
-          // Reset state machine to parse next frame
-          ack_frame_state = START;
-          ack_a = ack_c = 0;
-          continue;
-        }
-
         if ((ack_c == C_RR0) || (ack_c == C_RR1)) {
+          unsigned char expected_rr_nr = (tx_cur_ns + 1) % 2;
+
+          if (nr != expected_rr_nr) {
+            // Ignore duplicate RRs because of duplicate iframe sent to Rx
+            printf("LL: Received RR but with wrong N(r), expected %d\n",
+                   expected_rr_nr);
+
+            // Reset state machine to parse next frame
+            ack_frame_state = START;
+            ack_a = ack_c = 0;
+            continue;
+          }
+
           printf("LL: Received RR%d - Frame acknowledged\n", nr);
-          next_iframe_ns = expected_next_iframe_ns;
+          tx_cur_ns = expected_rr_nr;
           alarm(0);
           return bufSize;
 
         } else if (ack_c == C_REJ0 || ack_c == C_REJ1) {
+
+          unsigned char expected_rej_nr = tx_cur_ns;
+
+          if (nr != expected_rej_nr) {
+            // In theory this should not happen, but just in case
+            printf("LL: Received REJ but with wrong N(r), expected %d\n",
+                   expected_rej_nr);
+
+            // Reset state machine to parse next frame
+            ack_frame_state = START;
+            ack_a = ack_c = 0;
+            continue;
+          }
+
           // Exit while loop to retransmit immediately
           printf("LL: Received REJ%d - Retransmitting immediately\n", nr);
           alarm(0);
@@ -638,7 +652,7 @@ int llread(unsigned char *packet) {
   } else if (bcc1 != (A ^ C)) {
     printf("LL: BCC1 error detected\n");
     // Header error → ignore frame (Slide 15)
-  } else if (expected_iframe_ns != ns) {
+  } else if (rx_expected_ns != ns) {
     // Unexpected N(s) means we received a duplicated frame (our RR got lost)
     // Unexpected N(s) takes precedence over BCC2 error
 
@@ -646,9 +660,9 @@ int llread(unsigned char *packet) {
     // sending RR? sending RR increases complexity
     printf(
         "LL: Unexpected N(s) received, expected %d but got %d. Sending RR%d\n",
-        expected_iframe_ns, ns, expected_iframe_ns);
+        rx_expected_ns, ns, rx_expected_ns);
     // Send RR with expected_iframe_ns
-    unsigned char rr_control = (expected_iframe_ns == 0) ? C_RR0 : C_RR1;
+    unsigned char rr_control = (rx_expected_ns == 0) ? C_RR0 : C_RR1;
     if (send_ack_frame(rr_control) < 0) {
       return -1;
     }
@@ -675,9 +689,9 @@ int llread(unsigned char *packet) {
     }
 
     if (received_bcc2 != computed_bcc2) {
-      printf("LL: BCC2 error detected, sending REJ%d\n", expected_iframe_ns);
+      printf("LL: BCC2 error detected, sending REJ%d\n", rx_expected_ns);
       // Send REJ with expected_iframe_ns
-      unsigned char rej_control = (expected_iframe_ns == 0) ? C_REJ0 : C_REJ1;
+      unsigned char rej_control = (rx_expected_ns == 0) ? C_REJ0 : C_REJ1;
       if (send_ack_frame(rej_control) < 0) {
         return -1;
       }
@@ -685,8 +699,8 @@ int llread(unsigned char *packet) {
       printf("LL: I-frame received correctly, N(s)=%d, payload size=%d\n", ns,
              payload_len);
       memcpy(packet, destuffed_payload_bcc2, payload_len);
-      expected_iframe_ns = (expected_iframe_ns + 1) % 2;
-      send_ack_frame(expected_iframe_ns == 0 ? C_RR0 : C_RR1);
+      rx_expected_ns = (rx_expected_ns + 1) % 2;
+      send_ack_frame(rx_expected_ns == 0 ? C_RR0 : C_RR1);
       return payload_len;
     }
   }
