@@ -271,78 +271,101 @@ int llopen(LinkLayer connectionParameters) {
     // Test this condition by placing a '\n' in the middle of the buffer.
     // The whole buffer must be sent even with the '\n'.
 
-    int bytes_written = writeBytesSerialPort(set_frame, SFRAME_SIZE);
-    if (bytes_written < 0) {
-      perror("writeBytesSerialPort");
-      return -1;
-    }
-    printf("%d bytes written to serial port\n", bytes_written);
+    int max_attempts = ll_config.nRetransmissions;
+    for (int attempts = 0; attempts < max_attempts; attempts++) {
 
-    // Wait until all bytes have been written to the serial port
-    // sleep(1);
-
-    // Tx tries to parse UA frame
-    unsigned char ua_a;
-    unsigned char ua_c;
-
-    while (sframe_state != SUCCESS) {
-      unsigned char byte;
-      int bytes_read = readByteSerialPort(&byte);
-
-      if (bytes_read < 0) {
-        perror("readByteSerialPort");
+      int bytes_written = writeBytesSerialPort(set_frame, SFRAME_SIZE);
+      if (bytes_written < 0) {
+        perror("writeBytesSerialPort");
         return -1;
-      } else if (bytes_read == 0) {
-        continue; // No byte received, try again
       }
+      printf("SET frame sent\n");
 
-      if (sframe_state == START) {
-        // Ensure ua_a and ua_c are reset
-        ua_a = 0;
-        ua_c = 0;
-        if (byte == FLAG) {
-          printf("Tracking UA FRAME...\n");
-          sframe_state = FLAG_RCV;
-        } else {
-          sframe_state = START;
-        }
-      } else if (sframe_state == FLAG_RCV) {
-        if (byte == A_RECEIVER) {
-          sframe_state = A_RCV;
-          ua_a = byte;
-        } else if (byte == FLAG) {
-          sframe_state = FLAG_RCV;
-        } else {
-          sframe_state = START;
-        }
-      } else if (sframe_state == A_RCV) {
-        if (byte == C_UA) {
-          sframe_state = C_RCV;
-          ua_c = byte;
-        } else if (byte == FLAG) {
-          sframe_state = FLAG_RCV;
-        } else {
-          sframe_state = START;
-        }
-      } else if (sframe_state == C_RCV) {
-        if (byte == (ua_a ^ ua_c)) {
-          sframe_state = BCC_OK;
-        } else if (byte == FLAG) {
-          sframe_state = FLAG_RCV;
-        } else {
-          sframe_state = START;
-        }
-      } else if (sframe_state == BCC_OK) {
-        if (byte == FLAG) {
-          sframe_state = SUCCESS;
-        } else {
-          sframe_state = START;
-        }
-      }
+      alarm_triggered = FALSE;
+      alarm(ll_config.timeout);
 
-      if (sframe_state == SUCCESS) {
-        printf("UA frame received successfully\n");
+      // Wait until all bytes have been written to the serial port
+      // sleep(1);
+
+      // Tx tries to parse UA frame
+      unsigned char ua_a;
+      unsigned char ua_c;
+
+      while (!alarm_triggered) {
+        unsigned char byte;
+        int bytes_read = readByteSerialPort(&byte);
+        if (bytes_read < 0) {
+          if (errno == EINTR) {
+            // read was interrupted by the alarm signal, just continue
+            if (alarm_triggered) {
+              break;
+            }
+            continue;
+          }
+          alarm(0);
+          perror("readByteSerialPort");
+          return -1;
+        } else if (bytes_read == 0) {
+          continue;
+        }
+
+        if (sframe_state == START) {
+          // Ensure ua_a and ua_c are reset
+          ua_a = 0;
+          ua_c = 0;
+          if (byte == FLAG) {
+            printf("Tracking UA FRAME...\n");
+            sframe_state = FLAG_RCV;
+          } else {
+            sframe_state = START;
+          }
+        } else if (sframe_state == FLAG_RCV) {
+          if (byte == A_RECEIVER) {
+            sframe_state = A_RCV;
+            ua_a = byte;
+          } else if (byte == FLAG) {
+            sframe_state = FLAG_RCV;
+          } else {
+            sframe_state = START;
+          }
+        } else if (sframe_state == A_RCV) {
+          if (byte == C_UA) {
+            sframe_state = C_RCV;
+            ua_c = byte;
+          } else if (byte == FLAG) {
+            sframe_state = FLAG_RCV;
+          } else {
+            sframe_state = START;
+          }
+        } else if (sframe_state == C_RCV) {
+          if (byte == (ua_a ^ ua_c)) {
+            sframe_state = BCC_OK;
+          } else if (byte == FLAG) {
+            sframe_state = FLAG_RCV;
+          } else {
+            sframe_state = START;
+          }
+        } else if (sframe_state == BCC_OK) {
+          if (byte == FLAG) {
+            sframe_state = SUCCESS;
+          } else {
+            sframe_state = START;
+          }
+        }
+
+        if (sframe_state == SUCCESS) {
+
+          if (alarm_triggered) {
+            printf("LL: Timeout occurred, retransmitting (attempt %d of %d)\n",
+                   attempts + 1, max_attempts);
+            break;
+          }
+          printf("UA frame received successfully\n");
+          return 0;
+        }
       }
+      printf("LL: Timeout occurred, retransmitting (attempt %d of %d)\n",
+             attempts + 1, max_attempts);
     }
   } else if (ll_config.role == LlRx) {
 
@@ -353,8 +376,8 @@ int llopen(LinkLayer connectionParameters) {
     while (sframe_state != SUCCESS) {
       // Read one byte from serial port.
       // NOTE: You must check how many bytes were actually read by reading the
-      // return value. In this example, we assume that the byte is always read,
-      // which may not be true.
+      // return value. In this example, we assume that the byte is always
+      // read, which may not be true.
       unsigned char byte;
       int bytes_read = readByteSerialPort(&byte);
 
@@ -575,6 +598,9 @@ int llwrite(const unsigned char *buf, int bufSize) {
         }
       }
     }
+
+    printf("LL: Timeout occurred, retransmitting (attempt %d of %d)\n",
+           attempts + 1, max_attempts);
     // ensure timer is off before next attempt
     alarm(0);
   }
@@ -669,9 +695,9 @@ int llread(unsigned char *packet) {
 
     // TO THINK ABOUT: couldnt i just ignore the duplicated frame instead of
     // sending RR? sending RR increases complexity
-    printf(
-        "LL: Unexpected N(s) received, expected %d but got %d. Sending RR%d\n",
-        rx_expected_ns, ns, rx_expected_ns);
+    printf("LL: Unexpected N(s) received, expected %d but got %d. Sending "
+           "RR%d\n",
+           rx_expected_ns, ns, rx_expected_ns);
     // Send RR with expected_iframe_ns
     unsigned char rr_control = (rx_expected_ns == 0) ? C_RR0 : C_RR1;
     if (send_ack_frame(rr_control) < 0) {
