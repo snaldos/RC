@@ -729,10 +729,211 @@ int llread(unsigned char *packet) {
 // LLCLOSE
 ////////////////////////////////////////////////
 int llclose() {
+  if (!ll_opened)
+    return -1;
+
+  enum SUPERVISION_STATE sframe_state = START;
+  unsigned char sframe_a, sframe_c;
+
+  if (ll_config.role == LlTx) {
+    // Tx: send DISC
+    unsigned char disc_frame[SFRAME_SIZE] = {FLAG, A_SENDER, C_DISC,
+                                             A_SENDER ^ C_DISC, FLAG};
+
+    int bytes_written = writeBytesSerialPort(disc_frame, SFRAME_SIZE);
+    if (bytes_written < 0) {
+      perror("writeBytesSerialPort");
+      return -1;
+    }
+
+    printf("Tx: Sending DISC\n");
+
+    // Wait for Rx's DISC
+    while (sframe_state != SUCCESS) {
+      unsigned char byte;
+      int bytes_read = readByteSerialPort(&byte);
+      if (bytes_read < 0) {
+        perror("readByteSerialPort");
+        return -1;
+      } else if (bytes_read == 0) {
+        continue;
+      }
+
+      if (sframe_state == START) {
+        if (byte == FLAG) {
+          sframe_state = FLAG_RCV;
+        }
+      } else if (sframe_state == FLAG_RCV) {
+        if (byte == A_RECEIVER) {
+          sframe_a = byte;
+          sframe_state = A_RCV;
+        } else if (byte != FLAG) {
+          sframe_state = FLAG_RCV;
+        } else {
+          sframe_state = START;
+        }
+      } else if (sframe_state == A_RCV) {
+        if (byte == C_DISC) {
+          sframe_c = byte;
+          sframe_state = C_RCV;
+        } else if (byte == FLAG) {
+          sframe_state = FLAG_RCV;
+        } else {
+          sframe_state = START;
+        }
+      } else if (sframe_state == C_RCV) {
+        if (byte == (sframe_a ^ sframe_c)) {
+          sframe_state = BCC_OK;
+        } else if (byte == FLAG) {
+          sframe_state = FLAG_RCV;
+        } else {
+          sframe_state = START;
+        }
+      } else if (sframe_state == BCC_OK) {
+        if (byte == FLAG) {
+          sframe_state = SUCCESS;
+        } else {
+          sframe_state = START;
+        }
+      }
+    }
+
+    // Send UA
+    unsigned char ua_frame[SFRAME_SIZE] = {FLAG, A_SENDER, C_UA,
+                                           A_SENDER ^ C_UA, FLAG};
+    bytes_written = writeBytesSerialPort(ua_frame, SFRAME_SIZE);
+
+    if (bytes_written < 0) {
+      perror("writeBytesSerialPort");
+      return -1;
+    }
+
+  } else if (ll_config.role == LlRx) {
+
+    // Rx: wait for Tx's DISC
+    while (sframe_state != SUCCESS) {
+      unsigned char byte;
+      int bytes_read = readByteSerialPort(&byte);
+      if (bytes_read < 0) {
+        perror("readByteSerialPort");
+        return -1;
+      } else if (bytes_read == 0) {
+        continue;
+      }
+
+      // State machine for DISC (A=0x03, C=0x0B)
+      if (sframe_state == START) {
+        if (byte == FLAG) {
+          sframe_state = FLAG_RCV;
+        }
+      } else if (sframe_state == FLAG_RCV) {
+        if (byte == A_SENDER) {
+          sframe_a = byte;
+          sframe_state = A_RCV;
+        } else if (byte == FLAG) {
+          sframe_state = FLAG_RCV;
+        } else {
+          sframe_state = START;
+        }
+      } else if (sframe_state == A_RCV) {
+        if (byte == C_DISC) {
+          sframe_c = byte;
+          sframe_state = C_RCV;
+        } else if (byte == FLAG) {
+          sframe_state = FLAG_RCV;
+        } else {
+          sframe_state = START;
+        }
+      } else if (sframe_state == C_RCV) {
+        if (byte == (sframe_a ^ sframe_c)) {
+          sframe_state = BCC_OK;
+        } else if (byte == FLAG) {
+          sframe_state = FLAG_RCV;
+        } else {
+          sframe_state = START;
+        }
+      } else if (sframe_state == BCC_OK) {
+        if (byte == FLAG) {
+          sframe_state = SUCCESS;
+        } else {
+          sframe_state = START;
+        }
+      }
+    }
+
+    // Send DISC
+    unsigned char disc_frame[SFRAME_SIZE] = {FLAG, A_RECEIVER, C_DISC,
+                                             A_RECEIVER ^ C_DISC, FLAG};
+    int bytes_written = writeBytesSerialPort(disc_frame, SFRAME_SIZE);
+    if (bytes_written < 0) {
+      perror("writeBytesSerialPort");
+      return -1;
+    }
+    printf("Rx: Sending DISC\n");
+
+    // Receive UA
+    sframe_state = START;
+
+    sframe_a = 0;
+    sframe_c = 0;
+
+    // Rx: wait for Tx's UA
+    while (sframe_state != SUCCESS) {
+      unsigned char byte;
+      int bytes_read = readByteSerialPort(&byte);
+      if (bytes_read < 0) {
+        perror("readByteSerialPort");
+        return -1;
+      } else if (bytes_read == 0) {
+        continue;
+      }
+
+      if (sframe_state == START) {
+        if (byte == FLAG) {
+          sframe_state = FLAG_RCV;
+        }
+      } else if (sframe_state == FLAG_RCV) {
+        if (byte == A_SENDER) {
+          sframe_a = byte;
+          sframe_state = A_RCV;
+        } else if (byte == FLAG) {
+          sframe_state = FLAG_RCV;
+        } else {
+          sframe_state = START;
+        }
+      } else if (sframe_state == A_RCV) {
+        if (byte == C_UA) {
+          sframe_c = byte;
+          sframe_state = C_RCV;
+        } else if (byte == FLAG) {
+          sframe_state = FLAG_RCV;
+        } else {
+          sframe_state = START;
+        }
+      } else if (sframe_state == C_RCV) {
+        if (byte == (sframe_a ^ sframe_c)) {
+          sframe_state = BCC_OK;
+        } else if (byte == FLAG) {
+          sframe_state = FLAG_RCV;
+        } else {
+          sframe_state = START;
+        }
+      } else if (sframe_state == BCC_OK) {
+        if (byte == FLAG) {
+          sframe_state = SUCCESS;
+        } else {
+          sframe_state = START;
+        }
+      }
+    }
+    printf("Rx: Received UA\n");
+  }
+
   if (closeSerialPort() < 0) {
     perror("closeSerialPort");
     return -1;
   }
+  ll_opened = 0;
 
   printf("Serial port closed\n");
 
