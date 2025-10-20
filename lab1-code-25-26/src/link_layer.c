@@ -16,9 +16,12 @@
 /*
     TODO: try to reduce code repetition, specially in state machines (ex: create
    a function that parses frames and stuff)
-   ? decide if you should or not allow I frames where payload is 0 bytes
    TODO: think about migrating static functions to link_layer_utils.h and create
    a cpp
+   TODO: currently Rx doesnt close when Tx closes due to max attempts reached
+   ? should we retransmit n times or transmit n times in total (ie initial + n
+   retransmissions)
+   ? decide if you should or not allow I frames where payload is 0 bytes
    ? maybe look at see if tweaking is possible for Vmin and Vtime
    ? Should we make some arrays size more or less strict in size
 
@@ -248,7 +251,7 @@ int llopen(LinkLayer connectionParameters) {
     return -1;
   }
 
-  printf("Serial port %s opened\n", connectionParameters.serialPort);
+  printf("LL: Serial port %s opened\n", connectionParameters.serialPort);
   ll_config = connectionParameters;
   ll_opened = 1;
 
@@ -256,7 +259,7 @@ int llopen(LinkLayer connectionParameters) {
     return -1;
   }
 
-  printf("Alarm handler set up\n");
+  printf("LL: Alarm handler set up\n");
 
   enum SUPERVISION_STATE sframe_state = START;
 
@@ -279,7 +282,7 @@ int llopen(LinkLayer connectionParameters) {
         perror("writeBytesSerialPort");
         return -1;
       }
-      printf("SET frame sent\n");
+      printf("LL: SET frame sent\n");
 
       alarm_triggered = FALSE;
       alarm(ll_config.timeout);
@@ -314,7 +317,7 @@ int llopen(LinkLayer connectionParameters) {
           ua_a = 0;
           ua_c = 0;
           if (byte == FLAG) {
-            printf("Tracking UA FRAME...\n");
+            printf("LL: Tracking UA FRAME...\n");
             sframe_state = FLAG_RCV;
           } else {
             sframe_state = START;
@@ -356,17 +359,29 @@ int llopen(LinkLayer connectionParameters) {
         if (sframe_state == SUCCESS) {
 
           if (alarm_triggered) {
-            printf("LL: Timeout occurred, retransmitting (attempt %d of %d)\n",
-                   attempts + 1, max_attempts);
+            sframe_state = START;
             break;
           }
-          printf("UA frame received successfully\n");
-          return 0;
+          printf("LL: UA frame received successfully\n");
+          alarm(0);
+          break;
         }
       }
-      printf("LL: Timeout occurred, retransmitting (attempt %d of %d)\n",
-             attempts + 1, max_attempts);
+
+      if (sframe_state == SUCCESS) {
+        break;
+      }
+
+      if (attempts + 1 >= max_attempts) {
+        // exceeded max attempts
+        printf("LL: Failed to receive UA frame\n");
+        return -1;
+      } else {
+        printf("LL: Timeout occurred, retransmitting (attempt %d of %d)\n",
+               attempts + 1, max_attempts);
+      }
     }
+
   } else if (ll_config.role == LlRx) {
 
     // Rx tries to parse SET frame
@@ -431,7 +446,7 @@ int llopen(LinkLayer connectionParameters) {
       }
 
       if (sframe_state == SUCCESS) {
-        printf("SET frame received successfully\n");
+        printf("LL: SET frame received successfully\n");
         unsigned char ua_frame[SFRAME_SIZE] = {0};
 
         if (create_sframe(ua_frame) != SFRAME_SIZE) {
@@ -443,7 +458,7 @@ int llopen(LinkLayer connectionParameters) {
         if (bytes_written < 0) {
           return -1;
         }
-        printf("UA frame sent\n");
+        printf("LL: UA frame sent\n");
 
         // Wait until all bytes have been written to the serial port
         // sleep(1);
@@ -549,8 +564,7 @@ int llwrite(const unsigned char *buf, int bufSize) {
       if (ack_frame_state == SUCCESS) {
 
         if (alarm_triggered) {
-          printf("LL: Timeout occurred, retransmitting (attempt %d of %d)\n",
-                 attempts + 1, max_attempts);
+          ack_frame_state = START;
           break;
         }
 
@@ -599,15 +613,15 @@ int llwrite(const unsigned char *buf, int bufSize) {
       }
     }
 
-    printf("LL: Timeout occurred, retransmitting (attempt %d of %d)\n",
-           attempts + 1, max_attempts);
-    // ensure timer is off before next attempt
-    alarm(0);
+    if (attempts + 1 >= max_attempts) {
+      printf("LL: Maximum retransmissions reached, giving up\n");
+    } else {
+      printf("LL: Timeout occurred, retransmitting (attempt %d of %d)\n",
+             attempts + 1, max_attempts);
+    }
   }
 
-  printf("LL: Maximum retransmissions reached, giving up\n");
-  alarm(0);
-  return 0;
+  return 0; // Sent 0 bytes after exceeding max attempts
 }
 ////////////////////////////////////////////////
 // LLREAD
@@ -637,13 +651,13 @@ int llread(unsigned char *packet) {
     if (iframe_state == START) {
       idx = 0;
       if (byte == FLAG) {
-        printf("start of stuffed FRAME...\n");
+        printf("LL: start of stuffed FRAME...\n");
         iframe_state = FLAG_RCV;
       }
     } else if (iframe_state == FLAG_RCV) {
       if (byte == FLAG) {
         // Repeated flag — stay in FLAG_RCV
-        printf("Found repeated flag, still at start of stuffed FRAME...\n");
+        printf("LL: Found repeated flag, still at start of stuffed FRAME...\n");
         continue;
       } else {
         iframe_state = DATA_RCV;
@@ -653,7 +667,7 @@ int llread(unsigned char *packet) {
     if (iframe_state == DATA_RCV) {
       if (byte == FLAG) {
         iframe_state = SUCCESS;
-        printf("end of stuffed FRAME...\n");
+        printf("LL: end of stuffed FRAME...\n");
       } else if (idx < MAX_STUFFED_BODY_SIZE - 1) {
         stuffed_body[idx++] = byte;
       } else {
@@ -751,87 +765,125 @@ int llread(unsigned char *packet) {
   return 0;
 }
 
-////////////////////////////////////////////////
-// LLCLOSE
-////////////////////////////////////////////////
-int llclose() {
-  if (!ll_opened)
+// Wrapped inside llclose to ensure serial port is closed even on failure
+static int llclose_body() {
+  if (!ll_opened) {
     return -1;
+  }
 
   enum SUPERVISION_STATE sframe_state = START;
   unsigned char sframe_a, sframe_c;
 
   if (ll_config.role == LlTx) {
-    // Tx: send DISC
-    unsigned char disc_frame[SFRAME_SIZE] = {FLAG, A_SENDER, C_DISC,
-                                             A_SENDER ^ C_DISC, FLAG};
 
-    int bytes_written = writeBytesSerialPort(disc_frame, SFRAME_SIZE);
-    if (bytes_written < 0) {
-      perror("writeBytesSerialPort");
-      return -1;
-    }
+    int max_attempts = ll_config.nRetransmissions;
+    for (int attempts = 0; attempts < max_attempts; attempts++) {
 
-    printf("Tx: Sending DISC\n");
+      alarm_triggered = FALSE;
+      alarm(ll_config.timeout);
 
-    // Wait for Rx's DISC
-    while (sframe_state != SUCCESS) {
-      unsigned char byte;
-      int bytes_read = readByteSerialPort(&byte);
-      if (bytes_read < 0) {
-        perror("readByteSerialPort");
+      // Tx: send DISC
+      unsigned char disc_frame[SFRAME_SIZE] = {FLAG, A_SENDER, C_DISC,
+                                               A_SENDER ^ C_DISC, FLAG};
+
+      int bytes_written = writeBytesSerialPort(disc_frame, SFRAME_SIZE);
+      if (bytes_written < 0) {
+        perror("writeBytesSerialPort");
         return -1;
-      } else if (bytes_read == 0) {
-        continue;
       }
 
-      if (sframe_state == START) {
-        if (byte == FLAG) {
-          sframe_state = FLAG_RCV;
+      printf("LL: Sending DISC\n");
+
+      // Wait for Rx's DISC
+      while (!alarm_triggered) {
+        unsigned char byte;
+        int bytes_read = readByteSerialPort(&byte);
+        if (bytes_read < 0) {
+          if (errno == EINTR) {
+            // read was interrupted by the alarm signal, just continue
+            if (alarm_triggered) {
+              break;
+            }
+            continue;
+          }
+          alarm(0);
+          perror("readByteSerialPort");
+          return -1;
+        } else if (bytes_read == 0) {
+          continue;
         }
-      } else if (sframe_state == FLAG_RCV) {
-        if (byte == A_RECEIVER) {
-          sframe_a = byte;
-          sframe_state = A_RCV;
-        } else if (byte != FLAG) {
-          sframe_state = FLAG_RCV;
-        } else {
-          sframe_state = START;
+
+        if (sframe_state == START) {
+          if (byte == FLAG) {
+            sframe_state = FLAG_RCV;
+          }
+        } else if (sframe_state == FLAG_RCV) {
+          if (byte == A_RECEIVER) {
+            sframe_a = byte;
+            sframe_state = A_RCV;
+          } else if (byte != FLAG) {
+            sframe_state = FLAG_RCV;
+          } else {
+            sframe_state = START;
+          }
+        } else if (sframe_state == A_RCV) {
+          if (byte == C_DISC) {
+            sframe_c = byte;
+            sframe_state = C_RCV;
+          } else if (byte == FLAG) {
+            sframe_state = FLAG_RCV;
+          } else {
+            sframe_state = START;
+          }
+        } else if (sframe_state == C_RCV) {
+          if (byte == (sframe_a ^ sframe_c)) {
+            sframe_state = BCC_OK;
+          } else if (byte == FLAG) {
+            sframe_state = FLAG_RCV;
+          } else {
+            sframe_state = START;
+          }
+        } else if (sframe_state == BCC_OK) {
+          if (byte == FLAG) {
+            sframe_state = SUCCESS;
+          } else {
+            sframe_state = START;
+          }
         }
-      } else if (sframe_state == A_RCV) {
-        if (byte == C_DISC) {
-          sframe_c = byte;
-          sframe_state = C_RCV;
-        } else if (byte == FLAG) {
-          sframe_state = FLAG_RCV;
-        } else {
-          sframe_state = START;
-        }
-      } else if (sframe_state == C_RCV) {
-        if (byte == (sframe_a ^ sframe_c)) {
-          sframe_state = BCC_OK;
-        } else if (byte == FLAG) {
-          sframe_state = FLAG_RCV;
-        } else {
-          sframe_state = START;
-        }
-      } else if (sframe_state == BCC_OK) {
-        if (byte == FLAG) {
-          sframe_state = SUCCESS;
-        } else {
-          sframe_state = START;
+
+        if (sframe_state == SUCCESS) {
+
+          if (alarm_triggered) {
+            sframe_state = START;
+            break;
+          }
+          printf("LL: DISC frame received successfully\n");
+          alarm(0);
+
+          break;
         }
       }
-    }
+      if (sframe_state == SUCCESS) {
+        // Send UA
+        unsigned char ua_frame[SFRAME_SIZE] = {FLAG, A_SENDER, C_UA,
+                                               A_SENDER ^ C_UA, FLAG};
+        int bytes_written = writeBytesSerialPort(ua_frame, SFRAME_SIZE);
 
-    // Send UA
-    unsigned char ua_frame[SFRAME_SIZE] = {FLAG, A_SENDER, C_UA,
-                                           A_SENDER ^ C_UA, FLAG};
-    bytes_written = writeBytesSerialPort(ua_frame, SFRAME_SIZE);
+        if (bytes_written < 0) {
+          perror("writeBytesSerialPort");
+          return -1;
+        }
+        break;
+      }
 
-    if (bytes_written < 0) {
-      perror("writeBytesSerialPort");
-      return -1;
+      if (attempts + 1 >= max_attempts) {
+        // exceeded max attempts
+        printf("LL: Failed to receive DISC frame\n");
+        return -1;
+      } else {
+        printf("LL: Timeout occurred, retransmitting (attempt %d of %d)\n",
+               attempts + 1, max_attempts);
+      }
     }
 
   } else if (ll_config.role == LlRx) {
@@ -895,7 +947,7 @@ int llclose() {
       perror("writeBytesSerialPort");
       return -1;
     }
-    printf("Rx: Sending DISC\n");
+    printf("LL: Sending DISC\n");
 
     // Receive UA
     sframe_state = START;
@@ -952,16 +1004,25 @@ int llclose() {
         }
       }
     }
-    printf("Rx: Received UA\n");
+    printf("LL: Received UA\n");
   }
-
-  if (closeSerialPort() < 0) {
-    perror("closeSerialPort");
-    return -1;
-  }
-  ll_opened = 0;
-
-  printf("Serial port closed\n");
 
   return 0;
+}
+
+////////////////////////////////////////////////
+// LLCLOSE
+////////////////////////////////////////////////
+int llclose() {
+
+  int res = llclose_body();
+
+  if (closeSerialPort() < 0) {
+    return -1;
+  }
+
+  ll_opened = 0;
+  printf("LL: Serial port closed\n");
+
+  return res;
 }
