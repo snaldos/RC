@@ -19,6 +19,7 @@
    TODO: think about migrating static functions to link_layer_utils.h and create
    a cpp
    TODO: currently Rx doesnt close when Tx closes due to max attempts reached
+   ? what to do when Tx sends DISC and Rx is on llread waiting for I frames
    ? should we retransmit n times or transmit n times in total (ie initial + n
    retransmissions)
    ? decide if you should or not allow I frames where payload is 0 bytes
