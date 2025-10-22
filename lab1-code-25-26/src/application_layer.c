@@ -245,8 +245,13 @@ void applicationLayer(const char *serialPort, const char *role, int baudRate,
           }
           uint32_t filesize = (uint32_t)st.st_size;
 
-          printf("File transfer complete: %s (%u bytes) -> %s (%u bytes)\n",
-                 recv_name, recv_size, filename, filesize);
+          if (recv_size != filesize) {
+            printf("Warning: expected size %u bytes, received size %u bytes\n",
+                   recv_size, filesize);
+          } else {
+            printf("File transfer complete: %s (%u bytes) -> %s (%u bytes)\n",
+                   recv_name, recv_size, filename, filesize);
+          }
           break;
         }
 
