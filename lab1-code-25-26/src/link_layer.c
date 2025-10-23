@@ -372,7 +372,7 @@ int llopen(LinkLayer connectionParameters) {
 
       if (attempts + 1 >= max_attempts) {
         // exceeded max attempts
-        printf("LL: Failed to receive UA frame\n");
+        printf("LL: Maximum retransmissions reached, giving up\n");
         return -1;
       } else {
         printf("LL: Timeout occurred, retransmitting (attempt %d of %d)\n",
@@ -484,49 +484,6 @@ int llwrite(const unsigned char *buf, int bufSize) {
                                       A_RECEIVER, expected_cs) < 0) {
         return -1;
       }
-
-      // if (ack_frame_state == START) {
-      //   // Ensure ack_a and ack_c are reset
-      //   ack_a = 0;
-      //   ack_c = 0;
-      //   if (byte == FLAG) {
-      //     ack_frame_state = FLAG_RCV;
-      //   }
-      // } else if (ack_frame_state == FLAG_RCV) {
-      //   if (byte == A_RECEIVER) {
-      //     ack_frame_state = A_RCV;
-      //     ack_a = byte;
-      //   } else if (byte == FLAG) {
-      //     ack_frame_state = FLAG_RCV;
-      //   } else {
-      //     ack_frame_state = START;
-      //   }
-      // } else if (ack_frame_state == A_RCV) {
-      //   // Check for RR or REJ
-      //   if (byte == C_RR0 || byte == C_RR1 || byte == C_REJ0 ||
-      //       byte == C_REJ1) {
-      //     ack_frame_state = C_RCV;
-      //     ack_c = byte;
-      //   } else if (byte == FLAG) {
-      //     ack_frame_state = FLAG_RCV;
-      //   } else {
-      //     ack_frame_state = START;
-      //   }
-      // } else if (ack_frame_state == C_RCV) {
-      //   if (byte == (ack_a ^ ack_c)) {
-      //     ack_frame_state = BCC_OK;
-      //   } else if (byte == FLAG) {
-      //     ack_frame_state = FLAG_RCV;
-      //   } else {
-      //     ack_frame_state = START;
-      //   }
-      // } else if (ack_frame_state == BCC_OK) {
-      //   if (byte == FLAG) {
-      //     ack_frame_state = SUCCESS;
-      //   } else {
-      //     ack_frame_state = START;
-      //   }
-      // }
 
       if (ack_frame_state == SUCCESS) {
 
