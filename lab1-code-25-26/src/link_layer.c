@@ -326,9 +326,6 @@ int llopen(LinkLayer connectionParameters) {
       alarm_triggered = FALSE;
       alarm(ll_config.timeout);
 
-      // Wait until all bytes have been written to the serial port
-      // sleep(1);
-
       // Tx tries to parse UA frame
       unsigned char ua_a;
       unsigned char ua_c;
@@ -357,50 +354,6 @@ int llopen(LinkLayer connectionParameters) {
                                         A_RECEIVER, expected_cs) < 0) {
           return -1;
         }
-
-        // if (sframe_state == START) {
-        //   // Ensure ua_a and ua_c are reset
-        //   ua_a = 0;
-        //   ua_c = 0;
-        //   if (byte == FLAG) {
-        //     printf("LL: Tracking UA FRAME...\n");
-        //     sframe_state = FLAG_RCV;
-        //   } else {
-        //     sframe_state = START;
-        //   }
-        // } else if (sframe_state == FLAG_RCV) {
-        //   if (byte == A_RECEIVER) {
-        //     sframe_state = A_RCV;
-        //     ua_a = byte;
-        //   } else if (byte == FLAG) {
-        //     sframe_state = FLAG_RCV;
-        //   } else {
-        //     sframe_state = START;
-        //   }
-        // } else if (sframe_state == A_RCV) {
-        //   if (byte == C_UA) {
-        //     sframe_state = C_RCV;
-        //     ua_c = byte;
-        //   } else if (byte == FLAG) {
-        //     sframe_state = FLAG_RCV;
-        //   } else {
-        //     sframe_state = START;
-        //   }
-        // } else if (sframe_state == C_RCV) {
-        //   if (byte == (ua_a ^ ua_c)) {
-        //     sframe_state = BCC_OK;
-        //   } else if (byte == FLAG) {
-        //     sframe_state = FLAG_RCV;
-        //   } else {
-        //     sframe_state = START;
-        //   }
-        // } else if (sframe_state == BCC_OK) {
-        //   if (byte == FLAG) {
-        //     sframe_state = SUCCESS;
-        //   } else {
-        //     sframe_state = START;
-        //   }
-        // }
 
         if (sframe_state == SUCCESS) {
           if (alarm_triggered) {
@@ -454,48 +407,6 @@ int llopen(LinkLayer connectionParameters) {
         return -1;
       }
 
-      // if (sframe_state == START) {
-      //   // Ensure set_a and set_c are reset
-      //   set_a = 0;
-      //   set_c = 0;
-      //   if (byte == FLAG) {
-      //     sframe_state = FLAG_RCV;
-      //   }
-      // } else if (sframe_state == FLAG_RCV) {
-      //   if (byte == A_SENDER) {
-      //     sframe_state = A_RCV;
-      //     set_a = byte;
-      //   } else if (byte == FLAG) {
-      //     sframe_state = FLAG_RCV;
-      //   } else {
-      //     sframe_state = START;
-      //   }
-      // } else if (sframe_state == A_RCV) {
-      //   if (byte == C_SET) {
-      //     sframe_state = C_RCV;
-      //     set_c = byte;
-      //   } else if (byte == FLAG) {
-      //     sframe_state = FLAG_RCV;
-      //   } else {
-      //     sframe_state = START;
-      //   }
-      // } else if (sframe_state == C_RCV) {
-      //   if (byte == (set_a ^ set_c)) {
-      //     sframe_state = BCC_OK;
-      //   } else if (byte == FLAG) {
-      //     sframe_state = FLAG_RCV;
-      //   } else {
-      //     sframe_state = START;
-      //   }
-      // } else if (sframe_state == BCC_OK) {
-      //   if (byte == FLAG) {
-      //     sframe_state = SUCCESS;
-
-      //   } else {
-      //     sframe_state = START;
-      //   }
-      // }
-
       if (sframe_state == SUCCESS) {
         printf("LL: SET frame received successfully\n");
         unsigned char ua_frame[SFRAME_SIZE] = {FLAG, A_RECEIVER, C_UA,
@@ -512,9 +423,6 @@ int llopen(LinkLayer connectionParameters) {
         // TODO: ask professor for a workaround. we could send multiple UAs...
         // or we could wrap in a loop and only return when C read is either C_0
         // or C_1 meaning Tx moved on to I frames
-
-        // Wait until all bytes have been written to the serial port
-        // sleep(1);
       }
     }
   }
@@ -757,7 +665,13 @@ int llread(unsigned char *packet) {
   unsigned char ns = C == C_I0 ? 0 : 1;
 
   // First handle unexpected header values
-  if (C != C_I0 && C != C_I1) {
+
+  if (C == C_SET) {
+    printf("LL: UA frame sent (while waiting for Iframe)\n");
+    if (send_ack_frame(C_UA) < 0) {
+      return -1;
+    }
+  } else if (C != C_I0 && C != C_I1) {
     printf("LL: C field error detected\n");
     // Header error → ignore frame (Slide 15)
   } else if (A != A_SENDER) {
@@ -883,46 +797,6 @@ static int llclose_body() {
           return -1;
         }
 
-        // if (sframe_state == START) {
-        //   sframe_a = 0;
-        //   sframe_c = 0;
-        //   if (byte == FLAG) {
-        //     sframe_state = FLAG_RCV;
-        //   }
-        // } else if (sframe_state == FLAG_RCV) {
-        //   if (byte == A_RECEIVER) {
-        //     sframe_a = byte;
-        //     sframe_state = A_RCV;
-        //   } else if (byte != FLAG) {
-        //     sframe_state = FLAG_RCV;
-        //   } else {
-        //     sframe_state = START;
-        //   }
-        // } else if (sframe_state == A_RCV) {
-        //   if (byte == C_DISC) {
-        //     sframe_c = byte;
-        //     sframe_state = C_RCV;
-        //   } else if (byte == FLAG) {
-        //     sframe_state = FLAG_RCV;
-        //   } else {
-        //     sframe_state = START;
-        //   }
-        // } else if (sframe_state == C_RCV) {
-        //   if (byte == (sframe_a ^ sframe_c)) {
-        //     sframe_state = BCC_OK;
-        //   } else if (byte == FLAG) {
-        //     sframe_state = FLAG_RCV;
-        //   } else {
-        //     sframe_state = START;
-        //   }
-        // } else if (sframe_state == BCC_OK) {
-        //   if (byte == FLAG) {
-        //     sframe_state = SUCCESS;
-        //   } else {
-        //     sframe_state = START;
-        //   }
-        // }
-
         if (sframe_state == SUCCESS) {
 
           if (alarm_triggered) {
@@ -977,46 +851,6 @@ static int llclose_body() {
                                       A_SENDER, expected_cs) < 0) {
         return -1;
       }
-
-      // if (sframe_state == START) {
-      //   sframe_a = 0;
-      //   sframe_c = 0;
-      //   if (byte == FLAG) {
-      //     sframe_state = FLAG_RCV;
-      //   }
-      // } else if (sframe_state == FLAG_RCV) {
-      //   if (byte == A_SENDER) {
-      //     sframe_a = byte;
-      //     sframe_state = A_RCV;
-      //   } else if (byte == FLAG) {
-      //     sframe_state = FLAG_RCV;
-      //   } else {
-      //     sframe_state = START;
-      //   }
-      // } else if (sframe_state == A_RCV) {
-      //   if (byte == C_DISC) {
-      //     sframe_c = byte;
-      //     sframe_state = C_RCV;
-      //   } else if (byte == FLAG) {
-      //     sframe_state = FLAG_RCV;
-      //   } else {
-      //     sframe_state = START;
-      //   }
-      // } else if (sframe_state == C_RCV) {
-      //   if (byte == (sframe_a ^ sframe_c)) {
-      //     sframe_state = BCC_OK;
-      //   } else if (byte == FLAG) {
-      //     sframe_state = FLAG_RCV;
-      //   } else {
-      //     sframe_state = START;
-      //   }
-      // } else if (sframe_state == BCC_OK) {
-      //   if (byte == FLAG) {
-      //     sframe_state = SUCCESS;
-      //   } else {
-      //     sframe_state = START;
-      //   }
-      // }
     }
 
     // Send DISC
@@ -1052,45 +886,6 @@ static int llclose_body() {
         return -1;
       }
 
-      // if (sframe_state == START) {
-      //   sframe_a = 0;
-      //   sframe_c = 0;
-      //   if (byte == FLAG) {
-      //     sframe_state = FLAG_RCV;
-      //   }
-      // } else if (sframe_state == FLAG_RCV) {
-      //   if (byte == A_SENDER) {
-      //     sframe_a = byte;
-      //     sframe_state = A_RCV;
-      //   } else if (byte == FLAG) {
-      //     sframe_state = FLAG_RCV;
-      //   } else {
-      //     sframe_state = START;
-      //   }
-      // } else if (sframe_state == A_RCV) {
-      //   if (byte == C_UA) {
-      //     sframe_c = byte;
-      //     sframe_state = C_RCV;
-      //   } else if (byte == FLAG) {
-      //     sframe_state = FLAG_RCV;
-      //   } else {
-      //     sframe_state = START;
-      //   }
-      // } else if (sframe_state == C_RCV) {
-      //   if (byte == (sframe_a ^ sframe_c)) {
-      //     sframe_state = BCC_OK;
-      //   } else if (byte == FLAG) {
-      //     sframe_state = FLAG_RCV;
-      //   } else {
-      //     sframe_state = START;
-      //   }
-      // } else if (sframe_state == BCC_OK) {
-      //   if (byte == FLAG) {
-      //     sframe_state = SUCCESS;
-      //   } else {
-      //     sframe_state = START;
-      //   }
-      // }
     }
     printf("LL: UA frame received successfully\n");
   }
