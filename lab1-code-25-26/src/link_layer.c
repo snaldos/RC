@@ -560,6 +560,8 @@ int llread(unsigned char *packet) {
   //! If Tx closes connection while Rx is in llread, Rx will get stuck trying to
   //! parse a DISC frame
   // TODO: ask professor for a workaround. maybe application layer timeout?
+  // Professor made the analogy of a server, what matters is that tx closes
+  // serial port
 
   // Rx tries to parse I-frame
 
@@ -625,19 +627,20 @@ int llread(unsigned char *packet) {
   // in the case where header C is corrupted and not really a C_DISC, meaning we
   // should reattempt and not disconnect
 
-  if (C == C_SET) {
+  if (A != A_SENDER) {
+    printf("LL: A field error detected\n");
+    // Header error → ignore frame (Slide 15)
+  } else if (bcc1 != (A ^ C)) {
+    printf("LL: BCC1 error detected\n");
+    // Header error → ignore frame (Slide 15)
+  } else if (C == C_SET) {
+    // If we receive a SET while waiting for I-frame, resend UA
     printf("LL: UA frame sent (while waiting for Iframe)\n");
     if (send_ack_frame(C_UA) < 0) {
       return -1;
     }
   } else if (C != C_I0 && C != C_I1) {
     printf("LL: C field error detected\n");
-    // Header error → ignore frame (Slide 15)
-  } else if (A != A_SENDER) {
-    printf("LL: A field error detected\n");
-    // Header error → ignore frame (Slide 15)
-  } else if (bcc1 != (A ^ C)) {
-    printf("LL: BCC1 error detected\n");
     // Header error → ignore frame (Slide 15)
   } else if (rx_expected_ns != ns) {
     // Unexpected N(s) means we received a duplicated frame (our RR got lost)
@@ -828,6 +831,10 @@ static int llclose_body() {
 
     // Rx: wait for Tx's UA
     while (sframe_state != SUCCESS) {
+      // Rx tries to parse UA frame and if DISC is received again, resend DISC
+      // to ensure proper termination on Tx side which wants to receive a Rx
+      // DISC before sending UA and closing serial port, Rx will stay open
+      // unless he properly receives UA
       unsigned char byte;
       int bytes_read = readByteSerialPort(&byte);
       if (bytes_read < 0) {
@@ -837,10 +844,27 @@ static int llclose_body() {
         continue;
       }
 
-      unsigned char expected_cs[2] = {C_UA, 0};
+      unsigned char expected_cs[3] = {C_UA, C_DISC, 0};
       if (update_sframe_state_machine(&sframe_state, byte, &sframe_a, &sframe_c,
                                       A_SENDER, expected_cs) < 0) {
         return -1;
+      }
+
+      if (sframe_state == SUCCESS && sframe_c == C_DISC) {
+        // If received DISC while waiting on UA, resend DISC
+        printf(
+            "LL: DISC frame received while waiting for UA, resending DISC\n");
+        sframe_a = 0;
+        sframe_c = 0;
+        sframe_state = START;
+
+        unsigned char disc_frame[SFRAME_SIZE] = {FLAG, A_RECEIVER, C_DISC,
+                                                 A_RECEIVER ^ C_DISC, FLAG};
+        int bytes_written = writeBytesSerialPort(disc_frame, SFRAME_SIZE);
+        if (bytes_written < 0) {
+          perror("writeBytesSerialPort");
+          return -1;
+        }
       }
     }
     printf("LL: UA frame received successfully\n");
