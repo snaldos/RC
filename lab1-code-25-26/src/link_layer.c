@@ -15,15 +15,14 @@
 
 /*
    TODO: try to reduce code repetition
-   TODO: remove commented out state machines once veriied that
-   updte_sframe_state_machine works
    TODO: try to find workarounds for warnings below
    ? should we retransmit n times or transmit n times in total (ie initial + n
    retransmissions)
    ? decide if you should or not allow I frames where payload
    is 0 bytes
-   ? maybe look at see if tweaking is possible for Vmin and Vtime
-   ? Should we make some arrays size more or less strict in size
+   ? maybe look at and see if tweaking is possible for Vmin and Vtime
+   ? Should we make some arrays more or less strict in size, right now they are
+   strict
 
 */
 
@@ -376,7 +375,7 @@ int llopen(LinkLayer connectionParameters) {
         return -1;
       } else {
         printf("LL: Timeout occurred, retransmitting (attempt %d of %d)\n",
-               attempts + 1, max_attempts);
+               attempts + 2, max_attempts);
       }
     }
 
@@ -419,10 +418,9 @@ int llopen(LinkLayer connectionParameters) {
         }
         printf("LL: UA frame sent\n");
 
-        //! If UA gets lost Tx keeps sending SET but Rx already exited llopen...
-        // TODO: ask professor for a workaround. we could send multiple UAs...
-        // or we could wrap in a loop and only return when C read is either C_0
-        // or C_1 meaning Tx moved on to I frames
+        // Rx will advance to waiting for I-frames, and even if UA is lost,
+        // Tx will retransmit SET after timeout and Rx will respond again with
+        // UA despite being already in I-frame receiving state
       }
     }
   }
@@ -519,7 +517,7 @@ int llwrite(const unsigned char *buf, int bufSize) {
           unsigned char expected_rej_nr = tx_cur_ns;
 
           if (nr != expected_rej_nr) {
-            // In theory this should not happen, but just in case
+            // In case Rx rejected a frame that happened to be a duplicate
             printf("LL: Received REJ but with wrong N(r), expected %d\n",
                    expected_rej_nr);
 
@@ -541,7 +539,7 @@ int llwrite(const unsigned char *buf, int bufSize) {
       printf("LL: Maximum retransmissions reached, giving up\n");
     } else {
       printf("LL: Timeout occurred, retransmitting (attempt %d of %d)\n",
-             attempts + 1, max_attempts);
+             attempts + 2, max_attempts);
     }
   }
 
@@ -623,6 +621,10 @@ int llread(unsigned char *packet) {
 
   // First handle unexpected header values
 
+  // Could also check for if C == C_DISC but then it would enforce shutdown even
+  // in the case where header C is corrupted and not really a C_DISC, meaning we
+  // should reattempt and not disconnect
+
   if (C == C_SET) {
     printf("LL: UA frame sent (while waiting for Iframe)\n");
     if (send_ack_frame(C_UA) < 0) {
@@ -641,8 +643,6 @@ int llread(unsigned char *packet) {
     // Unexpected N(s) means we received a duplicated frame (our RR got lost)
     // Unexpected N(s) takes precedence over BCC2 error
 
-    // TO THINK ABOUT: couldnt i just ignore the duplicated frame instead of
-    // sending RR? sending RR increases complexity
     printf("LL: Unexpected N(s) received, expected %d but got %d. Sending "
            "RR%d\n",
            rx_expected_ns, ns, rx_expected_ns);
@@ -786,7 +786,7 @@ static int llclose_body() {
         return -1;
       } else {
         printf("LL: Timeout occurred, retransmitting (attempt %d of %d)\n",
-               attempts + 1, max_attempts);
+               attempts + 2, max_attempts);
       }
     }
 
@@ -842,7 +842,6 @@ static int llclose_body() {
                                       A_SENDER, expected_cs) < 0) {
         return -1;
       }
-
     }
     printf("LL: UA frame received successfully\n");
   }
