@@ -1,3 +1,5 @@
+import csv
+import os
 import subprocess
 import time
 
@@ -7,16 +9,15 @@ def open_terminal_with_command(command, password=None):
     Opens a new terminal window and runs the specified command.
     If a password is provided, it is used for sudo commands.
     """
+    terminal_emulator = "kitty"  # Change this to your preferred terminal emulator
     if password:
         command = f"echo {password} | sudo -S {command}"
-    return subprocess.Popen(["kitty", "bash", "-c", f"{command}; exec bash"])
+    return subprocess.Popen([terminal_emulator, "bash", "-c", f"{command}; exec bash"])
 
 
 def main():
     # Sudo password (replace with your actual password)
-    sudo_password = "your_password_here"
-    import csv
-    import os
+    sudo_password = "your_sudo_password_here"
 
     prop_delays = [
         0,
@@ -76,17 +77,24 @@ def main():
         9000,
         10000,
     ]
-    n_tests = 1  # Number of test iterations per delay
-
+    n_tests = 1
     gif_path = "penguin-received.gif"
     target_size = 10968
 
-    # --- Prop Delay Test ---
+    run_prop_delay_tests(prop_delays, n_tests, gif_path, target_size, sudo_password)
+    run_byte_err_tests(byte_errs, n_tests, gif_path, target_size, sudo_password)
+    run_baudrate_tests(baudrates, n_tests, gif_path, target_size, sudo_password)
+    run_max_payload_size_tests(
+        max_payload_sizes, n_tests, gif_path, target_size, sudo_password
+    )
+
+
+def run_prop_delay_tests(prop_delays, n_tests, gif_path, target_size, sudo_password):
+
     csv_filename = "test_prop_delay.csv"
     with open(csv_filename, mode="w", newline="", encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["PropDelay (us)", "Test Number", "Elapsed Time (seconds)"])
-
     for prop_delay in prop_delays:
         for test_num in range(n_tests):
             print(f"Testing prop_delay={prop_delay} (Test {test_num + 1}/{n_tests})")
@@ -94,10 +102,8 @@ def main():
             timer_started = False
             start_time = None
             elapsed_time = None
-
             if os.path.exists(gif_path):
                 os.remove(gif_path)
-
             commands = [
                 (
                     f"make run_custom_cable CUSTOM_PROP_DELAY={prop_delay}",
@@ -106,7 +112,6 @@ def main():
                 ("make run_rx", None),
                 ("make run_tx", None),
             ]
-
             for cmd, pwd in commands:
                 print(f"Running: {cmd}")
                 proc = open_terminal_with_command(cmd, password=pwd)
@@ -115,7 +120,6 @@ def main():
                 if cmd == "make run_tx":
                     start_time = time.time()
                     timer_started = True
-
             if timer_started:
                 last_size = None
                 size = None
@@ -140,7 +144,6 @@ def main():
                         break
                     time.sleep(0.1)
                     print(time.time() - last_change_time)
-
             with open(csv_filename, mode="a", newline="", encoding="utf-8") as csvfile:
                 writer = csv.writer(csvfile)
                 writer.writerow(
@@ -150,17 +153,17 @@ def main():
                         f"{elapsed_time:.4f}" if elapsed_time else "N/A",
                     ]
                 )
-
             for proc in procs:
                 proc.terminate()
             print("Closed all terminals. Restarting loop...\n")
 
-    # --- Byte Error Test ---
+
+def run_byte_err_tests(byte_errs, n_tests, gif_path, target_size, sudo_password):
+
     byte_err_csv = "test_byte_err.csv"
     with open(byte_err_csv, mode="w", newline="", encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["ByteErr", "Test Number", "Elapsed Time (seconds)"])
-
     for byte_err in byte_errs:
         for test_num in range(n_tests):
             print(f"Testing byte_err={byte_err} (Test {test_num + 1}/{n_tests})")
@@ -168,16 +171,13 @@ def main():
             timer_started = False
             start_time = None
             elapsed_time = None
-
             if os.path.exists(gif_path):
                 os.remove(gif_path)
-
             commands = [
                 (f"make run_custom_cable CUSTOM_BYTE_ERR={byte_err}", sudo_password),
                 ("make run_rx", None),
                 ("make run_tx", None),
             ]
-
             for cmd, pwd in commands:
                 print(f"Running: {cmd}")
                 proc = open_terminal_with_command(cmd, password=pwd)
@@ -186,7 +186,6 @@ def main():
                 if cmd == "make run_tx":
                     start_time = time.time()
                     timer_started = True
-
             if timer_started:
                 last_size = None
                 size = None
@@ -211,7 +210,6 @@ def main():
                         break
                     time.sleep(0.1)
                     print(time.time() - last_change_time)
-
             with open(byte_err_csv, mode="a", newline="", encoding="utf-8") as csvfile:
                 writer = csv.writer(csvfile)
                 writer.writerow(
@@ -221,17 +219,17 @@ def main():
                         f"{elapsed_time:.4f}" if elapsed_time else "N/A",
                     ]
                 )
-
             for proc in procs:
                 proc.terminate()
             print("Closed all terminals. Restarting loop...\n")
 
-    # --- Baudrate Test ---
+
+def run_baudrate_tests(baudrates, n_tests, gif_path, target_size, sudo_password):
+
     baudrate_csv = "test_baudrate.csv"
     with open(baudrate_csv, mode="w", newline="", encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["Baudrate", "Test Number", "Elapsed Time (seconds)"])
-
     for baudrate in baudrates:
         for test_num in range(n_tests):
             print(f"Testing baudrate={baudrate} (Test {test_num + 1}/{n_tests})")
@@ -239,16 +237,13 @@ def main():
             timer_started = False
             start_time = None
             elapsed_time = None
-
             if os.path.exists(gif_path):
                 os.remove(gif_path)
-
             commands = [
                 (f"make run_custom_cable CUSTOM_BAUDRATE={baudrate}", sudo_password),
                 (f"make run_rx CUSTOM_BAUDRATE={baudrate}", None),
                 (f"make run_tx CUSTOM_BAUDRATE={baudrate}", None),
             ]
-
             for cmd, pwd in commands:
                 print(f"Running: {cmd}")
                 proc = open_terminal_with_command(cmd, password=pwd)
@@ -257,7 +252,6 @@ def main():
                 if cmd.startswith("make run_tx"):
                     start_time = time.time()
                     timer_started = True
-
             if timer_started:
                 last_size = None
                 size = None
@@ -282,7 +276,6 @@ def main():
                         break
                     time.sleep(0.1)
                     print(time.time() - last_change_time)
-
             with open(baudrate_csv, mode="a", newline="", encoding="utf-8") as csvfile:
                 writer = csv.writer(csvfile)
                 writer.writerow(
@@ -292,17 +285,19 @@ def main():
                         f"{elapsed_time:.4f}" if elapsed_time else "N/A",
                     ]
                 )
-
             for proc in procs:
                 proc.terminate()
             print("Closed all terminals. Restarting loop...\n")
 
-    # --- Max Payload Size Test ---
+
+def run_max_payload_size_tests(
+    max_payload_sizes, n_tests, gif_path, target_size, sudo_password
+):
+
     payload_csv = "test_max_payload_size.csv"
     with open(payload_csv, mode="w", newline="", encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["MaxPayloadSize", "Test Number", "Elapsed Time (seconds)"])
-
     for payload_size in max_payload_sizes:
         for test_num in range(n_tests):
             print(
@@ -312,16 +307,13 @@ def main():
             timer_started = False
             start_time = None
             elapsed_time = None
-
             if os.path.exists(gif_path):
                 os.remove(gif_path)
-
             commands = [
                 ("make run_custom_cable", sudo_password),
                 (f"make run_rx CUSTOM_MAX_PAYLOAD_SIZE={payload_size}", None),
                 (f"make run_tx CUSTOM_MAX_PAYLOAD_SIZE={payload_size}", None),
             ]
-
             for cmd, pwd in commands:
                 print(f"Running: {cmd}")
                 proc = open_terminal_with_command(cmd, password=pwd)
@@ -330,7 +322,6 @@ def main():
                 if cmd.startswith("make run_tx"):
                     start_time = time.time()
                     timer_started = True
-
             if timer_started:
                 last_size = None
                 size = None
@@ -355,7 +346,6 @@ def main():
                         break
                     time.sleep(0.1)
                     print(time.time() - last_change_time)
-
             with open(payload_csv, mode="a", newline="", encoding="utf-8") as csvfile:
                 writer = csv.writer(csvfile)
                 writer.writerow(
@@ -365,7 +355,6 @@ def main():
                         f"{elapsed_time:.4f}" if elapsed_time else "N/A",
                     ]
                 )
-
             for proc in procs:
                 proc.terminate()
             print("Closed all terminals. Restarting loop...\n")
