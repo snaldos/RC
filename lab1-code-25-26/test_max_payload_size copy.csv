@@ -1,0 +1,4 @@
+PropDelay (us),Test Number,Elapsed Time (seconds)
+0,1,10.0132
+1000,1,10.0123
+10000,1,10.3137
