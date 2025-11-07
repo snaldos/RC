@@ -1,2 +1,5 @@
-PropDelay (us),Test Number,Elapsed Time (seconds)
-0,1,10.0176
+PropDelay (us),Test Number,Elapsed Time (seconds),Throughput R (bps),Measured Efficiency S,Theoretical Efficiency S_theoretical
+0,1,10.0169,8759.62,0.9125,1.0000
+1000,1,10.0181,8758.53,0.9123,0.9976
+10000,1,10.3185,8503.59,0.8858,0.9766
+100000,1,12.7203,6897.94,0.7185,0.8065

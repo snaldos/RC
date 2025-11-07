@@ -1,2 +1,7 @@
-MaxPayloadSize,Test Number,Elapsed Time (seconds)
-8000,1,-1.0000
+MaxPayloadSize,Test Number,Elapsed Time (seconds),Throughput R (bps),Measured Efficiency S,Theoretical Efficiency S_theoretical
+50,1,13.318554,6588.10,0.6863,1.0000
+100,1,11.616144,7553.63,0.7868,1.0000
+200,1,10.716292,8187.91,0.8529,1.0000
+500,1,10.216426,8588.52,0.8946,1.0000
+600,1,10.215679,8589.15,0.8947,1.0000
+700,1,10.213122,8591.30,0.8949,1.0000

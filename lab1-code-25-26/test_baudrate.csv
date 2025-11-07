@@ -1,1 +1,10 @@
-Baudrate,Test Number,Elapsed Time (seconds)
+Baudrate,Test Number,Elapsed Time (seconds),Throughput R (bps),Measured Efficiency S,Theoretical Efficiency S_theoretical
+1200,1,N/A,N/A,N/A,1.0000
+1800,1,N/A,N/A,N/A,1.0000
+2400,1,N/A,N/A,N/A,1.0000
+4800,1,21.7359,4036.83,0.8410,1.0000
+9600,1,10.0153,8760.98,0.9126,1.0000
+19200,1,4.2060,20861.55,1.0865,1.0000
+38400,1,1.2021,72992.41,1.9008,1.0000
+57600,1,0.2004,437944.10,7.6032,1.0000
+115200,1,0.0000,6133750169.60,53244.3591,1.0000

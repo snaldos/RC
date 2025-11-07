@@ -1,2 +1,2 @@
-ByteErr,Test Number,Elapsed Time (seconds)
-0,1,10.0187
+ByteErr,Test Number,Elapsed Time (seconds),Throughput R (bps),Measured Efficiency S,Theoretical Efficiency S_theoretical
+0,1,10.0138,8762.35,0.9127,1.0000
