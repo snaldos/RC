@@ -3,9 +3,13 @@ import os
 import subprocess
 import time
 
+# This timer resolution should be sufficient for most practical purposes.
+# For extremely high-speed transfers, consider synchronizing timing with
+# transmission events in the sender/receiver code.
+
 # Default experiment parameters
-DEFAULT_PROP_DELAY = 0
-DEFAULT_BYTE_ERR = 0.00000
+DEFAULT_PROP_DELAY = 1000
+DEFAULT_BYTE_ERR = 0.00005
 DEFAULT_BAUDRATE = 9600
 DEFAULT_MAX_PAYLOAD_SIZE = 1000
 DEFAULT_TARGET_SIZE = 10968
@@ -172,7 +176,8 @@ def main():
         0.01,
         0.1,
     ]
-    baudrates = [1200, 1800, 2400, 4800, DEFAULT_BAUDRATE, 19200, 38400, 57600, 115200]
+    # baudrates = [1200, 1800, 2400, 4800, DEFAULT_BAUDRATE, 19200, 38400, 57600, 115200]
+    baudrates = [4800, 9600, 19200, 38400, 57600, 115200]
     max_payload_sizes = [
         50,
         100,
@@ -182,7 +187,7 @@ def main():
         700,
         800,
         900,
-        DEFAULT_MAX_PAYLOAD_SIZE,
+        1000,
         2000,
         3000,
         4000,
@@ -197,12 +202,12 @@ def main():
     gif_path = DEFAULT_GIF_PATH
     target_size = DEFAULT_TARGET_SIZE
 
-    run_prop_delay_tests(prop_delays, n_tests, gif_path, target_size, sudo_password)
-    run_byte_err_tests(byte_errs, n_tests, gif_path, target_size, sudo_password)
-    run_baudrate_tests(baudrates, n_tests, gif_path, target_size, sudo_password)
-    run_max_payload_size_tests(
-        max_payload_sizes, n_tests, gif_path, target_size, sudo_password
-    )
+    # run_prop_delay_tests(prop_delays, n_tests, gif_path, target_size, sudo_password)
+    run_fer_tests(byte_errs, n_tests, gif_path, target_size, sudo_password)
+    # run_baudrate_tests(baudrates, n_tests, gif_path, target_size, sudo_password)
+    # run_max_payload_size_tests(
+    #     max_payload_sizes, n_tests, gif_path, target_size, sudo_password
+    # )
 
 
 def run_prop_delay_tests(prop_delays, n_tests, gif_path, target_size, sudo_password):
@@ -270,7 +275,8 @@ def run_prop_delay_tests(prop_delays, n_tests, gif_path, target_size, sudo_passw
                             f"File size stuck at {size} bytes for {DEFAULT_GIVE_UP_TIME} seconds. Skipping test."
                         )
                         break
-                    time.sleep(0.1)
+                    # Finer polling interval for more accurate timing (1ms)
+                    time.sleep(0.001)
             throughput = calculate_throughput(target_size, elapsed_time)
             measured_efficiency = calculate_measured_efficiency(
                 throughput, DEFAULT_BAUDRATE
@@ -303,14 +309,14 @@ def run_prop_delay_tests(prop_delays, n_tests, gif_path, target_size, sudo_passw
             print("Closed all terminals. Restarting loop...\n")
 
 
-def run_byte_err_tests(byte_errs, n_tests, gif_path, target_size, sudo_password):
+def run_fer_tests(byte_errs, n_tests, gif_path, target_size, sudo_password):
 
-    byte_err_csv = "test_byte_err.csv"
+    byte_err_csv = "test_fer.csv"
     with open(byte_err_csv, mode="w", newline="", encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(
             [
-                "ByteErr",
+                "FER",
                 "Test Number",
                 "Elapsed Time (seconds)",
                 "Throughput R (bps)",
@@ -365,7 +371,8 @@ def run_byte_err_tests(byte_errs, n_tests, gif_path, target_size, sudo_password)
                             f"File size stuck at {size} bytes for {DEFAULT_GIVE_UP_TIME} seconds. Skipping test."
                         )
                         break
-                    time.sleep(0.1)
+                    # Finer polling interval for more accurate timing (1ms)
+                    time.sleep(0.001)
             throughput = calculate_throughput(target_size, elapsed_time)
             measured_efficiency = calculate_measured_efficiency(
                 throughput, DEFAULT_BAUDRATE
@@ -377,7 +384,7 @@ def run_byte_err_tests(byte_errs, n_tests, gif_path, target_size, sudo_password)
                 writer = csv.writer(csvfile)
                 writer.writerow(
                     [
-                        byte_err,
+                        calculate_fer_from_byte_err(byte_err, DEFAULT_MAX_PAYLOAD_SIZE),
                         test_num + 1,
                         f"{elapsed_time:.6f}" if elapsed_time >= 0 else "N/A",
                         f"{throughput:.2f}" if throughput is not None else "N/A",
@@ -460,7 +467,8 @@ def run_baudrate_tests(baudrates, n_tests, gif_path, target_size, sudo_password)
                             f"File size stuck at {size} bytes for {DEFAULT_GIVE_UP_TIME} seconds. Skipping test."
                         )
                         break
-                    time.sleep(0.1)
+                    # Finer polling interval for more accurate timing (1ms)
+                    time.sleep(0.001)
             throughput = calculate_throughput(target_size, elapsed_time)
             measured_efficiency = calculate_measured_efficiency(throughput, baudrate)
             theoretical_efficiency = calculate_file_theoretical_efficiency(
@@ -557,7 +565,8 @@ def run_max_payload_size_tests(
                             f"File size stuck at {size} bytes for {DEFAULT_GIVE_UP_TIME} seconds. Skipping test."
                         )
                         break
-                    time.sleep(0.1)
+                    # Finer polling interval for more accurate timing (1ms)
+                    time.sleep(0.001)
             throughput = calculate_throughput(target_size, elapsed_time)
             measured_efficiency = calculate_measured_efficiency(
                 throughput, DEFAULT_BAUDRATE
@@ -593,5 +602,7 @@ def run_max_payload_size_tests(
             print("Closed all terminals. Restarting loop...\n")
 
 
+# NOTE: For best timing accuracy, synchronize timer with actual transmission events in sender/receiver code.
+# The current polling-based timing is improved, but still not perfect for very fast transfers.
 if __name__ == "__main__":
     main()
