@@ -4,30 +4,65 @@ import subprocess
 import time
 
 # Default experiment parameters
-DEFAULT_PROP_DELAY = 0
-DEFAULT_BYTE_ERR = 0
+DEFAULT_PROP_DELAY = 1000
+DEFAULT_BYTE_ERR = 0.00005
 DEFAULT_BAUDRATE = 9600
 DEFAULT_MAX_PAYLOAD_SIZE = 1000
 DEFAULT_TARGET_SIZE = 10968
 DEFAULT_GIF_PATH = "penguin-received.gif"
 DEFAULT_N_TESTS = 1
 DEFAULT_GIVE_UP_TIME = 30  # seconds
-DEFAULT_SUDO_PASSWORD = (
-    "your_sudo_password_here"  # Replace with your actual sudo password
-)
+DEFAULT_SUDO_PASSWORD = ""  # Replace with your actual sudo password
+
+
+# RS-232 uses binary signaling (1 bit per symbol), meaning C=baud rate (bps)
+
+
+def calculate_file_theoretical_efficiency(
+    byte_err, prop_delay_us, frame_sizes_bytes, baudrate
+):
+    """
+    Compute the theoretical efficiency for Stop-and-Wait file transfer.
+
+    Parameters:
+      byte_err: Byte Error Rate
+      prop_delay_us: one-way propagation delay in microseconds
+      frame_sizes_bytes: list of frame sizes (payload only)
+      baudrate: link baud rate (bits per second)
+    """
+    total_useful_time = 0
+    total_expected_time = 0
+    Tprop = prop_delay_us / 1_000_000  # µs -> seconds
+
+    for L_bytes in frame_sizes_bytes:
+        L_bits = L_bytes * 8
+        T_frame = L_bits / baudrate  # seconds
+        fer = calculate_fer_from_byte_err(byte_err, L_bytes)
+        if fer is None or fer >= 1:
+            continue
+
+        E_k = 1 / (1 - fer)
+        total_useful_time += T_frame
+        total_expected_time += E_k * (T_frame + 2 * Tprop)
+
+    if total_expected_time > 0:
+        return total_useful_time / total_expected_time
+    return None
 
 
 # Calculate Frame Error Rate (FER) from Byte Error Rate (BER) and frame size
-def calculate_fer_from_ber(ber, frame_size_bytes):
+def calculate_fer_from_byte_err(byte_err, frame_size_bytes):
     # FER = 1 - (1 - BER) ** frame_size_bytes
-    if ber is not None and frame_size_bytes > 0:
-        return 1 - (1 - ber) ** frame_size_bytes
+    if byte_err is not None and frame_size_bytes > 0:
+        return 1 - (1 - byte_err) ** frame_size_bytes
     return None
 
 
 # Calculate theoretical efficiency for Stop-and-Wait ARQ
-def calculate_theoretical_efficiency(ber, prop_delay, frame_size_bytes, baudrate):
-    fer = calculate_fer_from_ber(ber, frame_size_bytes)
+def calculate_frame_theoretical_efficiency(
+    byte_err, prop_delay, frame_size_bytes, baudrate
+):
+    fer = calculate_fer_from_byte_err(byte_err, frame_size_bytes)
     L = frame_size_bytes * 8
     T_frame = L / baudrate if baudrate else None
     a = (prop_delay / 1_000_000) / T_frame if T_frame else None
@@ -99,7 +134,7 @@ def main():
     sudo_password = DEFAULT_SUDO_PASSWORD
 
     prop_delays = [
-        DEFAULT_PROP_DELAY,
+        0,
         1000,
         10000,
         100000,
@@ -113,7 +148,7 @@ def main():
         8000000,
     ]
     byte_errs = [
-        DEFAULT_BYTE_ERR,
+        0,
         0.00005,
         0.00006,
         0.00007,
@@ -162,12 +197,12 @@ def main():
     gif_path = DEFAULT_GIF_PATH
     target_size = DEFAULT_TARGET_SIZE
 
-    run_prop_delay_tests(prop_delays, n_tests, gif_path, target_size, sudo_password)
-    run_byte_err_tests(byte_errs, n_tests, gif_path, target_size, sudo_password)
+    # run_prop_delay_tests(prop_delays, n_tests, gif_path, target_size, sudo_password)
+    # run_byte_err_tests(byte_errs, n_tests, gif_path, target_size, sudo_password)
     run_baudrate_tests(baudrates, n_tests, gif_path, target_size, sudo_password)
-    run_max_payload_size_tests(
-        max_payload_sizes, n_tests, gif_path, target_size, sudo_password
-    )
+    # run_max_payload_size_tests(
+    # max_payload_sizes, n_tests, gif_path, target_size, sudo_password
+    # )
 
 
 def run_prop_delay_tests(prop_delays, n_tests, gif_path, target_size, sudo_password):
@@ -211,19 +246,22 @@ def run_prop_delay_tests(prop_delays, n_tests, gif_path, target_size, sudo_passw
                     start_time = time.time()
                     timer_started = True
             if timer_started:
-                last_size = None
-                size = None
+                frame_sizes_bytes = []
+                last_size = 0
+                size = 0
                 last_change_time = time.time()
                 while True:
                     if os.path.exists(gif_path):
                         size = os.path.getsize(gif_path)
                     if size == target_size:
+                        frame_sizes_bytes.append(size - last_size)
                         elapsed_time = time.time() - start_time
                         print(
                             f"penguin-received.gif reached {target_size} bytes. Elapsed time: {elapsed_time:.6f} seconds"
                         )
                         break
                     if size != last_size:
+                        frame_sizes_bytes.append(size - last_size)
                         last_size = size
                         last_change_time = time.time()
                     elif time.time() - last_change_time > DEFAULT_GIVE_UP_TIME:
@@ -233,13 +271,12 @@ def run_prop_delay_tests(prop_delays, n_tests, gif_path, target_size, sudo_passw
                         )
                         break
                     time.sleep(0.1)
-                    print(time.time() - last_change_time)
             throughput = calculate_throughput(target_size, elapsed_time)
             measured_efficiency = calculate_measured_efficiency(
                 throughput, DEFAULT_BAUDRATE
             )
-            theoretical_efficiency = calculate_theoretical_efficiency(
-                DEFAULT_BYTE_ERR, prop_delay, DEFAULT_MAX_PAYLOAD_SIZE, DEFAULT_BAUDRATE
+            theoretical_efficiency = calculate_file_theoretical_efficiency(
+                DEFAULT_BYTE_ERR, prop_delay, frame_sizes_bytes, DEFAULT_BAUDRATE
             )
             with open(csv_filename, mode="a", newline="", encoding="utf-8") as csvfile:
                 writer = csv.writer(csvfile)
@@ -304,19 +341,22 @@ def run_byte_err_tests(byte_errs, n_tests, gif_path, target_size, sudo_password)
                     start_time = time.time()
                     timer_started = True
             if timer_started:
-                last_size = None
-                size = None
+                frame_sizes_bytes = []
+                last_size = 0
+                size = 0
                 last_change_time = time.time()
                 while True:
                     if os.path.exists(gif_path):
                         size = os.path.getsize(gif_path)
                     if size == target_size:
+                        frame_sizes_bytes.append(size - last_size)
                         elapsed_time = time.time() - start_time
                         print(
                             f"penguin-received.gif reached {target_size} bytes. Elapsed time: {elapsed_time:.6f} seconds"
                         )
                         break
                     if size != last_size:
+                        frame_sizes_bytes.append(size - last_size)
                         last_size = size
                         last_change_time = time.time()
                     elif time.time() - last_change_time > DEFAULT_GIVE_UP_TIME:
@@ -326,13 +366,12 @@ def run_byte_err_tests(byte_errs, n_tests, gif_path, target_size, sudo_password)
                         )
                         break
                     time.sleep(0.1)
-                    print(time.time() - last_change_time)
             throughput = calculate_throughput(target_size, elapsed_time)
             measured_efficiency = calculate_measured_efficiency(
                 throughput, DEFAULT_BAUDRATE
             )
-            theoretical_efficiency = calculate_theoretical_efficiency(
-                byte_err, DEFAULT_PROP_DELAY, DEFAULT_MAX_PAYLOAD_SIZE, DEFAULT_BAUDRATE
+            theoretical_efficiency = calculate_file_theoretical_efficiency(
+                byte_err, DEFAULT_PROP_DELAY, frame_sizes_bytes, DEFAULT_BAUDRATE
             )
             with open(byte_err_csv, mode="a", newline="", encoding="utf-8") as csvfile:
                 writer = csv.writer(csvfile)
@@ -397,19 +436,22 @@ def run_baudrate_tests(baudrates, n_tests, gif_path, target_size, sudo_password)
                     start_time = time.time()
                     timer_started = True
             if timer_started:
-                last_size = None
-                size = None
+                frame_sizes_bytes = []
+                last_size = 0
+                size = 0
                 last_change_time = time.time()
                 while True:
                     if os.path.exists(gif_path):
                         size = os.path.getsize(gif_path)
                     if size == target_size:
+                        frame_sizes_bytes.append(size - last_size)
                         elapsed_time = time.time() - start_time
                         print(
                             f"penguin-received.gif reached {target_size} bytes. Elapsed time: {elapsed_time:.6f} seconds"
                         )
                         break
                     if size != last_size:
+                        frame_sizes_bytes.append(size - last_size)
                         last_size = size
                         last_change_time = time.time()
                     elif time.time() - last_change_time > DEFAULT_GIVE_UP_TIME:
@@ -419,11 +461,10 @@ def run_baudrate_tests(baudrates, n_tests, gif_path, target_size, sudo_password)
                         )
                         break
                     time.sleep(0.1)
-                    print(time.time() - last_change_time)
             throughput = calculate_throughput(target_size, elapsed_time)
             measured_efficiency = calculate_measured_efficiency(throughput, baudrate)
-            theoretical_efficiency = calculate_theoretical_efficiency(
-                DEFAULT_BYTE_ERR, DEFAULT_PROP_DELAY, DEFAULT_MAX_PAYLOAD_SIZE, baudrate
+            theoretical_efficiency = calculate_file_theoretical_efficiency(
+                DEFAULT_BYTE_ERR, DEFAULT_PROP_DELAY, frame_sizes_bytes, baudrate
             )
             with open(baudrate_csv, mode="a", newline="", encoding="utf-8") as csvfile:
                 writer = csv.writer(csvfile)
@@ -492,19 +533,22 @@ def run_max_payload_size_tests(
                     start_time = time.time()
                     timer_started = True
             if timer_started:
-                last_size = None
-                size = None
+                frame_sizes_bytes = []
+                last_size = 0
+                size = 0
                 last_change_time = time.time()
                 while True:
                     if os.path.exists(gif_path):
                         size = os.path.getsize(gif_path)
                     if size == target_size:
+                        frame_sizes_bytes.append(size - last_size)
                         elapsed_time = time.time() - start_time
                         print(
                             f"penguin-received.gif reached {target_size} bytes. Elapsed time: {elapsed_time:.6f} seconds"
                         )
                         break
                     if size != last_size:
+                        frame_sizes_bytes.append(size - last_size)
                         last_size = size
                         last_change_time = time.time()
                     elif time.time() - last_change_time > DEFAULT_GIVE_UP_TIME:
@@ -514,13 +558,15 @@ def run_max_payload_size_tests(
                         )
                         break
                     time.sleep(0.1)
-                    print(time.time() - last_change_time)
             throughput = calculate_throughput(target_size, elapsed_time)
             measured_efficiency = calculate_measured_efficiency(
                 throughput, DEFAULT_BAUDRATE
             )
-            theoretical_efficiency = calculate_theoretical_efficiency(
-                DEFAULT_BYTE_ERR, DEFAULT_PROP_DELAY, payload_size, DEFAULT_BAUDRATE
+            theoretical_efficiency = calculate_file_theoretical_efficiency(
+                DEFAULT_BYTE_ERR,
+                DEFAULT_PROP_DELAY,
+                frame_sizes_bytes,
+                DEFAULT_BAUDRATE,
             )
             with open(payload_csv, mode="a", newline="", encoding="utf-8") as csvfile:
                 writer = csv.writer(csvfile)
