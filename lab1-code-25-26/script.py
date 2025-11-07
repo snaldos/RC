@@ -4,8 +4,8 @@ import subprocess
 import time
 
 # Default experiment parameters
-DEFAULT_PROP_DELAY = 1000
-DEFAULT_BYTE_ERR = 0.00005
+DEFAULT_PROP_DELAY = 0
+DEFAULT_BYTE_ERR = 0.00000
 DEFAULT_BAUDRATE = 9600
 DEFAULT_MAX_PAYLOAD_SIZE = 1000
 DEFAULT_TARGET_SIZE = 10968
@@ -197,12 +197,12 @@ def main():
     gif_path = DEFAULT_GIF_PATH
     target_size = DEFAULT_TARGET_SIZE
 
-    # run_prop_delay_tests(prop_delays, n_tests, gif_path, target_size, sudo_password)
-    # run_byte_err_tests(byte_errs, n_tests, gif_path, target_size, sudo_password)
+    run_prop_delay_tests(prop_delays, n_tests, gif_path, target_size, sudo_password)
+    run_byte_err_tests(byte_errs, n_tests, gif_path, target_size, sudo_password)
     run_baudrate_tests(baudrates, n_tests, gif_path, target_size, sudo_password)
-    # run_max_payload_size_tests(
-    # max_payload_sizes, n_tests, gif_path, target_size, sudo_password
-    # )
+    run_max_payload_size_tests(
+        max_payload_sizes, n_tests, gif_path, target_size, sudo_password
+    )
 
 
 def run_prop_delay_tests(prop_delays, n_tests, gif_path, target_size, sudo_password):

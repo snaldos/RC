@@ -81,12 +81,12 @@ struct Parameters par = {.cableOn = TRUE,
 #ifdef CUSTOM_BYTE_ERR
                          .byteER = CUSTOM_BYTE_ERR,
 #else
-                         .byteER = 0.00005,
+                         .byteER = 0.00000,
 #endif
 #ifdef CUSTOM_PROP_DELAY
                          .propDelay = CUSTOM_PROP_DELAY,
 #else
-                         .propDelay = 1000,
+                         .propDelay = 0,
 #endif
                          .tx2rx = NULL,
                          .tx2rxValid = NULL,
