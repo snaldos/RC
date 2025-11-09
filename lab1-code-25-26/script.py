@@ -333,6 +333,7 @@ def run_fer_tests(byte_errs, n_tests, gif_path, target_size, sudo_password):
         writer.writerow(
             [
                 "FER",
+                "byte_err",
                 "Test Number",
                 "Elapsed Time (seconds)",
                 "Throughput R (bps)",
@@ -374,6 +375,7 @@ def run_fer_tests(byte_errs, n_tests, gif_path, target_size, sudo_password):
                 writer.writerow(
                     [
                         calculate_fer_from_byte_err(byte_err, DEFAULT_MAX_PAYLOAD_SIZE),
+                        byte_err,
                         test_num + 1,
                         f"{elapsed_time:.6f}" if elapsed_time >= 0 else "N/A",
                         f"{throughput:.2f}" if throughput is not None else "N/A",
