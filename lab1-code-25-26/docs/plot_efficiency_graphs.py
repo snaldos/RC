@@ -5,51 +5,55 @@ import pandas as pd
 
 
 def plot_efficiency_vs_variable(csv_path, variable_name, output_folder, output_name):
-    df = pd.read_csv(csv_path, na_values=None, keep_default_na=False)
-    # Use Measured Efficiency S for y-axis, but drop rows where either y value is NA or not a number
-    df_plot = df.copy()
-    # Convert to numeric, coerce errors to NaN
-    df_plot["Measured Efficiency S"] = pd.to_numeric(
-        df_plot["Measured Efficiency S"], errors="coerce"
+    df = pd.read_csv(csv_path, na_values=["N/A", ""], keep_default_na=True)
+    # Convert columns to numeric, coerce errors to NaN
+    df["Measured Efficiency S"] = pd.to_numeric(
+        df["Measured Efficiency S"], errors="coerce"
     )
-    df_plot["Theoretical Efficiency S_theoretical"] = pd.to_numeric(
-        df_plot["Theoretical Efficiency S_theoretical"], errors="coerce"
+    df["Theoretical Efficiency S_theoretical"] = pd.to_numeric(
+        df["Theoretical Efficiency S_theoretical"], errors="coerce"
     )
-    df_plot[variable_name] = pd.to_numeric(df_plot[variable_name], errors="coerce")
-    # Only keep rows where x and y values are not NaN
-    df_plot = df_plot.dropna(
-        subset=[
-            variable_name,
-            "Measured Efficiency S",
-            "Theoretical Efficiency S_theoretical",
-        ]
+    df[variable_name] = pd.to_numeric(df[variable_name], errors="coerce")
+
+    # For theoretical: plot all x where theoretical is present
+    df_theoretical = df.dropna(
+        subset=[variable_name, "Theoretical Efficiency S_theoretical"]
     )
-    x = df_plot[variable_name]
-    y_measured = df_plot["Measured Efficiency S"]
-    y_theoretical = df_plot["Theoretical Efficiency S_theoretical"]
+    x_theoretical = df_theoretical[variable_name]
+    y_theoretical = df_theoretical["Theoretical Efficiency S_theoretical"]
+
+    # For measured: plot only where measured is present
+    df_measured = df.dropna(subset=[variable_name, "Measured Efficiency S"])
+    x_measured = df_measured[variable_name]
+    y_measured = df_measured["Measured Efficiency S"]
 
     # Create a figure with two columns: left for plot, right for table
     fig, (ax_table, ax_plot) = plt.subplots(
         1, 2, figsize=(16, 7), gridspec_kw={"width_ratios": [1.2, 2.8]}
     )
 
-    # Plot on the left
+    # Plot theoretical for all x values
     ax_plot.plot(
-        x,
-        y_measured,
-        marker="o",
-        linestyle="-",
-        color="blue",
-        label="Measured Efficiency",
-    )
-    ax_plot.plot(
-        x,
+        x_theoretical,
         y_theoretical,
         marker="s",
         linestyle="--",
         color="orange",
         label="Theoretical Efficiency",
     )
+    # Plot measured only where available
+    ax_plot.plot(
+        x_measured,
+        y_measured,
+        marker="o",
+        linestyle="-",
+        color="blue",
+        label="Measured Efficiency",
+    )
+    # Set x-axis to cover all possible x values in the file
+    all_x = df[variable_name].dropna()
+    if not all_x.empty:
+        ax_plot.set_xlim(min(all_x), max(all_x))
     # Set y-axis from 0 to 1
     ax_plot.set_ylim(0, 1)
     # Set x-axis label based on variable_name
