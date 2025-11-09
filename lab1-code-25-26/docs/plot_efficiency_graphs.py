@@ -98,6 +98,7 @@ def plot_efficiency_vs_variable(csv_path, variable_name, output_folder, output_n
     df_table = df_table.rename(columns=col_rename)
     # Format FER column to 4 decimal places if present, but keep 'N/A' as is
     if "FER" in df_table.columns:
+
         def fer_format(v):
             if v == "N/A":
                 return "N/A"
@@ -105,12 +106,13 @@ def plot_efficiency_vs_variable(csv_path, variable_name, output_folder, output_n
                 return f"{float(v):.4f}"
             except Exception:
                 return v
+
         df_table["FER"] = df_table["FER"].apply(fer_format)
     # Format T_total (s) column to 3 decimal places if present, but keep 'N/A' as is
     if "T_total (s)" in df_table.columns:
 
         def ttotal_format(v):
-            if v == "N/A":
+            if v == "N/A" or pd.isna(v):
                 return "N/A"
             try:
                 return f"{float(v):.3f}"
