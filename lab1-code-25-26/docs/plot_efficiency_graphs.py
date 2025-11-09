@@ -52,14 +52,27 @@ def plot_efficiency_vs_variable(csv_path, variable_name, output_folder, output_n
     )
     # Set y-axis from 0 to 1
     ax_plot.set_ylim(0, 1)
-    ax_plot.set_xlabel(variable_name, fontsize=13)
-    ax_plot.set_ylabel("Efficiency S", fontsize=13)
-    ax_plot.set_title(f"Efficiency vs {variable_name}", fontsize=15)
+    # Set x-axis label based on variable_name
+    if variable_name == "Baudrate":
+        xlabel = "Baudrate (bps)"
+        title = "efficiency vs baudrate"
+    elif variable_name == "MaxPayloadSize":
+        xlabel = "max_payload_size (bytes)"
+        title = "efficiency vs max_payload_size"
+    elif variable_name == "PropDelay (us)":
+        xlabel = "prop_delay (us)"
+        title = "efficiency vs prop_delay"
+    else:
+        xlabel = variable_name
+        title = f"efficiency vs {variable_name}"
+    ax_plot.set_xlabel(xlabel, fontsize=13)
+    ax_plot.set_ylabel("efficiency", fontsize=13)
+    ax_plot.set_title(title, fontsize=15)
     ax_plot.grid(True, which="both", linestyle="--", linewidth=0.5)
     ax_plot.legend(fontsize=11)
     ax_plot.tick_params(axis="both", which="major", labelsize=11)
     fig.subplots_adjust(wspace=0.25)
-    # Ensure y-axis is not inverted (should not be needed now)
+    # Ensure y-axis is not inverted (should not  be needed now)
 
     # Table on the right
     # Rename columns and remove 'Test Number' as requested
