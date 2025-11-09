@@ -133,6 +133,53 @@ def open_terminal_with_command(command, password=None):
     return subprocess.Popen([terminal_emulator, "bash", "-c", f"{command}; exec bash"])
 
 
+def run_zsh_time_make_run_tx(command, password=None):
+    """
+    Runs 'time make run_tx' using zsh's built-in time and parses the elapsed time from the 'total' field.
+    Returns (elapsed_time, output_lines)
+    """
+
+    if os.path.exists(DEFAULT_GIF_PATH):
+        os.remove("penguin-received.gif")
+        open("penguin-received.gif", "w").close()
+
+    if password:
+        command = f"echo {password} | sudo -S {command}"
+    # Use zsh -c to ensure zsh's time is used
+    time_cmd = f"zsh -c 'time {command}'"
+    proc = subprocess.Popen(
+        time_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+    )
+    stdout, stderr = proc.communicate()
+    # zsh's time output is in stderr, e.g.:
+    # make run_tx  0.19s user 0.05s system 98% cpu 0.239 total
+    elapsed_time = None
+    for line in reversed(stderr.splitlines()):
+        if " total" in line:
+            time_str = line.strip().split()[-2]
+            try:
+                if ":" in time_str:
+                    # Format is M:SS.ss
+                    mins, secs = time_str.split(":")
+                    elapsed_time = int(mins) * 60 + float(secs)
+                else:
+                    elapsed_time = float(time_str)
+            except Exception:
+                elapsed_time = None
+            break
+    # Check if the file exists and has the expected size
+    try:
+        if (
+            os.path.exists(DEFAULT_GIF_PATH)
+            and os.path.getsize(DEFAULT_GIF_PATH) == DEFAULT_TARGET_SIZE
+        ):
+            return elapsed_time, stdout + stderr
+        else:
+            return -1, stdout + stderr
+    except Exception:
+        return -1, stdout + stderr
+
+
 def main():
     # Sudo password (replace with your actual password)
     sudo_password = DEFAULT_SUDO_PASSWORD
@@ -176,8 +223,7 @@ def main():
         0.01,
         0.1,
     ]
-    # baudrates = [1200, 1800, 2400, 4800, DEFAULT_BAUDRATE, 19200, 38400, 57600, 115200]
-    baudrates = [4800, 9600, 19200, 38400, 57600, 115200]
+    baudrates = [1200, 1800, 2400, 4800, DEFAULT_BAUDRATE, 19200, 38400, 57600, 115200]
     max_payload_sizes = [
         50,
         100,
@@ -202,17 +248,17 @@ def main():
     gif_path = DEFAULT_GIF_PATH
     target_size = DEFAULT_TARGET_SIZE
 
-    # run_prop_delay_tests(prop_delays, n_tests, gif_path, target_size, sudo_password)
     run_fer_tests(byte_errs, n_tests, gif_path, target_size, sudo_password)
-    # run_baudrate_tests(baudrates, n_tests, gif_path, target_size, sudo_password)
-    # run_max_payload_size_tests(
-    #     max_payload_sizes, n_tests, gif_path, target_size, sudo_password
-    # )
+    run_prop_delay_tests(prop_delays, n_tests, gif_path, target_size, sudo_password)
+    run_max_payload_size_tests(
+        max_payload_sizes, n_tests, gif_path, target_size, sudo_password
+    )
+    run_baudrate_tests(baudrates, n_tests, gif_path, target_size, sudo_password)
 
 
 def run_prop_delay_tests(prop_delays, n_tests, gif_path, target_size, sudo_password):
 
-    csv_filename = "test_prop_delay.csv"
+    csv_filename = "datasets/test_prop_delay.csv"
     with open(csv_filename, mode="w", newline="", encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(
@@ -229,60 +275,30 @@ def run_prop_delay_tests(prop_delays, n_tests, gif_path, target_size, sudo_passw
         for test_num in range(n_tests):
             print(f"Testing prop_delay={prop_delay} (Test {test_num + 1}/{n_tests})")
             procs = []
-            timer_started = False
-            start_time = None
-            elapsed_time = None
             if os.path.exists(gif_path):
                 os.remove(gif_path)
-            commands = [
-                (
+            # Start cable and rx in terminals
+            procs.append(
+                open_terminal_with_command(
                     f"make run_custom_cable CUSTOM_PROP_DELAY={prop_delay}",
-                    sudo_password,
-                ),
-                ("make run_rx", None),
-                ("make run_tx", None),
-            ]
-            for cmd, pwd in commands:
-                print(f"Running: {cmd}")
-                proc = open_terminal_with_command(cmd, password=pwd)
-                procs.append(proc)
-                time.sleep(2)
-                if cmd == "make run_tx":
-                    start_time = time.time()
-                    timer_started = True
-            if timer_started:
-                frame_sizes_bytes = []
-                last_size = 0
-                size = 0
-                last_change_time = time.time()
-                while True:
-                    if os.path.exists(gif_path):
-                        size = os.path.getsize(gif_path)
-                    if size == target_size:
-                        frame_sizes_bytes.append(size - last_size)
-                        elapsed_time = time.time() - start_time
-                        print(
-                            f"penguin-received.gif reached {target_size} bytes. Elapsed time: {elapsed_time:.6f} seconds"
-                        )
-                        break
-                    if size != last_size:
-                        frame_sizes_bytes.append(size - last_size)
-                        last_size = size
-                        last_change_time = time.time()
-                    elif time.time() - last_change_time > DEFAULT_GIVE_UP_TIME:
-                        elapsed_time = -1
-                        print(
-                            f"File size stuck at {size} bytes for {DEFAULT_GIVE_UP_TIME} seconds. Skipping test."
-                        )
-                        break
-                    # Finer polling interval for more accurate timing (1ms)
-                    time.sleep(0.001)
+                    password=sudo_password,
+                )
+            )
+            time.sleep(2)
+            procs.append(open_terminal_with_command("make run_rx", password=None))
+            time.sleep(2)
+            # Run tx with time and capture elapsed time
+            elapsed_time, tx_output = run_zsh_time_make_run_tx(
+                "make run_tx", password=None
+            )
+            if elapsed_time is None:
+                elapsed_time = -1
             throughput = calculate_throughput(target_size, elapsed_time)
             measured_efficiency = calculate_measured_efficiency(
                 throughput, DEFAULT_BAUDRATE
             )
-            theoretical_efficiency = calculate_file_theoretical_efficiency(
-                DEFAULT_BYTE_ERR, prop_delay, frame_sizes_bytes, DEFAULT_BAUDRATE
+            theoretical_efficiency = calculate_frame_theoretical_efficiency(
+                DEFAULT_BYTE_ERR, prop_delay, DEFAULT_MAX_PAYLOAD_SIZE, DEFAULT_BAUDRATE
             )
             with open(csv_filename, mode="a", newline="", encoding="utf-8") as csvfile:
                 writer = csv.writer(csvfile)
@@ -311,7 +327,7 @@ def run_prop_delay_tests(prop_delays, n_tests, gif_path, target_size, sudo_passw
 
 def run_fer_tests(byte_errs, n_tests, gif_path, target_size, sudo_password):
 
-    byte_err_csv = "test_fer.csv"
+    byte_err_csv = "datasets/test_fer.csv"
     with open(byte_err_csv, mode="w", newline="", encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(
@@ -328,57 +344,30 @@ def run_fer_tests(byte_errs, n_tests, gif_path, target_size, sudo_password):
         for test_num in range(n_tests):
             print(f"Testing byte_err={byte_err} (Test {test_num + 1}/{n_tests})")
             procs = []
-            timer_started = False
-            start_time = None
-            elapsed_time = None
             if os.path.exists(gif_path):
                 os.remove(gif_path)
-            commands = [
-                (f"make run_custom_cable CUSTOM_BYTE_ERR={byte_err}", sudo_password),
-                ("make run_rx", None),
-                ("make run_tx", None),
-            ]
-            for cmd, pwd in commands:
-                print(f"Running: {cmd}")
-                proc = open_terminal_with_command(cmd, password=pwd)
-                procs.append(proc)
-                time.sleep(2)
-                if cmd == "make run_tx":
-                    start_time = time.time()
-                    timer_started = True
-            if timer_started:
-                frame_sizes_bytes = []
-                last_size = 0
-                size = 0
-                last_change_time = time.time()
-                while True:
-                    if os.path.exists(gif_path):
-                        size = os.path.getsize(gif_path)
-                    if size == target_size:
-                        frame_sizes_bytes.append(size - last_size)
-                        elapsed_time = time.time() - start_time
-                        print(
-                            f"penguin-received.gif reached {target_size} bytes. Elapsed time: {elapsed_time:.6f} seconds"
-                        )
-                        break
-                    if size != last_size:
-                        frame_sizes_bytes.append(size - last_size)
-                        last_size = size
-                        last_change_time = time.time()
-                    elif time.time() - last_change_time > DEFAULT_GIVE_UP_TIME:
-                        elapsed_time = -1
-                        print(
-                            f"File size stuck at {size} bytes for {DEFAULT_GIVE_UP_TIME} seconds. Skipping test."
-                        )
-                        break
-                    # Finer polling interval for more accurate timing (1ms)
-                    time.sleep(0.001)
+            # Start cable and rx in terminals
+            procs.append(
+                open_terminal_with_command(
+                    f"make run_custom_cable CUSTOM_BYTE_ERR={byte_err}",
+                    password=sudo_password,
+                )
+            )
+            time.sleep(2)
+            procs.append(open_terminal_with_command("make run_rx", password=None))
+            time.sleep(2)
+            # Run tx with time and capture elapsed time
+            elapsed_time, tx_output = run_zsh_time_make_run_tx(
+                "make run_tx", password=None
+            )
+            if elapsed_time is None:
+                elapsed_time = -1
             throughput = calculate_throughput(target_size, elapsed_time)
             measured_efficiency = calculate_measured_efficiency(
                 throughput, DEFAULT_BAUDRATE
             )
-            theoretical_efficiency = calculate_file_theoretical_efficiency(
-                byte_err, DEFAULT_PROP_DELAY, frame_sizes_bytes, DEFAULT_BAUDRATE
+            theoretical_efficiency = calculate_frame_theoretical_efficiency(
+                byte_err, DEFAULT_PROP_DELAY, DEFAULT_MAX_PAYLOAD_SIZE, DEFAULT_BAUDRATE
             )
             with open(byte_err_csv, mode="a", newline="", encoding="utf-8") as csvfile:
                 writer = csv.writer(csvfile)
@@ -407,7 +396,7 @@ def run_fer_tests(byte_errs, n_tests, gif_path, target_size, sudo_password):
 
 def run_baudrate_tests(baudrates, n_tests, gif_path, target_size, sudo_password):
 
-    baudrate_csv = "test_baudrate.csv"
+    baudrate_csv = "datasets/test_baudrate.csv"
     with open(baudrate_csv, mode="w", newline="", encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(
@@ -424,55 +413,32 @@ def run_baudrate_tests(baudrates, n_tests, gif_path, target_size, sudo_password)
         for test_num in range(n_tests):
             print(f"Testing baudrate={baudrate} (Test {test_num + 1}/{n_tests})")
             procs = []
-            timer_started = False
-            start_time = None
-            elapsed_time = None
             if os.path.exists(gif_path):
                 os.remove(gif_path)
-            commands = [
-                (f"make run_custom_cable CUSTOM_BAUDRATE={baudrate}", sudo_password),
-                (f"make run_rx CUSTOM_BAUDRATE={baudrate}", None),
-                (f"make run_tx CUSTOM_BAUDRATE={baudrate}", None),
-            ]
-            for cmd, pwd in commands:
-                print(f"Running: {cmd}")
-                proc = open_terminal_with_command(cmd, password=pwd)
-                procs.append(proc)
-                time.sleep(2)
-                if cmd.startswith("make run_tx"):
-                    start_time = time.time()
-                    timer_started = True
-            if timer_started:
-                frame_sizes_bytes = []
-                last_size = 0
-                size = 0
-                last_change_time = time.time()
-                while True:
-                    if os.path.exists(gif_path):
-                        size = os.path.getsize(gif_path)
-                    if size == target_size:
-                        frame_sizes_bytes.append(size - last_size)
-                        elapsed_time = time.time() - start_time
-                        print(
-                            f"penguin-received.gif reached {target_size} bytes. Elapsed time: {elapsed_time:.6f} seconds"
-                        )
-                        break
-                    if size != last_size:
-                        frame_sizes_bytes.append(size - last_size)
-                        last_size = size
-                        last_change_time = time.time()
-                    elif time.time() - last_change_time > DEFAULT_GIVE_UP_TIME:
-                        elapsed_time = -1
-                        print(
-                            f"File size stuck at {size} bytes for {DEFAULT_GIVE_UP_TIME} seconds. Skipping test."
-                        )
-                        break
-                    # Finer polling interval for more accurate timing (1ms)
-                    time.sleep(0.001)
+            # Start cable and rx in terminals
+            procs.append(
+                open_terminal_with_command(
+                    f"make run_custom_cable CUSTOM_BAUDRATE={baudrate}",
+                    password=sudo_password,
+                )
+            )
+            time.sleep(2)
+            procs.append(
+                open_terminal_with_command(
+                    f"make run_rx CUSTOM_BAUDRATE={baudrate}", password=None
+                )
+            )
+            time.sleep(2)
+            # Run tx with time and capture elapsed time
+            elapsed_time, tx_output = run_zsh_time_make_run_tx(
+                f"make run_tx CUSTOM_BAUDRATE={baudrate}", password=None
+            )
+            if elapsed_time is None:
+                elapsed_time = -1
             throughput = calculate_throughput(target_size, elapsed_time)
             measured_efficiency = calculate_measured_efficiency(throughput, baudrate)
-            theoretical_efficiency = calculate_file_theoretical_efficiency(
-                DEFAULT_BYTE_ERR, DEFAULT_PROP_DELAY, frame_sizes_bytes, baudrate
+            theoretical_efficiency = calculate_frame_theoretical_efficiency(
+                DEFAULT_BYTE_ERR, DEFAULT_PROP_DELAY, DEFAULT_MAX_PAYLOAD_SIZE, baudrate
             )
             with open(baudrate_csv, mode="a", newline="", encoding="utf-8") as csvfile:
                 writer = csv.writer(csvfile)
@@ -503,7 +469,7 @@ def run_max_payload_size_tests(
     max_payload_sizes, n_tests, gif_path, target_size, sudo_password
 ):
 
-    payload_csv = "test_max_payload_size.csv"
+    payload_csv = "datasets/test_max_payload_size.csv"
     with open(payload_csv, mode="w", newline="", encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(
@@ -522,60 +488,33 @@ def run_max_payload_size_tests(
                 f"Testing max_payload_size={payload_size} (Test {test_num + 1}/{n_tests})"
             )
             procs = []
-            timer_started = False
-            start_time = None
-            elapsed_time = None
             if os.path.exists(gif_path):
                 os.remove(gif_path)
-            commands = [
-                ("make run_custom_cable", sudo_password),
-                (f"make run_rx CUSTOM_MAX_PAYLOAD_SIZE={payload_size}", None),
-                (f"make run_tx CUSTOM_MAX_PAYLOAD_SIZE={payload_size}", None),
-            ]
-            for cmd, pwd in commands:
-                print(f"Running: {cmd}")
-                proc = open_terminal_with_command(cmd, password=pwd)
-                procs.append(proc)
-                time.sleep(2)
-                if cmd.startswith("make run_tx"):
-                    start_time = time.time()
-                    timer_started = True
-            if timer_started:
-                frame_sizes_bytes = []
-                last_size = 0
-                size = 0
-                last_change_time = time.time()
-                while True:
-                    if os.path.exists(gif_path):
-                        size = os.path.getsize(gif_path)
-                    if size == target_size:
-                        frame_sizes_bytes.append(size - last_size)
-                        elapsed_time = time.time() - start_time
-                        print(
-                            f"penguin-received.gif reached {target_size} bytes. Elapsed time: {elapsed_time:.6f} seconds"
-                        )
-                        break
-                    if size != last_size:
-                        frame_sizes_bytes.append(size - last_size)
-                        last_size = size
-                        last_change_time = time.time()
-                    elif time.time() - last_change_time > DEFAULT_GIVE_UP_TIME:
-                        elapsed_time = -1
-                        print(
-                            f"File size stuck at {size} bytes for {DEFAULT_GIVE_UP_TIME} seconds. Skipping test."
-                        )
-                        break
-                    # Finer polling interval for more accurate timing (1ms)
-                    time.sleep(0.001)
+            # Start cable and rx in terminals
+            procs.append(
+                open_terminal_with_command(
+                    "make run_custom_cable", password=sudo_password
+                )
+            )
+            time.sleep(2)
+            procs.append(
+                open_terminal_with_command(
+                    f"make run_rx CUSTOM_MAX_PAYLOAD_SIZE={payload_size}", password=None
+                )
+            )
+            time.sleep(2)
+            # Run tx with time and capture elapsed time
+            elapsed_time, tx_output = run_zsh_time_make_run_tx(
+                f"make run_tx CUSTOM_MAX_PAYLOAD_SIZE={payload_size}", password=None
+            )
+            if elapsed_time is None:
+                elapsed_time = -1
             throughput = calculate_throughput(target_size, elapsed_time)
             measured_efficiency = calculate_measured_efficiency(
                 throughput, DEFAULT_BAUDRATE
             )
-            theoretical_efficiency = calculate_file_theoretical_efficiency(
-                DEFAULT_BYTE_ERR,
-                DEFAULT_PROP_DELAY,
-                frame_sizes_bytes,
-                DEFAULT_BAUDRATE,
+            theoretical_efficiency = calculate_frame_theoretical_efficiency(
+                DEFAULT_BYTE_ERR, DEFAULT_PROP_DELAY, payload_size, DEFAULT_BAUDRATE
             )
             with open(payload_csv, mode="a", newline="", encoding="utf-8") as csvfile:
                 writer = csv.writer(csvfile)

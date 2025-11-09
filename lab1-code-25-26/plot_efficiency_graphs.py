@@ -42,22 +42,22 @@ def plot_efficiency_vs_variable(csv_path, variable_name, output_folder, output_n
 if __name__ == "__main__":
     # Plot for test_baudrate.csv
     plot_efficiency_vs_variable(
-        "test_baudrate.csv", "Baudrate", "graphs", "efficiency_vs_baudrate.png"
+        "datasets/test_baudrate.csv", "Baudrate", "graphs", "efficiency_vs_baudrate.png"
     )
     # Plot for test_fer.csv
     plot_efficiency_vs_variable(
-        "test_fer.csv", "FER", "graphs", "efficiency_vs_fer.png"
+        "datasets/test_fer.csv", "FER", "graphs", "efficiency_vs_fer.png"
     )
     # Plot for test_max_payload_size.csv
     plot_efficiency_vs_variable(
-        "test_max_payload_size.csv",
+        "datasets/test_max_payload_size.csv",
         "MaxPayloadSize",
         "graphs",
         "efficiency_vs_max_payload_size.png",
     )
     # Plot for test_prop_delay.csv
     plot_efficiency_vs_variable(
-        "test_prop_delay.csv",
+        "datasets/test_prop_delay.csv",
         "PropDelay (us)",
         "graphs",
         "efficiency_vs_prop_delay.png",
