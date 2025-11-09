@@ -258,7 +258,7 @@ def main():
 
 def run_prop_delay_tests(prop_delays, n_tests, gif_path, target_size, sudo_password):
 
-    csv_filename = "datasets/test_prop_delay.csv"
+    csv_filename = "docs/datasets/test_prop_delay.csv"
     with open(csv_filename, mode="w", newline="", encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(
@@ -327,7 +327,7 @@ def run_prop_delay_tests(prop_delays, n_tests, gif_path, target_size, sudo_passw
 
 def run_fer_tests(byte_errs, n_tests, gif_path, target_size, sudo_password):
 
-    byte_err_csv = "datasets/test_fer.csv"
+    byte_err_csv = "docs/datasets/test_fer.csv"
     with open(byte_err_csv, mode="w", newline="", encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(
@@ -396,7 +396,7 @@ def run_fer_tests(byte_errs, n_tests, gif_path, target_size, sudo_password):
 
 def run_baudrate_tests(baudrates, n_tests, gif_path, target_size, sudo_password):
 
-    baudrate_csv = "datasets/test_baudrate.csv"
+    baudrate_csv = "docs/datasets/test_baudrate.csv"
     with open(baudrate_csv, mode="w", newline="", encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(
@@ -469,7 +469,7 @@ def run_max_payload_size_tests(
     max_payload_sizes, n_tests, gif_path, target_size, sudo_password
 ):
 
-    payload_csv = "datasets/test_max_payload_size.csv"
+    payload_csv = "docs/datasets/test_max_payload_size.csv"
     with open(payload_csv, mode="w", newline="", encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(
