@@ -541,7 +541,5 @@ def run_max_payload_size_tests(
             print("Closed all terminals. Restarting loop...\n")
 
 
-# NOTE: For best timing accuracy, synchronize timer with actual transmission events in sender/receiver code.
-# The current polling-based timing is improved, but still not perfect for very fast transfers.
 if __name__ == "__main__":
     main()
