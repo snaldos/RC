@@ -6,14 +6,31 @@ import pandas as pd
 
 def plot_efficiency_vs_variable(csv_path, variable_name, output_folder, output_name):
     df = pd.read_csv(csv_path, na_values=None, keep_default_na=False)
-    # Use Measured Efficiency S for y-axis
-    x = df[variable_name]
-    y_measured = df["Measured Efficiency S"]
-    y_theoretical = df["Theoretical Efficiency S_theoretical"]
+    # Use Measured Efficiency S for y-axis, but drop rows where either y value is NA or not a number
+    df_plot = df.copy()
+    # Convert to numeric, coerce errors to NaN
+    df_plot["Measured Efficiency S"] = pd.to_numeric(
+        df_plot["Measured Efficiency S"], errors="coerce"
+    )
+    df_plot["Theoretical Efficiency S_theoretical"] = pd.to_numeric(
+        df_plot["Theoretical Efficiency S_theoretical"], errors="coerce"
+    )
+    df_plot[variable_name] = pd.to_numeric(df_plot[variable_name], errors="coerce")
+    # Only keep rows where x and y values are not NaN
+    df_plot = df_plot.dropna(
+        subset=[
+            variable_name,
+            "Measured Efficiency S",
+            "Theoretical Efficiency S_theoretical",
+        ]
+    )
+    x = df_plot[variable_name]
+    y_measured = df_plot["Measured Efficiency S"]
+    y_theoretical = df_plot["Theoretical Efficiency S_theoretical"]
 
     # Create a figure with two columns: left for plot, right for table
     fig, (ax_table, ax_plot) = plt.subplots(
-        1, 2, figsize=(14, 6), gridspec_kw={"width_ratios": [1, 2]}
+        1, 2, figsize=(16, 7), gridspec_kw={"width_ratios": [1.2, 2.8]}
     )
 
     # Plot on the left
@@ -33,11 +50,16 @@ def plot_efficiency_vs_variable(csv_path, variable_name, output_folder, output_n
         color="orange",
         label="Theoretical Efficiency",
     )
-    ax_plot.set_xlabel(variable_name)
-    ax_plot.set_ylabel("Efficiency S")
-    ax_plot.set_title(f"Efficiency vs {variable_name}")
-    ax_plot.grid(True)
-    ax_plot.legend()
+    # Set y-axis from 0 to 1
+    ax_plot.set_ylim(0, 1)
+    ax_plot.set_xlabel(variable_name, fontsize=13)
+    ax_plot.set_ylabel("Efficiency S", fontsize=13)
+    ax_plot.set_title(f"Efficiency vs {variable_name}", fontsize=15)
+    ax_plot.grid(True, which="both", linestyle="--", linewidth=0.5)
+    ax_plot.legend(fontsize=11)
+    ax_plot.tick_params(axis="both", which="major", labelsize=11)
+    fig.subplots_adjust(wspace=0.25)
+    # Ensure y-axis is not inverted (should not be needed now)
 
     # Table on the right
     # Rename columns and remove 'Test Number' as requested
@@ -80,9 +102,11 @@ def plot_efficiency_vs_variable(csv_path, variable_name, output_folder, output_n
         cellLoc="center",
     )
     table.auto_set_font_size(False)
-    table.set_fontsize(8)
-    table.scale(1, 1.5)
+    table.set_fontsize(9)
+    table.scale(1.1, 1.3)
     ax_table.axis("off")
+    # Make sure table fits well
+    table.auto_set_column_width(col=list(range(len(df_table.columns))))
 
     plt.tight_layout()
     os.makedirs(output_folder, exist_ok=True)
