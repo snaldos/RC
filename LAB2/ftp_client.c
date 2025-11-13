@@ -42,34 +42,52 @@ int parse_url(char *url, struct ftp_url *info) {
     char *colon = strchr(userpass, ':');
     if (colon) {
       *colon = '\0';
-      strcpy(info->user, userpass);
-      strcpy(info->password, colon + 1);
+      strncpy(info->user, userpass, sizeof(info->user) - 1);
+      info->user[sizeof(info->user) - 1] = '\0';
+
+      strncpy(info->password, colon + 1, sizeof(info->password) - 1);
+      info->password[sizeof(info->password) - 1] = '\0';
     } else {
-      strcpy(info->user, userpass);
-      strcpy(info->password, default_pass);
+      strncpy(info->user, userpass, sizeof(info->user) - 1);
+      info->user[sizeof(info->user) - 1] = '\0';
+      strncpy(info->password, default_pass, sizeof(info->password) - 1);
+      info->password[sizeof(info->password) - 1] = '\0';
     }
   } else {
     // No credentials provided
-    strcpy(info->user, default_user);
-    strcpy(info->password, default_pass);
+    strncpy(info->user, default_user, sizeof(info->user) - 1);
+    info->user[sizeof(info->user) - 1] = '\0';
+    strncpy(info->password, default_pass, sizeof(info->password) - 1);
+    info->password[sizeof(info->password) - 1] = '\0';
   }
 
   // 3. Now url points to host/path
   char *slash = strchr(url, '/');
+
   if (!slash) {
-    return -1;
+    // No path provided → valid, but empty
+    strncpy(info->host, url, sizeof(info->host) - 1);
+    info->host[sizeof(info->host) - 1] = '\0';
+
+    info->path[0] = '\0';
+    info->filename[0] = '\0';
+    return 0;
   }
 
   *slash = '\0'; // terminate host
-  strcpy(info->host, url);
-  strcpy(info->path, slash + 1);
+  strncpy(info->host, url, sizeof(info->host) - 1);
+  info->host[sizeof(info->host) - 1] = '\0';
+  strncpy(info->path, slash + 1, sizeof(info->path) - 1);
+  info->path[sizeof(info->path) - 1] = '\0';
 
   // 4. Extract filename from path
   char *last_slash = strrchr(info->path, '/');
   if (last_slash) {
-    strcpy(info->filename, last_slash + 1);
+    strncpy(info->filename, last_slash + 1, sizeof(info->filename) - 1);
+    info->filename[sizeof(info->filename) - 1] = '\0';
   } else {
-    strcpy(info->filename, info->path);
+    strncpy(info->filename, info->path, sizeof(info->filename) - 1);
+    info->filename[sizeof(info->filename) - 1] = '\0';
   }
 
   return 0;
@@ -77,11 +95,9 @@ int parse_url(char *url, struct ftp_url *info) {
 
 int main(int argc, char *argv[]) {
 
-  char *example_url =
-      "ftp://arnaldo:lopes@ftp.netlab.fe.up.pt/pub/path/to/file.txt";
   // const char *example_url =
-  //     "ftp://arnaldo@ftp.netlab.fe.up.pt/pub/path/to/file.txt";
-  // char *example_url = "ftp://ftp.netlab.fe.up.pt/pub/path/to/file.txt";
+  //     "ftp://arnaldo:lopes@ftp.netlab.fe.up.pt/pub/path/to/file.txt";
+  const char *example_url = "ftp://ftp.netlab.fe.up.pt/";
   char url_buffer[512];
   strncpy(url_buffer, example_url, sizeof(url_buffer) - 1);
   url_buffer[sizeof(url_buffer) - 1] = '\0';
