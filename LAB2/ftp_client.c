@@ -18,6 +18,9 @@
  *
  * USEFULL LINKS:
  *
+ *
+ * LAB 2 GUIDE, slide 24:43 TCP/IP and Application Protocols
+ *
  * LAB 2 GUIDE, slide 44 - a example of the
  * sequence of commands and responses involved in a typical FTP session.
  *
@@ -38,16 +41,18 @@ typedef struct {
   char user[128];
   char pass[128];
   char host[256];
-  char path[512];
+  char path[512]; // full path on server
   char filename[256];
-  char ip[32];
+  char dir[512]; // directory path (without filename)
+  char ip[32];   // resolved IP address
 } ftp_url;
 
 /* ------------------ PARSE URL ------------------ */
 int parse_url(const char *url, ftp_url *out) {
   strcpy(out->user, "anonymous");
   strcpy(out->pass, "anonymous@");
-  out->host[0] = out->path[0] = out->filename[0] = out->ip[0] = '\0';
+  out->host[0] = out->path[0] = out->filename[0] = out->dir[0] = out->ip[0] =
+      '\0';
 
   if (strncmp(url, "ftp://", 6) != 0) {
     fprintf(stderr, "URL must start with ftp://\n");
@@ -91,15 +96,25 @@ int parse_url(const char *url, ftp_url *out) {
     out->path[0] = '\0';
   }
 
-  // Extract filename
   if (out->path[0]) {
     const char *last_slash = strrchr(out->path, '/');
-    if (last_slash)
+    if (last_slash) {
+      // Directory part
+      size_t dirlen = last_slash - out->path;
+      if (dirlen >= sizeof(out->dir))
+        dirlen = sizeof(out->dir) - 1;
+      strncpy(out->dir, out->path, dirlen);
+      out->dir[dirlen] = '\0';
+      // Filename part
       strncpy(out->filename, last_slash + 1, sizeof(out->filename) - 1);
-    else
+      out->filename[sizeof(out->filename) - 1] = '\0';
+    } else {
+      out->dir[0] = '\0';
       strncpy(out->filename, out->path, sizeof(out->filename) - 1);
-    out->filename[sizeof(out->filename) - 1] = '\0';
+      out->filename[sizeof(out->filename) - 1] = '\0';
+    }
   } else {
+    out->dir[0] = '\0';
     strcpy(out->filename, "default.txt"); // fallback filename
   }
 
@@ -264,37 +279,102 @@ int main(int argc, char *argv[]) {
 
   char buf[MAX_BUF];
   int code = ftp_read_reply(control, buf);
+  if (code == -1) {
+    fprintf(stderr, "Error reading server reply (initial connect)\n");
+    return -1;
+  }
   if (code >= 400) {
     fprintf(stderr, "Server error %d\n", code);
     return -1;
   }
 
+  // --- USER (login username) ---
   ftp_send_cmd(control, "USER %s\r\n", url.user);
   code = ftp_read_reply(control, buf);
+  if (code == -1) {
+    fprintf(stderr, "Error reading server reply (USER)\n");
+    return -1;
+  }
   if (code >= 400) {
     fprintf(stderr, "USER failed %d\n", code);
     return -1;
   }
 
+  // --- PASS (login password) ---
   ftp_send_cmd(control, "PASS %s\r\n", url.pass);
   code = ftp_read_reply(control, buf);
+  if (code == -1) {
+    fprintf(stderr, "Error reading server reply (PASS)\n");
+    return -1;
+  }
   if (code >= 400) {
     fprintf(stderr, "PASS failed %d\n", code);
     return -1;
   }
 
-  if (ftp_enter_passive(control, buf, &code) < 0) {
+  // --- CWD (change working directory, if needed) ---
+  if (url.dir[0]) {
+    ftp_send_cmd(control, "CWD %s\r\n", url.dir);
+    code = ftp_read_reply(control, buf);
+    if (code == -1) {
+      fprintf(stderr, "Error reading server reply (CWD)\n");
+      return -1;
+    }
+    if (code >= 400) {
+      fprintf(stderr, "CWD failed for %s (%d)\n", url.dir, code);
+      return -1;
+    }
+  }
+
+  // --- TYPE I (binary mode) ---
+  ftp_send_cmd(control, "TYPE I\r\n");
+  code = ftp_read_reply(control, buf);
+  if (code == -1) {
+    fprintf(stderr, "Error reading server reply (TYPE I)\n");
+    return -1;
+  }
+  if (code >= 400) {
+    fprintf(stderr, "TYPE I failed %d\n", code);
+    return -1;
+  }
+
+  // --- SIZE (get file size, optional) ---
+  ftp_send_cmd(control, "SIZE %s\r\n", url.filename);
+  code = ftp_read_reply(control, buf);
+  if (code == -1) {
+    fprintf(stderr, "Error reading server reply (SIZE)\n");
+    return -1;
+  }
+  if (code == 213) {
+    // 213 is the reply code for SIZE
+    char *size_str = strchr(buf, ' ');
+    if (size_str) {
+      printf("[INFO] File size:%s", size_str);
+    }
+  } else if (code >= 400) {
+    printf("[INFO] SIZE command failed or not supported\n");
+  }
+
+  // --- PASV (enter passive mode) ---
+  char pasv_ip[32];
+  int pasv_port;
+  if (ftp_enter_passive(control, pasv_ip, &pasv_port) < 0) {
     fprintf(stderr, "PASV failed\n");
     return -1;
   }
-  int data = ftp_connect(buf, code);
+  int data = ftp_connect(pasv_ip, pasv_port);
   if (data < 0) {
     fprintf(stderr, "Data connect failed\n");
     return -1;
   }
 
-  ftp_send_cmd(control, "RETR %s\r\n", url.path);
+  // --- RETR (retrieve file) ---
+  ftp_send_cmd(control, "RETR %s\r\n", url.filename);
   code = ftp_read_reply(control, buf);
+  if (code == -1) {
+    fprintf(stderr, "Error reading server reply (RETR)\n");
+    return -1;
+  }
   if (code >= 400) {
     fprintf(stderr, "RETR failed %d\n", code);
     return -1;
@@ -303,8 +383,13 @@ int main(int argc, char *argv[]) {
   ftp_download(data, url.filename);
   close(data);
 
+  // --- QUIT (close connection) ---
   ftp_send_cmd(control, "QUIT\r\n");
-  ftp_read_reply(control, buf);
+  code = ftp_read_reply(control, buf);
+  if (code == -1) {
+    fprintf(stderr, "Error reading server reply (QUIT)\n");
+    // still close control and exit
+  }
   close(control);
 
   return 0;
