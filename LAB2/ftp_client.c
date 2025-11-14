@@ -11,10 +11,20 @@
 /* --------------- DOCUMENTATION --------------- */
 
 /*
- * In order to implement a simple FTP client in C, we need to understand the FTP
- * protocol and how to interact with an FTP server using sockets. The following
- * code provides a basic implementation of an FTP client that can connect to an
- * FTP server, log in, enter passive mode, download a file, and then disconnect.
+ * NOTE ON SOCKETS, IP, AND PORTS:
+ *
+ * A socket is a programming interface that allows communication between two
+ * endpoints over a network. Each endpoint is defined by an IP address
+ * (identifies the device on the network) and a port number (identifies the
+ * specific service or application on that device). When you connect a socket to
+ * an IP and port, you are telling the OS to send data to that device and
+ * deliver it to the correct service. Example: Connecting to 192.168.1.10:21
+ * means connecting to the FTP service (port 21) on the device with IP
+ * 192.168.1.10. Multiple services can run on the same IP, each using a
+ * different port. In FTP, the control connection uses port 21, while data
+ * transfers may use other ports (especially in passive mode).
+ *
+ *
  *
  * USEFULL LINKS:
  *
