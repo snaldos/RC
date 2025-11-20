@@ -1,0 +1,251 @@
+No.     Time           Source                Destination           Protocol Length Info
+      1 0.000000000    Routerbo_1c:8c:2b     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:29  Cost = 0  Port = 0x8003
+
+Frame 1: 60 bytes on wire (480 bits), 60 bytes captured (480 bits)
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+      2 1.603310177    172.16.20.2           172.16.20.3           ICMP     98     Echo (ping) request  id=0x319f, seq=1/256, ttl=64 (reply in 3)
+
+Frame 2: 98 bytes on wire (784 bits), 98 bytes captured (784 bits)
+Ethernet II, Src: 8c:90:2d:fd:b1:10 (8c:90:2d:fd:b1:10), Dst: ec:75:0c:c2:51:46 (ec:75:0c:c2:51:46)
+Internet Protocol Version 4, Src: 172.16.20.2, Dst: 172.16.20.3
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+      3 1.603482926    172.16.20.3           172.16.20.2           ICMP     98     Echo (ping) reply    id=0x319f, seq=1/256, ttl=64 (request in 2)
+
+Frame 3: 98 bytes on wire (784 bits), 98 bytes captured (784 bits)
+Ethernet II, Src: ec:75:0c:c2:51:46 (ec:75:0c:c2:51:46), Dst: 8c:90:2d:fd:b1:10 (8c:90:2d:fd:b1:10)
+Internet Protocol Version 4, Src: 172.16.20.3, Dst: 172.16.20.2
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+      4 2.002113258    Routerbo_1c:8c:2b     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:29  Cost = 0  Port = 0x8003
+
+Frame 4: 60 bytes on wire (480 bits), 60 bytes captured (480 bits)
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+      5 2.623630210    172.16.20.2           172.16.20.3           ICMP     98     Echo (ping) request  id=0x319f, seq=2/512, ttl=64 (reply in 6)
+
+Frame 5: 98 bytes on wire (784 bits), 98 bytes captured (784 bits)
+Ethernet II, Src: 8c:90:2d:fd:b1:10 (8c:90:2d:fd:b1:10), Dst: ec:75:0c:c2:51:46 (ec:75:0c:c2:51:46)
+Internet Protocol Version 4, Src: 172.16.20.2, Dst: 172.16.20.3
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+      6 2.623819446    172.16.20.3           172.16.20.2           ICMP     98     Echo (ping) reply    id=0x319f, seq=2/512, ttl=64 (request in 5)
+
+Frame 6: 98 bytes on wire (784 bits), 98 bytes captured (784 bits)
+Ethernet II, Src: ec:75:0c:c2:51:46 (ec:75:0c:c2:51:46), Dst: 8c:90:2d:fd:b1:10 (8c:90:2d:fd:b1:10)
+Internet Protocol Version 4, Src: 172.16.20.3, Dst: 172.16.20.2
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+      7 3.647603387    172.16.20.2           172.16.20.3           ICMP     98     Echo (ping) request  id=0x319f, seq=3/768, ttl=64 (reply in 8)
+
+Frame 7: 98 bytes on wire (784 bits), 98 bytes captured (784 bits)
+Ethernet II, Src: 8c:90:2d:fd:b1:10 (8c:90:2d:fd:b1:10), Dst: ec:75:0c:c2:51:46 (ec:75:0c:c2:51:46)
+Internet Protocol Version 4, Src: 172.16.20.2, Dst: 172.16.20.3
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+      8 3.647770322    172.16.20.3           172.16.20.2           ICMP     98     Echo (ping) reply    id=0x319f, seq=3/768, ttl=64 (request in 7)
+
+Frame 8: 98 bytes on wire (784 bits), 98 bytes captured (784 bits)
+Ethernet II, Src: ec:75:0c:c2:51:46 (ec:75:0c:c2:51:46), Dst: 8c:90:2d:fd:b1:10 (8c:90:2d:fd:b1:10)
+Internet Protocol Version 4, Src: 172.16.20.3, Dst: 172.16.20.2
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+      9 4.004339778    Routerbo_1c:8c:2b     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:29  Cost = 0  Port = 0x8003
+
+Frame 9: 60 bytes on wire (480 bits), 60 bytes captured (480 bits)
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     10 4.671641410    172.16.20.2           172.16.20.3           ICMP     98     Echo (ping) request  id=0x319f, seq=4/1024, ttl=64 (reply in 11)
+
+Frame 10: 98 bytes on wire (784 bits), 98 bytes captured (784 bits)
+Ethernet II, Src: 8c:90:2d:fd:b1:10 (8c:90:2d:fd:b1:10), Dst: ec:75:0c:c2:51:46 (ec:75:0c:c2:51:46)
+Internet Protocol Version 4, Src: 172.16.20.2, Dst: 172.16.20.3
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     11 4.671831004    172.16.20.3           172.16.20.2           ICMP     98     Echo (ping) reply    id=0x319f, seq=4/1024, ttl=64 (request in 10)
+
+Frame 11: 98 bytes on wire (784 bits), 98 bytes captured (784 bits)
+Ethernet II, Src: ec:75:0c:c2:51:46 (ec:75:0c:c2:51:46), Dst: 8c:90:2d:fd:b1:10 (8c:90:2d:fd:b1:10)
+Internet Protocol Version 4, Src: 172.16.20.3, Dst: 172.16.20.2
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     12 5.695633546    172.16.20.2           172.16.20.3           ICMP     98     Echo (ping) request  id=0x319f, seq=5/1280, ttl=64 (reply in 13)
+
+Frame 12: 98 bytes on wire (784 bits), 98 bytes captured (784 bits)
+Ethernet II, Src: 8c:90:2d:fd:b1:10 (8c:90:2d:fd:b1:10), Dst: ec:75:0c:c2:51:46 (ec:75:0c:c2:51:46)
+Internet Protocol Version 4, Src: 172.16.20.2, Dst: 172.16.20.3
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     13 5.695819277    172.16.20.3           172.16.20.2           ICMP     98     Echo (ping) reply    id=0x319f, seq=5/1280, ttl=64 (request in 12)
+
+Frame 13: 98 bytes on wire (784 bits), 98 bytes captured (784 bits)
+Ethernet II, Src: ec:75:0c:c2:51:46 (ec:75:0c:c2:51:46), Dst: 8c:90:2d:fd:b1:10 (8c:90:2d:fd:b1:10)
+Internet Protocol Version 4, Src: 172.16.20.3, Dst: 172.16.20.2
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     14 6.006539613    Routerbo_1c:8c:2b     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:29  Cost = 0  Port = 0x8003
+
+Frame 14: 60 bytes on wire (480 bits), 60 bytes captured (480 bits)
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     15 6.719626792    172.16.20.2           172.16.20.3           ICMP     98     Echo (ping) request  id=0x319f, seq=6/1536, ttl=64 (reply in 16)
+
+Frame 15: 98 bytes on wire (784 bits), 98 bytes captured (784 bits)
+Ethernet II, Src: 8c:90:2d:fd:b1:10 (8c:90:2d:fd:b1:10), Dst: ec:75:0c:c2:51:46 (ec:75:0c:c2:51:46)
+Internet Protocol Version 4, Src: 172.16.20.2, Dst: 172.16.20.3
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     16 6.719782406    172.16.20.3           172.16.20.2           ICMP     98     Echo (ping) reply    id=0x319f, seq=6/1536, ttl=64 (request in 15)
+
+Frame 16: 98 bytes on wire (784 bits), 98 bytes captured (784 bits)
+Ethernet II, Src: ec:75:0c:c2:51:46 (ec:75:0c:c2:51:46), Dst: 8c:90:2d:fd:b1:10 (8c:90:2d:fd:b1:10)
+Internet Protocol Version 4, Src: 172.16.20.3, Dst: 172.16.20.2
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     17 6.728358579    ec:75:0c:c2:51:46     8c:90:2d:fd:b1:10     ARP      60     Who has 172.16.20.2? Tell 172.16.20.3
+
+Frame 17: 60 bytes on wire (480 bits), 60 bytes captured (480 bits)
+Ethernet II, Src: ec:75:0c:c2:51:46 (ec:75:0c:c2:51:46), Dst: 8c:90:2d:fd:b1:10 (8c:90:2d:fd:b1:10)
+Address Resolution Protocol (request)
+
+No.     Time           Source                Destination           Protocol Length Info
+     18 6.728367505    8c:90:2d:fd:b1:10     ec:75:0c:c2:51:46     ARP      42     172.16.20.2 is at 8c:90:2d:fd:b1:10
+
+Frame 18: 42 bytes on wire (336 bits), 42 bytes captured (336 bits)
+Ethernet II, Src: 8c:90:2d:fd:b1:10 (8c:90:2d:fd:b1:10), Dst: ec:75:0c:c2:51:46 (ec:75:0c:c2:51:46)
+Address Resolution Protocol (reply)
+
+No.     Time           Source                Destination           Protocol Length Info
+     19 6.751557906    8c:90:2d:fd:b1:10     ec:75:0c:c2:51:46     ARP      42     Who has 172.16.20.3? Tell 172.16.20.2
+
+Frame 19: 42 bytes on wire (336 bits), 42 bytes captured (336 bits)
+Ethernet II, Src: 8c:90:2d:fd:b1:10 (8c:90:2d:fd:b1:10), Dst: ec:75:0c:c2:51:46 (ec:75:0c:c2:51:46)
+Address Resolution Protocol (request)
+
+No.     Time           Source                Destination           Protocol Length Info
+     20 6.751710639    ec:75:0c:c2:51:46     8c:90:2d:fd:b1:10     ARP      60     172.16.20.3 is at ec:75:0c:c2:51:46
+
+Frame 20: 60 bytes on wire (480 bits), 60 bytes captured (480 bits)
+Ethernet II, Src: ec:75:0c:c2:51:46 (ec:75:0c:c2:51:46), Dst: 8c:90:2d:fd:b1:10 (8c:90:2d:fd:b1:10)
+Address Resolution Protocol (reply)
+
+No.     Time           Source                Destination           Protocol Length Info
+     21 7.743631146    172.16.20.2           172.16.20.3           ICMP     98     Echo (ping) request  id=0x319f, seq=7/1792, ttl=64 (reply in 22)
+
+Frame 21: 98 bytes on wire (784 bits), 98 bytes captured (784 bits)
+Ethernet II, Src: 8c:90:2d:fd:b1:10 (8c:90:2d:fd:b1:10), Dst: ec:75:0c:c2:51:46 (ec:75:0c:c2:51:46)
+Internet Protocol Version 4, Src: 172.16.20.2, Dst: 172.16.20.3
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     22 7.743827506    172.16.20.3           172.16.20.2           ICMP     98     Echo (ping) reply    id=0x319f, seq=7/1792, ttl=64 (request in 21)
+
+Frame 22: 98 bytes on wire (784 bits), 98 bytes captured (784 bits)
+Ethernet II, Src: ec:75:0c:c2:51:46 (ec:75:0c:c2:51:46), Dst: 8c:90:2d:fd:b1:10 (8c:90:2d:fd:b1:10)
+Internet Protocol Version 4, Src: 172.16.20.3, Dst: 172.16.20.2
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     23 8.008710129    Routerbo_1c:8c:2b     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:29  Cost = 0  Port = 0x8003
+
+Frame 23: 60 bytes on wire (480 bits), 60 bytes captured (480 bits)
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     24 8.767633459    172.16.20.2           172.16.20.3           ICMP     98     Echo (ping) request  id=0x319f, seq=8/2048, ttl=64 (reply in 25)
+
+Frame 24: 98 bytes on wire (784 bits), 98 bytes captured (784 bits)
+Ethernet II, Src: 8c:90:2d:fd:b1:10 (8c:90:2d:fd:b1:10), Dst: ec:75:0c:c2:51:46 (ec:75:0c:c2:51:46)
+Internet Protocol Version 4, Src: 172.16.20.2, Dst: 172.16.20.3
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     25 8.767821026    172.16.20.3           172.16.20.2           ICMP     98     Echo (ping) reply    id=0x319f, seq=8/2048, ttl=64 (request in 24)
+
+Frame 25: 98 bytes on wire (784 bits), 98 bytes captured (784 bits)
+Ethernet II, Src: ec:75:0c:c2:51:46 (ec:75:0c:c2:51:46), Dst: 8c:90:2d:fd:b1:10 (8c:90:2d:fd:b1:10)
+Internet Protocol Version 4, Src: 172.16.20.3, Dst: 172.16.20.2
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     26 9.791622608    172.16.20.2           172.16.20.3           ICMP     98     Echo (ping) request  id=0x319f, seq=9/2304, ttl=64 (reply in 27)
+
+Frame 26: 98 bytes on wire (784 bits), 98 bytes captured (784 bits)
+Ethernet II, Src: 8c:90:2d:fd:b1:10 (8c:90:2d:fd:b1:10), Dst: ec:75:0c:c2:51:46 (ec:75:0c:c2:51:46)
+Internet Protocol Version 4, Src: 172.16.20.2, Dst: 172.16.20.3
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     27 9.791820128    172.16.20.3           172.16.20.2           ICMP     98     Echo (ping) reply    id=0x319f, seq=9/2304, ttl=64 (request in 26)
+
+Frame 27: 98 bytes on wire (784 bits), 98 bytes captured (784 bits)
+Ethernet II, Src: ec:75:0c:c2:51:46 (ec:75:0c:c2:51:46), Dst: 8c:90:2d:fd:b1:10 (8c:90:2d:fd:b1:10)
+Internet Protocol Version 4, Src: 172.16.20.3, Dst: 172.16.20.2
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     28 10.010866696   Routerbo_1c:8c:2b     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:29  Cost = 0  Port = 0x8003
+
+Frame 28: 60 bytes on wire (480 bits), 60 bytes captured (480 bits)
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     29 10.815629413   172.16.20.2           172.16.20.3           ICMP     98     Echo (ping) request  id=0x319f, seq=10/2560, ttl=64 (reply in 30)
+
+Frame 29: 98 bytes on wire (784 bits), 98 bytes captured (784 bits)
+Ethernet II, Src: 8c:90:2d:fd:b1:10 (8c:90:2d:fd:b1:10), Dst: ec:75:0c:c2:51:46 (ec:75:0c:c2:51:46)
+Internet Protocol Version 4, Src: 172.16.20.2, Dst: 172.16.20.3
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     30 10.815827540   172.16.20.3           172.16.20.2           ICMP     98     Echo (ping) reply    id=0x319f, seq=10/2560, ttl=64 (request in 29)
+
+Frame 30: 98 bytes on wire (784 bits), 98 bytes captured (784 bits)
+Ethernet II, Src: ec:75:0c:c2:51:46 (ec:75:0c:c2:51:46), Dst: 8c:90:2d:fd:b1:10 (8c:90:2d:fd:b1:10)
+Internet Protocol Version 4, Src: 172.16.20.3, Dst: 172.16.20.2
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     31 12.013028770   Routerbo_1c:8c:2b     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:29  Cost = 0  Port = 0x8003
+
+Frame 31: 60 bytes on wire (480 bits), 60 bytes captured (480 bits)
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     32 14.015156080   Routerbo_1c:8c:2b     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:29  Cost = 0  Port = 0x8003
+
+Frame 32: 60 bytes on wire (480 bits), 60 bytes captured (480 bits)
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
