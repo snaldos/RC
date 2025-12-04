@@ -60,7 +60,7 @@ typedef struct {
 /* ------------------ PARSE URL ------------------ */
 int parse_url(const char *url, ftp_url *out) {
   strcpy(out->user, "anonymous");
-  strcpy(out->pass, "anonymous@");
+  strcpy(out->pass, "anonymous");
   out->host[0] = out->path[0] = out->filename[0] = out->dir[0] = out->ip[0] =
       '\0';
 
