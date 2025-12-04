@@ -322,49 +322,6 @@ int main(int argc, char *argv[]) {
     return -1;
   }
 
-  // --- CWD (change working directory, if needed) ---
-  if (url.dir[0]) {
-    ftp_send_cmd(control, "CWD %s\r\n", url.dir);
-    code = ftp_read_reply(control, buf);
-    if (code == -1) {
-      fprintf(stderr, "Error reading server reply (CWD)\n");
-      return -1;
-    }
-    if (code >= 400) {
-      fprintf(stderr, "CWD failed for %s (%d)\n", url.dir, code);
-      return -1;
-    }
-  }
-
-  // --- TYPE I (binary mode) ---
-  ftp_send_cmd(control, "TYPE I\r\n");
-  code = ftp_read_reply(control, buf);
-  if (code == -1) {
-    fprintf(stderr, "Error reading server reply (TYPE I)\n");
-    return -1;
-  }
-  if (code >= 400) {
-    fprintf(stderr, "TYPE I failed %d\n", code);
-    return -1;
-  }
-
-  // --- SIZE (get file size, optional) ---
-  ftp_send_cmd(control, "SIZE %s\r\n", url.filename);
-  code = ftp_read_reply(control, buf);
-  if (code == -1) {
-    fprintf(stderr, "Error reading server reply (SIZE)\n");
-    return -1;
-  }
-  if (code == 213) {
-    // 213 is the reply code for SIZE
-    char *size_str = strchr(buf, ' ');
-    if (size_str) {
-      printf("[INFO] File size:%s", size_str);
-    }
-  } else if (code >= 400) {
-    printf("[INFO] SIZE command failed or not supported\n");
-  }
-
   // --- PASV (enter passive mode) ---
   char pasv_ip[32];
   int pasv_port;
@@ -379,7 +336,7 @@ int main(int argc, char *argv[]) {
   }
 
   // --- RETR (retrieve file) ---
-  ftp_send_cmd(control, "RETR %s\r\n", url.filename);
+  ftp_send_cmd(control, "RETR %s\r\n", url.path);
   code = ftp_read_reply(control, buf);
   if (code == -1) {
     fprintf(stderr, "Error reading server reply (RETR)\n");
