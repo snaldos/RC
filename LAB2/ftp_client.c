@@ -22,7 +22,7 @@
  * means connecting to the FTP service (port 21) on the device with IP
  * 192.168.1.10. Multiple services can run on the same IP, each using a
  * different port. In FTP, the control connection uses port 21, while data
- * transfers may use other ports (especially in passive mode).
+ * transfers may use other ports.
  *
  *
  *
@@ -34,7 +34,7 @@
  * LAB 2 GUIDE, slide 44 - a example of the
  * sequence of commands and responses involved in a typical FTP session.
  *
- * LAB 2 PRESEENTATION, slide 15:24 - everything we need (berkley sockets API,
+ * LAB 2 PRESENTATION, slide 15:24 - everything we need (berkley sockets API,
  * Client-server model, etc)
  *
  */
