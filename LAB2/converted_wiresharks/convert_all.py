@@ -54,6 +54,7 @@ def convert_file(input_filename):
     print(f"Processing: {input_filename} -> {output_filename}")
 
     packets = []
+    # Regex to capture the summary line
     summary_pattern = re.compile(
         r"^\s*(\d+)\s+(\d+\.\d+)\s+(\S+)\s+(\S+)\s+([A-Za-z0-9\-\.]+)\s+(\d+)\s+(.*)"
     )
@@ -100,15 +101,13 @@ def convert_file(input_filename):
                 ips = re.findall(ipv4_pattern, info)
                 psrc, pdst = ("0.0.0.0", "0.0.0.0")
 
-                # --- FIXED ARP LOGIC ---
-                if op == 1:  # Request: "Who has 1.2? Tell 1.1" (2 IPs)
+                # Correct ARP logic: Reply has only 1 IP in text
+                if op == 1:  # Request
                     if len(ips) >= 2:
-                        pdst = ips[0]
-                        psrc = ips[1]
-                else:  # Reply: "1.2 is at Mac" (1 IP)
+                        pdst, psrc = ips[0], ips[1]
+                else:  # Reply
                     if len(ips) >= 1:
                         psrc = ips[0]
-                        # pdst is unknown in text, but psrc is what creates the "X is at Y" message
 
                 packet = Ether(src=src_mac, dst=dst_mac) / ARP(
                     op=op, psrc=psrc, pdst=pdst, hwsrc=src_mac, hwdst=dst_mac
@@ -122,8 +121,12 @@ def convert_file(input_filename):
                         / ICMPv6Unknown()
                     )
                 else:
-                    itype = 8
-                    if "reply" in info.lower():
+                    # --- FIXED ICMP LOGIC ---
+                    itype = 8  # Default to Request
+
+                    # Strict check: Only mark as reply if it explicitly says "Echo (ping) reply"
+                    # This avoids matching "(reply in 22)" which appears in requests.
+                    if "echo (ping) reply" in info.lower():
                         itype = 0
                     elif "unreachable" in info.lower():
                         itype = 3
@@ -190,7 +193,7 @@ def convert_file(input_filename):
                     soa_match = re.search(r"SOA\s+([a-zA-Z0-9\.\-\_]+)", info)
                     if soa_match:
                         mname = soa_match.group(1)
-                        # Compatible construction of SOA record
+                        # Use DNSRRSOA class to fix 'AttributeError: mname'
                         soa_rr = DNSRRSOA(
                             rrname=qname,
                             type=6,
