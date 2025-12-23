@@ -23,7 +23,7 @@ def clean_mac(mac_str):
     if "LLDP_Multicast" in mac_str:
         return "01:80:c2:00:00:0e"
 
-    # Handle vendor prefixes from your file
+    # Vendor prefixes
     if "Routerbo_" in mac_str:
         suffix = mac_str.split("_")[1] if "_" in mac_str else "00:00:00"
         return f"00:0c:42:{suffix}"
@@ -99,13 +99,19 @@ def convert_file(input_filename):
                 op = 2 if "is at" in info else 1
                 ips = re.findall(ipv4_pattern, info)
                 psrc, pdst = ("0.0.0.0", "0.0.0.0")
-                if len(ips) >= 2:
-                    if op == 1:
-                        pdst, psrc = ips[0], ips[1]
-                    else:
+
+                # --- FIXED ARP LOGIC ---
+                if op == 1:  # Request: "Who has 1.2? Tell 1.1" (2 IPs)
+                    if len(ips) >= 2:
+                        pdst = ips[0]
+                        psrc = ips[1]
+                else:  # Reply: "1.2 is at Mac" (1 IP)
+                    if len(ips) >= 1:
                         psrc = ips[0]
+                        # pdst is unknown in text, but psrc is what creates the "X is at Y" message
+
                 packet = Ether(src=src_mac, dst=dst_mac) / ARP(
-                    op=op, psrc=psrc, pdst=pdst
+                    op=op, psrc=psrc, pdst=pdst, hwsrc=src_mac, hwdst=dst_mac
                 )
 
             elif "ICMP" in proto:
@@ -145,13 +151,11 @@ def convert_file(input_filename):
                 if "MDNS" in proto:
                     sport, dport = 5353, 5353
 
-                # Parse DNS ID
                 dns_id = 0
                 id_match = re.search(r"0x([0-9a-fA-F]+)", info)
                 if id_match:
                     dns_id = int(id_match.group(1), 16)
 
-                # Parse Qname and Type
                 qname = "."
                 qtype_map = {
                     "A": 1,
@@ -174,29 +178,22 @@ def convert_file(input_filename):
                     q_type_int = qtype_map.get(q_match.group(1), 1)
                     qname = q_match.group(2)
 
-                # Base DNS Layer
                 dns_layer = DNS(
                     id=dns_id, rd=1, qd=DNSQR(qname=qname, qtype=q_type_int)
                 )
 
-                # Handle Response Logic (Cloudflare SOA)
                 if "response" in info.lower():
-                    dns_layer.qr = 1  # Response bit
+                    dns_layer.qr = 1
                     if "No such name" in info:
-                        dns_layer.rcode = 3  # NXDOMAIN
+                        dns_layer.rcode = 3
 
                     soa_match = re.search(r"SOA\s+([a-zA-Z0-9\.\-\_]+)", info)
                     if soa_match:
-                        mname = soa_match.group(1)  # e.g. cruz.ns.cloudflare.com
-
-                        # --- FIX: Construct DNSRR with explicit type=6 (SOA) ---
-                        # In some Scapy versions, you must pass arguments to DNSRR() carefully.
-                        # We use the generic 'rdata' field or ensure the object is initialized as SOA.
-
-                        # Correct way to init an SOA record in Scapy:
+                        mname = soa_match.group(1)
+                        # Compatible construction of SOA record
                         soa_rr = DNSRRSOA(
                             rrname=qname,
-                            type=6,  # SOA
+                            type=6,
                             ttl=60,
                             mname=mname,
                             rname="dns.cloudflare.com",
