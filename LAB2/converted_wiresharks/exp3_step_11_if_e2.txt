@@ -1,0 +1,1371 @@
+No.     Time           Source                Destination           Protocol Length Info
+      1 0.000000000    Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 1: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+      2 2.001432149    Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 2: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+      3 4.003714902    Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 3: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+      4 6.005876211    Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 4: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+      5 8.007484230    Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 5: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+      6 10.009714909   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 6: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+      7 12.011959774   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 7: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+      8 14.014229074   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 8: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+      9 16.016450679   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 9: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     10 18.018679461   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 10: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     11 19.836326484   172.16.21.253         239.255.255.250       UDP      649    46004 → 3702 Len=607
+
+Frame 11: 649 bytes on wire (5192 bits), 649 bytes captured (5192 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: IPv4mcast_7f:ff:fa (01:00:5e:7f:ff:fa)
+Internet Protocol Version 4, Src: 172.16.21.253, Dst: 239.255.255.250
+User Datagram Protocol, Src Port: 46004, Dst Port: 3702
+Data (607 bytes)
+
+0000  3c 3f 78 6d 6c 20 76 65 72 73 69 6f 6e 3d 22 31   <?xml version="1
+0010  2e 30 22 3f 3e 3c 73 6f 61 70 3a 45 6e 76 65 6c   .0"?><soap:Envel
+0020  6f 70 65 20 78 6d 6c 6e 73 3a 77 73 61 3d 22 68   ope xmlns:wsa="h
+0030  74 74 70 3a 2f 2f 73 63 68 65 6d 61 73 2e 78 6d   ttp://schemas.xm
+0040  6c 73 6f 61 70 2e 6f 72 67 2f 77 73 2f 32 30 30   lsoap.org/ws/200
+0050  34 2f 30 38 2f 61 64 64 72 65 73 73 69 6e 67 22   4/08/addressing"
+0060  20 78 6d 6c 6e 73 3a 77 73 64 3d 22 68 74 74 70    xmlns:wsd="http
+0070  3a 2f 2f 73 63 68 65 6d 61 73 2e 78 6d 6c 73 6f   ://schemas.xmlso
+0080  61 70 2e 6f 72 67 2f 77 73 2f 32 30 30 35 2f 30   ap.org/ws/2005/0
+0090  34 2f 64 69 73 63 6f 76 65 72 79 22 20 78 6d 6c   4/discovery" xml
+00a0  6e 73 3a 73 6f 61 70 3d 22 68 74 74 70 3a 2f 2f   ns:soap="http://
+00b0  77 77 77 2e 77 33 2e 6f 72 67 2f 32 30 30 33 2f   www.w3.org/2003/
+00c0  30 35 2f 73 6f 61 70 2d 65 6e 76 65 6c 6f 70 65   05/soap-envelope
+00d0  22 20 78 6d 6c 6e 73 3a 77 73 64 70 3d 22 68 74   " xmlns:wsdp="ht
+00e0  74 70 3a 2f 2f 73 63 68 65 6d 61 73 2e 78 6d 6c   tp://schemas.xml
+00f0  73 6f 61 70 2e 6f 72 67 2f 77 73 2f 32 30 30 36   soap.org/ws/2006
+0100  2f 30 32 2f 64 65 76 70 72 6f 66 22 3e 3c 73 6f   /02/devprof"><so
+0110  61 70 3a 48 65 61 64 65 72 3e 3c 77 73 61 3a 41   ap:Header><wsa:A
+0120  63 74 69 6f 6e 3e 68 74 74 70 3a 2f 2f 73 63 68   ction>http://sch
+0130  65 6d 61 73 2e 78 6d 6c 73 6f 61 70 2e 6f 72 67   emas.xmlsoap.org
+0140  2f 77 73 2f 32 30 30 35 2f 30 34 2f 64 69 73 63   /ws/2005/04/disc
+0150  6f 76 65 72 79 2f 50 72 6f 62 65 3c 2f 77 73 61   overy/Probe</wsa
+0160  3a 41 63 74 69 6f 6e 3e 3c 77 73 61 3a 4d 65 73   :Action><wsa:Mes
+0170  73 61 67 65 49 44 3e 75 72 6e 3a 75 75 69 64 3a   sageID>urn:uuid:
+0180  35 64 64 34 33 32 38 30 2d 36 39 61 66 2d 39 38   5dd43280-69af-98
+0190  31 30 2d 32 39 37 36 2d 64 63 30 65 35 31 30 61   10-2976-dc0e510a
+01a0  61 38 35 66 3c 2f 77 73 61 3a 4d 65 73 73 61 67   a85f</wsa:Messag
+01b0  65 49 44 3e 3c 77 73 61 3a 54 6f 3e 75 72 6e 3a   eID><wsa:To>urn:
+01c0  73 63 68 65 6d 61 73 2d 78 6d 6c 73 6f 61 70 2d   schemas-xmlsoap-
+01d0  6f 72 67 3a 77 73 3a 32 30 30 35 3a 30 34 3a 64   org:ws:2005:04:d
+01e0  69 73 63 6f 76 65 72 79 3c 2f 77 73 61 3a 54 6f   iscovery</wsa:To
+01f0  3e 3c 2f 73 6f 61 70 3a 48 65 61 64 65 72 3e 3c   ></soap:Header><
+0200  73 6f 61 70 3a 42 6f 64 79 3e 3c 77 73 64 3a 50   soap:Body><wsd:P
+0210  72 6f 62 65 3e 3c 77 73 64 3a 54 79 70 65 73 3e   robe><wsd:Types>
+0220  77 73 64 70 3a 44 65 76 69 63 65 3c 2f 77 73 64   wsdp:Device</wsd
+0230  3a 54 79 70 65 73 3e 3c 2f 77 73 64 3a 50 72 6f   :Types></wsd:Pro
+0240  62 65 3e 3c 2f 73 6f 61 70 3a 42 6f 64 79 3e 3c   be></soap:Body><
+0250  2f 73 6f 61 70 3a 45 6e 76 65 6c 6f 70 65 3e      /soap:Envelope>
+
+No.     Time           Source                Destination           Protocol Length Info
+     12 19.855053773   172.16.21.253         224.0.0.22            IGMPv3   54     Membership Report / Leave group 239.255.255.250
+
+Frame 12: 54 bytes on wire (432 bits), 54 bytes captured (432 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: IPv4mcast_16 (01:00:5e:00:00:16)
+Internet Protocol Version 4, Src: 172.16.21.253, Dst: 224.0.0.22
+Internet Group Management Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     13 20.020918527   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 13: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     14 20.055022180   172.16.21.253         224.0.0.22            IGMPv3   54     Membership Report / Leave group 239.255.255.250
+
+Frame 14: 54 bytes on wire (432 bits), 54 bytes captured (432 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: IPv4mcast_16 (01:00:5e:00:00:16)
+Internet Protocol Version 4, Src: 172.16.21.253, Dst: 224.0.0.22
+Internet Group Management Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     15 22.023153752   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 15: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     16 22.920381899   172.16.21.1           239.255.255.250       UDP      649    45640 → 3702 Len=607
+
+Frame 16: 649 bytes on wire (5192 bits), 649 bytes captured (5192 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: IPv4mcast_7f:ff:fa (01:00:5e:7f:ff:fa)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 239.255.255.250
+User Datagram Protocol, Src Port: 45640, Dst Port: 3702
+Data (607 bytes)
+
+0000  3c 3f 78 6d 6c 20 76 65 72 73 69 6f 6e 3d 22 31   <?xml version="1
+0010  2e 30 22 3f 3e 3c 73 6f 61 70 3a 45 6e 76 65 6c   .0"?><soap:Envel
+0020  6f 70 65 20 78 6d 6c 6e 73 3a 77 73 61 3d 22 68   ope xmlns:wsa="h
+0030  74 74 70 3a 2f 2f 73 63 68 65 6d 61 73 2e 78 6d   ttp://schemas.xm
+0040  6c 73 6f 61 70 2e 6f 72 67 2f 77 73 2f 32 30 30   lsoap.org/ws/200
+0050  34 2f 30 38 2f 61 64 64 72 65 73 73 69 6e 67 22   4/08/addressing"
+0060  20 78 6d 6c 6e 73 3a 77 73 64 3d 22 68 74 74 70    xmlns:wsd="http
+0070  3a 2f 2f 73 63 68 65 6d 61 73 2e 78 6d 6c 73 6f   ://schemas.xmlso
+0080  61 70 2e 6f 72 67 2f 77 73 2f 32 30 30 35 2f 30   ap.org/ws/2005/0
+0090  34 2f 64 69 73 63 6f 76 65 72 79 22 20 78 6d 6c   4/discovery" xml
+00a0  6e 73 3a 73 6f 61 70 3d 22 68 74 74 70 3a 2f 2f   ns:soap="http://
+00b0  77 77 77 2e 77 33 2e 6f 72 67 2f 32 30 30 33 2f   www.w3.org/2003/
+00c0  30 35 2f 73 6f 61 70 2d 65 6e 76 65 6c 6f 70 65   05/soap-envelope
+00d0  22 20 78 6d 6c 6e 73 3a 77 73 64 70 3d 22 68 74   " xmlns:wsdp="ht
+00e0  74 70 3a 2f 2f 73 63 68 65 6d 61 73 2e 78 6d 6c   tp://schemas.xml
+00f0  73 6f 61 70 2e 6f 72 67 2f 77 73 2f 32 30 30 36   soap.org/ws/2006
+0100  2f 30 32 2f 64 65 76 70 72 6f 66 22 3e 3c 73 6f   /02/devprof"><so
+0110  61 70 3a 48 65 61 64 65 72 3e 3c 77 73 61 3a 41   ap:Header><wsa:A
+0120  63 74 69 6f 6e 3e 68 74 74 70 3a 2f 2f 73 63 68   ction>http://sch
+0130  65 6d 61 73 2e 78 6d 6c 73 6f 61 70 2e 6f 72 67   emas.xmlsoap.org
+0140  2f 77 73 2f 32 30 30 35 2f 30 34 2f 64 69 73 63   /ws/2005/04/disc
+0150  6f 76 65 72 79 2f 50 72 6f 62 65 3c 2f 77 73 61   overy/Probe</wsa
+0160  3a 41 63 74 69 6f 6e 3e 3c 77 73 61 3a 4d 65 73   :Action><wsa:Mes
+0170  73 61 67 65 49 44 3e 75 72 6e 3a 75 75 69 64 3a   sageID>urn:uuid:
+0180  66 64 35 38 34 32 61 36 2d 34 37 61 66 2d 64 36   fd5842a6-47af-d6
+0190  34 36 2d 30 65 32 66 2d 31 34 63 64 61 63 38 34   46-0e2f-14cdac84
+01a0  61 31 65 37 3c 2f 77 73 61 3a 4d 65 73 73 61 67   a1e7</wsa:Messag
+01b0  65 49 44 3e 3c 77 73 61 3a 54 6f 3e 75 72 6e 3a   eID><wsa:To>urn:
+01c0  73 63 68 65 6d 61 73 2d 78 6d 6c 73 6f 61 70 2d   schemas-xmlsoap-
+01d0  6f 72 67 3a 77 73 3a 32 30 30 35 3a 30 34 3a 64   org:ws:2005:04:d
+01e0  69 73 63 6f 76 65 72 79 3c 2f 77 73 61 3a 54 6f   iscovery</wsa:To
+01f0  3e 3c 2f 73 6f 61 70 3a 48 65 61 64 65 72 3e 3c   ></soap:Header><
+0200  73 6f 61 70 3a 42 6f 64 79 3e 3c 77 73 64 3a 50   soap:Body><wsd:P
+0210  72 6f 62 65 3e 3c 77 73 64 3a 54 79 70 65 73 3e   robe><wsd:Types>
+0220  77 73 64 70 3a 44 65 76 69 63 65 3c 2f 77 73 64   wsdp:Device</wsd
+0230  3a 54 79 70 65 73 3e 3c 2f 77 73 64 3a 50 72 6f   :Types></wsd:Pro
+0240  62 65 3e 3c 2f 73 6f 61 70 3a 42 6f 64 79 3e 3c   be></soap:Body><
+0250  2f 73 6f 61 70 3a 45 6e 76 65 6c 6f 70 65 3e      /soap:Envelope>
+
+No.     Time           Source                Destination           Protocol Length Info
+     17 22.938809350   172.16.21.1           224.0.0.22            IGMPv3   60     Membership Report / Leave group 239.255.255.250
+
+Frame 17: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: IPv4mcast_16 (01:00:5e:00:00:16)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 224.0.0.22
+Internet Group Management Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     18 22.966732789   172.16.21.1           224.0.0.22            IGMPv3   60     Membership Report / Leave group 239.255.255.250
+
+Frame 18: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: IPv4mcast_16 (01:00:5e:00:00:16)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 224.0.0.22
+Internet Group Management Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     19 23.608110107   172.16.21.1           239.255.255.250       UDP      649    60669 → 3702 Len=607
+
+Frame 19: 649 bytes on wire (5192 bits), 649 bytes captured (5192 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: IPv4mcast_7f:ff:fa (01:00:5e:7f:ff:fa)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 239.255.255.250
+User Datagram Protocol, Src Port: 60669, Dst Port: 3702
+Data (607 bytes)
+
+0000  3c 3f 78 6d 6c 20 76 65 72 73 69 6f 6e 3d 22 31   <?xml version="1
+0010  2e 30 22 3f 3e 3c 73 6f 61 70 3a 45 6e 76 65 6c   .0"?><soap:Envel
+0020  6f 70 65 20 78 6d 6c 6e 73 3a 77 73 61 3d 22 68   ope xmlns:wsa="h
+0030  74 74 70 3a 2f 2f 73 63 68 65 6d 61 73 2e 78 6d   ttp://schemas.xm
+0040  6c 73 6f 61 70 2e 6f 72 67 2f 77 73 2f 32 30 30   lsoap.org/ws/200
+0050  34 2f 30 38 2f 61 64 64 72 65 73 73 69 6e 67 22   4/08/addressing"
+0060  20 78 6d 6c 6e 73 3a 77 73 64 3d 22 68 74 74 70    xmlns:wsd="http
+0070  3a 2f 2f 73 63 68 65 6d 61 73 2e 78 6d 6c 73 6f   ://schemas.xmlso
+0080  61 70 2e 6f 72 67 2f 77 73 2f 32 30 30 35 2f 30   ap.org/ws/2005/0
+0090  34 2f 64 69 73 63 6f 76 65 72 79 22 20 78 6d 6c   4/discovery" xml
+00a0  6e 73 3a 73 6f 61 70 3d 22 68 74 74 70 3a 2f 2f   ns:soap="http://
+00b0  77 77 77 2e 77 33 2e 6f 72 67 2f 32 30 30 33 2f   www.w3.org/2003/
+00c0  30 35 2f 73 6f 61 70 2d 65 6e 76 65 6c 6f 70 65   05/soap-envelope
+00d0  22 20 78 6d 6c 6e 73 3a 77 73 64 70 3d 22 68 74   " xmlns:wsdp="ht
+00e0  74 70 3a 2f 2f 73 63 68 65 6d 61 73 2e 78 6d 6c   tp://schemas.xml
+00f0  73 6f 61 70 2e 6f 72 67 2f 77 73 2f 32 30 30 36   soap.org/ws/2006
+0100  2f 30 32 2f 64 65 76 70 72 6f 66 22 3e 3c 73 6f   /02/devprof"><so
+0110  61 70 3a 48 65 61 64 65 72 3e 3c 77 73 61 3a 41   ap:Header><wsa:A
+0120  63 74 69 6f 6e 3e 68 74 74 70 3a 2f 2f 73 63 68   ction>http://sch
+0130  65 6d 61 73 2e 78 6d 6c 73 6f 61 70 2e 6f 72 67   emas.xmlsoap.org
+0140  2f 77 73 2f 32 30 30 35 2f 30 34 2f 64 69 73 63   /ws/2005/04/disc
+0150  6f 76 65 72 79 2f 50 72 6f 62 65 3c 2f 77 73 61   overy/Probe</wsa
+0160  3a 41 63 74 69 6f 6e 3e 3c 77 73 61 3a 4d 65 73   :Action><wsa:Mes
+0170  73 61 67 65 49 44 3e 75 72 6e 3a 75 75 69 64 3a   sageID>urn:uuid:
+0180  36 37 61 37 36 66 30 62 2d 30 38 31 36 2d 37 36   67a76f0b-0816-76
+0190  30 30 2d 35 62 35 34 2d 62 30 33 62 37 61 62 37   00-5b54-b03b7ab7
+01a0  36 33 37 37 3c 2f 77 73 61 3a 4d 65 73 73 61 67   6377</wsa:Messag
+01b0  65 49 44 3e 3c 77 73 61 3a 54 6f 3e 75 72 6e 3a   eID><wsa:To>urn:
+01c0  73 63 68 65 6d 61 73 2d 78 6d 6c 73 6f 61 70 2d   schemas-xmlsoap-
+01d0  6f 72 67 3a 77 73 3a 32 30 30 35 3a 30 34 3a 64   org:ws:2005:04:d
+01e0  69 73 63 6f 76 65 72 79 3c 2f 77 73 61 3a 54 6f   iscovery</wsa:To
+01f0  3e 3c 2f 73 6f 61 70 3a 48 65 61 64 65 72 3e 3c   ></soap:Header><
+0200  73 6f 61 70 3a 42 6f 64 79 3e 3c 77 73 64 3a 50   soap:Body><wsd:P
+0210  72 6f 62 65 3e 3c 77 73 64 3a 54 79 70 65 73 3e   robe><wsd:Types>
+0220  77 73 64 70 3a 44 65 76 69 63 65 3c 2f 77 73 64   wsdp:Device</wsd
+0230  3a 54 79 70 65 73 3e 3c 2f 77 73 64 3a 50 72 6f   :Types></wsd:Pro
+0240  62 65 3e 3c 2f 73 6f 61 70 3a 42 6f 64 79 3e 3c   be></soap:Body><
+0250  2f 73 6f 61 70 3a 45 6e 76 65 6c 6f 70 65 3e      /soap:Envelope>
+
+No.     Time           Source                Destination           Protocol Length Info
+     20 23.622820530   172.16.21.1           224.0.0.22            IGMPv3   60     Membership Report / Leave group 239.255.255.250
+
+Frame 20: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: IPv4mcast_16 (01:00:5e:00:00:16)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 224.0.0.22
+Internet Group Management Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     21 24.025398316   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 21: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     22 24.350822342   172.16.21.1           224.0.0.22            IGMPv3   60     Membership Report / Leave group 239.255.255.250
+
+Frame 22: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: IPv4mcast_16 (01:00:5e:00:00:16)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 224.0.0.22
+Internet Group Management Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     23 25.307531841   172.16.21.1           239.255.255.250       UDP      649    57692 → 3702 Len=607
+
+Frame 23: 649 bytes on wire (5192 bits), 649 bytes captured (5192 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: IPv4mcast_7f:ff:fa (01:00:5e:7f:ff:fa)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 239.255.255.250
+User Datagram Protocol, Src Port: 57692, Dst Port: 3702
+Data (607 bytes)
+
+0000  3c 3f 78 6d 6c 20 76 65 72 73 69 6f 6e 3d 22 31   <?xml version="1
+0010  2e 30 22 3f 3e 3c 73 6f 61 70 3a 45 6e 76 65 6c   .0"?><soap:Envel
+0020  6f 70 65 20 78 6d 6c 6e 73 3a 77 73 61 3d 22 68   ope xmlns:wsa="h
+0030  74 74 70 3a 2f 2f 73 63 68 65 6d 61 73 2e 78 6d   ttp://schemas.xm
+0040  6c 73 6f 61 70 2e 6f 72 67 2f 77 73 2f 32 30 30   lsoap.org/ws/200
+0050  34 2f 30 38 2f 61 64 64 72 65 73 73 69 6e 67 22   4/08/addressing"
+0060  20 78 6d 6c 6e 73 3a 77 73 64 3d 22 68 74 74 70    xmlns:wsd="http
+0070  3a 2f 2f 73 63 68 65 6d 61 73 2e 78 6d 6c 73 6f   ://schemas.xmlso
+0080  61 70 2e 6f 72 67 2f 77 73 2f 32 30 30 35 2f 30   ap.org/ws/2005/0
+0090  34 2f 64 69 73 63 6f 76 65 72 79 22 20 78 6d 6c   4/discovery" xml
+00a0  6e 73 3a 73 6f 61 70 3d 22 68 74 74 70 3a 2f 2f   ns:soap="http://
+00b0  77 77 77 2e 77 33 2e 6f 72 67 2f 32 30 30 33 2f   www.w3.org/2003/
+00c0  30 35 2f 73 6f 61 70 2d 65 6e 76 65 6c 6f 70 65   05/soap-envelope
+00d0  22 20 78 6d 6c 6e 73 3a 77 73 64 70 3d 22 68 74   " xmlns:wsdp="ht
+00e0  74 70 3a 2f 2f 73 63 68 65 6d 61 73 2e 78 6d 6c   tp://schemas.xml
+00f0  73 6f 61 70 2e 6f 72 67 2f 77 73 2f 32 30 30 36   soap.org/ws/2006
+0100  2f 30 32 2f 64 65 76 70 72 6f 66 22 3e 3c 73 6f   /02/devprof"><so
+0110  61 70 3a 48 65 61 64 65 72 3e 3c 77 73 61 3a 41   ap:Header><wsa:A
+0120  63 74 69 6f 6e 3e 68 74 74 70 3a 2f 2f 73 63 68   ction>http://sch
+0130  65 6d 61 73 2e 78 6d 6c 73 6f 61 70 2e 6f 72 67   emas.xmlsoap.org
+0140  2f 77 73 2f 32 30 30 35 2f 30 34 2f 64 69 73 63   /ws/2005/04/disc
+0150  6f 76 65 72 79 2f 50 72 6f 62 65 3c 2f 77 73 61   overy/Probe</wsa
+0160  3a 41 63 74 69 6f 6e 3e 3c 77 73 61 3a 4d 65 73   :Action><wsa:Mes
+0170  73 61 67 65 49 44 3e 75 72 6e 3a 75 75 69 64 3a   sageID>urn:uuid:
+0180  36 35 37 39 64 66 36 63 2d 31 34 31 37 2d 31 61   6579df6c-1417-1a
+0190  62 35 2d 61 64 31 32 2d 62 35 36 64 34 31 66 33   b5-ad12-b56d41f3
+01a0  30 61 63 37 3c 2f 77 73 61 3a 4d 65 73 73 61 67   0ac7</wsa:Messag
+01b0  65 49 44 3e 3c 77 73 61 3a 54 6f 3e 75 72 6e 3a   eID><wsa:To>urn:
+01c0  73 63 68 65 6d 61 73 2d 78 6d 6c 73 6f 61 70 2d   schemas-xmlsoap-
+01d0  6f 72 67 3a 77 73 3a 32 30 30 35 3a 30 34 3a 64   org:ws:2005:04:d
+01e0  69 73 63 6f 76 65 72 79 3c 2f 77 73 61 3a 54 6f   iscovery</wsa:To
+01f0  3e 3c 2f 73 6f 61 70 3a 48 65 61 64 65 72 3e 3c   ></soap:Header><
+0200  73 6f 61 70 3a 42 6f 64 79 3e 3c 77 73 64 3a 50   soap:Body><wsd:P
+0210  72 6f 62 65 3e 3c 77 73 64 3a 54 79 70 65 73 3e   robe><wsd:Types>
+0220  77 73 64 70 3a 44 65 76 69 63 65 3c 2f 77 73 64   wsdp:Device</wsd
+0230  3a 54 79 70 65 73 3e 3c 2f 77 73 64 3a 50 72 6f   :Types></wsd:Pro
+0240  62 65 3e 3c 2f 73 6f 61 70 3a 42 6f 64 79 3e 3c   be></soap:Body><
+0250  2f 73 6f 61 70 3a 45 6e 76 65 6c 6f 70 65 3e      /soap:Envelope>
+
+No.     Time           Source                Destination           Protocol Length Info
+     24 25.318819914   172.16.21.1           224.0.0.22            IGMPv3   60     Membership Report / Leave group 239.255.255.250
+
+Frame 24: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: IPv4mcast_16 (01:00:5e:00:00:16)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 224.0.0.22
+Internet Group Management Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     25 25.790823119   172.16.21.1           224.0.0.22            IGMPv3   60     Membership Report / Leave group 239.255.255.250
+
+Frame 25: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: IPv4mcast_16 (01:00:5e:00:00:16)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 224.0.0.22
+Internet Group Management Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     26 26.027624153   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 26: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     27 28.029845512   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 27: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     28 30.032092554   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 28: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     29 32.033544864   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 29: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     30 34.035779034   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 30: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     31 36.038009505   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 31: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     32 38.040242092   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 32: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     33 38.157024981   0.0.0.0               255.255.255.255       MNDP     159    5678 → 5678 Len=117
+
+Frame 33: 159 bytes on wire (1272 bits), 159 bytes captured (1272 bits) on interface if_e2, id 0
+Ethernet II, Src: Routerbo_1c:8c:2b (c4:ad:34:1c:8c:2b), Dst: Broadcast (ff:ff:ff:ff:ff:ff)
+Internet Protocol Version 4, Src: 0.0.0.0, Dst: 255.255.255.255
+User Datagram Protocol, Src Port: 5678, Dst Port: 5678
+Mikrotik Neighbor Discovery Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     34 38.157025226   Routerbo_1c:8c:2b     CDP/VTP/DTP/PAgP/UDLD CDP      93     Device ID: MikroTik  Port ID: bridge21  
+
+Frame 34: 93 bytes on wire (744 bits), 93 bytes captured (744 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Cisco Discovery Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     35 38.157091650   Routerbo_1c:8c:2b     LLDP_Multicast        LLDP     110    MA/c4:ad:34:1c:8c:2b IN/bridge21 120 SysN=MikroTik SysD=MikroTik RouterOS 6.43.16 (long-term) CRS326-24G-2S+ 
+
+Frame 35: 110 bytes on wire (880 bits), 110 bytes captured (880 bits) on interface if_e2, id 0
+Ethernet II, Src: Routerbo_1c:8c:2b (c4:ad:34:1c:8c:2b), Dst: LLDP_Multicast (01:80:c2:00:00:0e)
+Link Layer Discovery Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     36 40.041616603   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 36: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     37 41.916808812   172.16.21.1           239.255.255.250       UDP      649    41995 → 3702 Len=607
+
+Frame 37: 649 bytes on wire (5192 bits), 649 bytes captured (5192 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: IPv4mcast_7f:ff:fa (01:00:5e:7f:ff:fa)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 239.255.255.250
+User Datagram Protocol, Src Port: 41995, Dst Port: 3702
+Data (607 bytes)
+
+0000  3c 3f 78 6d 6c 20 76 65 72 73 69 6f 6e 3d 22 31   <?xml version="1
+0010  2e 30 22 3f 3e 3c 73 6f 61 70 3a 45 6e 76 65 6c   .0"?><soap:Envel
+0020  6f 70 65 20 78 6d 6c 6e 73 3a 77 73 61 3d 22 68   ope xmlns:wsa="h
+0030  74 74 70 3a 2f 2f 73 63 68 65 6d 61 73 2e 78 6d   ttp://schemas.xm
+0040  6c 73 6f 61 70 2e 6f 72 67 2f 77 73 2f 32 30 30   lsoap.org/ws/200
+0050  34 2f 30 38 2f 61 64 64 72 65 73 73 69 6e 67 22   4/08/addressing"
+0060  20 78 6d 6c 6e 73 3a 77 73 64 3d 22 68 74 74 70    xmlns:wsd="http
+0070  3a 2f 2f 73 63 68 65 6d 61 73 2e 78 6d 6c 73 6f   ://schemas.xmlso
+0080  61 70 2e 6f 72 67 2f 77 73 2f 32 30 30 35 2f 30   ap.org/ws/2005/0
+0090  34 2f 64 69 73 63 6f 76 65 72 79 22 20 78 6d 6c   4/discovery" xml
+00a0  6e 73 3a 73 6f 61 70 3d 22 68 74 74 70 3a 2f 2f   ns:soap="http://
+00b0  77 77 77 2e 77 33 2e 6f 72 67 2f 32 30 30 33 2f   www.w3.org/2003/
+00c0  30 35 2f 73 6f 61 70 2d 65 6e 76 65 6c 6f 70 65   05/soap-envelope
+00d0  22 20 78 6d 6c 6e 73 3a 77 73 64 70 3d 22 68 74   " xmlns:wsdp="ht
+00e0  74 70 3a 2f 2f 73 63 68 65 6d 61 73 2e 78 6d 6c   tp://schemas.xml
+00f0  73 6f 61 70 2e 6f 72 67 2f 77 73 2f 32 30 30 36   soap.org/ws/2006
+0100  2f 30 32 2f 64 65 76 70 72 6f 66 22 3e 3c 73 6f   /02/devprof"><so
+0110  61 70 3a 48 65 61 64 65 72 3e 3c 77 73 61 3a 41   ap:Header><wsa:A
+0120  63 74 69 6f 6e 3e 68 74 74 70 3a 2f 2f 73 63 68   ction>http://sch
+0130  65 6d 61 73 2e 78 6d 6c 73 6f 61 70 2e 6f 72 67   emas.xmlsoap.org
+0140  2f 77 73 2f 32 30 30 35 2f 30 34 2f 64 69 73 63   /ws/2005/04/disc
+0150  6f 76 65 72 79 2f 50 72 6f 62 65 3c 2f 77 73 61   overy/Probe</wsa
+0160  3a 41 63 74 69 6f 6e 3e 3c 77 73 61 3a 4d 65 73   :Action><wsa:Mes
+0170  73 61 67 65 49 44 3e 75 72 6e 3a 75 75 69 64 3a   sageID>urn:uuid:
+0180  62 66 61 65 34 36 62 66 2d 37 63 35 64 2d 33 37   bfae46bf-7c5d-37
+0190  32 64 2d 63 31 33 39 2d 37 33 66 61 65 30 38 33   2d-c139-73fae083
+01a0  33 35 33 38 3c 2f 77 73 61 3a 4d 65 73 73 61 67   3538</wsa:Messag
+01b0  65 49 44 3e 3c 77 73 61 3a 54 6f 3e 75 72 6e 3a   eID><wsa:To>urn:
+01c0  73 63 68 65 6d 61 73 2d 78 6d 6c 73 6f 61 70 2d   schemas-xmlsoap-
+01d0  6f 72 67 3a 77 73 3a 32 30 30 35 3a 30 34 3a 64   org:ws:2005:04:d
+01e0  69 73 63 6f 76 65 72 79 3c 2f 77 73 61 3a 54 6f   iscovery</wsa:To
+01f0  3e 3c 2f 73 6f 61 70 3a 48 65 61 64 65 72 3e 3c   ></soap:Header><
+0200  73 6f 61 70 3a 42 6f 64 79 3e 3c 77 73 64 3a 50   soap:Body><wsd:P
+0210  72 6f 62 65 3e 3c 77 73 64 3a 54 79 70 65 73 3e   robe><wsd:Types>
+0220  77 73 64 70 3a 44 65 76 69 63 65 3c 2f 77 73 64   wsdp:Device</wsd
+0230  3a 54 79 70 65 73 3e 3c 2f 77 73 64 3a 50 72 6f   :Types></wsd:Pro
+0240  62 65 3e 3c 2f 73 6f 61 70 3a 42 6f 64 79 3e 3c   be></soap:Body><
+0250  2f 73 6f 61 70 3a 45 6e 76 65 6c 6f 70 65 3e      /soap:Envelope>
+
+No.     Time           Source                Destination           Protocol Length Info
+     38 41.930738752   172.16.21.1           224.0.0.22            IGMPv3   60     Membership Report / Leave group 239.255.255.250
+
+Frame 38: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: IPv4mcast_16 (01:00:5e:00:00:16)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 224.0.0.22
+Internet Group Management Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     39 42.043816922   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 39: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     40 42.110779078   172.16.21.1           224.0.0.22            IGMPv3   60     Membership Report / Leave group 239.255.255.250
+
+Frame 40: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: IPv4mcast_16 (01:00:5e:00:00:16)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 224.0.0.22
+Internet Group Management Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     41 44.046086162   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 41: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     42 46.048309129   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 42: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     43 48.050495747   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 43: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     44 50.052730895   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 44: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     45 52.054965540   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 45: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     46 54.057194616   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 46: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     47 56.059433453   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 47: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     48 58.060742829   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 48: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     49 60.062982735   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 49: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     50 62.065216352   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 50: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     51 64.067454488   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 51: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     52 66.069673849   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 52: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     53 68.071904803   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 53: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     54 70.074148214   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 54: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     55 72.076393994   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 55: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     56 74.078624647   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 56: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     57 76.080118499   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 57: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     58 78.081723629   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 58: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     59 80.083969937   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 59: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     60 82.086213921   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 60: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     61 84.088445005   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 61: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     62 86.090611850   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 62: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     63 88.092845157   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 63: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     64 90.095088745   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 64: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     65 92.097331111   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 65: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     66 94.099558972   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 66: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     67 96.101789509   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 67: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     68 98.104021275   Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 68: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     69 98.158069276   0.0.0.0               255.255.255.255       MNDP     159    5678 → 5678 Len=117
+
+Frame 69: 159 bytes on wire (1272 bits), 159 bytes captured (1272 bits) on interface if_e2, id 0
+Ethernet II, Src: Routerbo_1c:8c:2b (c4:ad:34:1c:8c:2b), Dst: Broadcast (ff:ff:ff:ff:ff:ff)
+Internet Protocol Version 4, Src: 0.0.0.0, Dst: 255.255.255.255
+User Datagram Protocol, Src Port: 5678, Dst Port: 5678
+Mikrotik Neighbor Discovery Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     70 98.158069524   Routerbo_1c:8c:2b     CDP/VTP/DTP/PAgP/UDLD CDP      93     Device ID: MikroTik  Port ID: bridge21  
+
+Frame 70: 93 bytes on wire (744 bits), 93 bytes captured (744 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Cisco Discovery Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     71 98.158137979   Routerbo_1c:8c:2b     LLDP_Multicast        LLDP     110    MA/c4:ad:34:1c:8c:2b IN/bridge21 120 SysN=MikroTik SysD=MikroTik RouterOS 6.43.16 (long-term) CRS326-24G-2S+ 
+
+Frame 71: 110 bytes on wire (880 bits), 110 bytes captured (880 bits) on interface if_e2, id 0
+Ethernet II, Src: Routerbo_1c:8c:2b (c4:ad:34:1c:8c:2b), Dst: LLDP_Multicast (01:80:c2:00:00:0e)
+Link Layer Discovery Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     72 100.106264274  Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 72: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     73 102.108516272  Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 73: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     74 104.110749678  Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 74: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     75 104.811957088  ec:75:0c:c2:26:30     Broadcast             ARP      42     Who has 172.16.21.1? Tell 172.16.21.253
+
+Frame 75: 42 bytes on wire (336 bits), 42 bytes captured (336 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: Broadcast (ff:ff:ff:ff:ff:ff)
+Address Resolution Protocol (request)
+
+No.     Time           Source                Destination           Protocol Length Info
+     76 104.812191848  8c:90:2d:fd:a5:7b     ec:75:0c:c2:26:30     ARP      60     172.16.21.1 is at 8c:90:2d:fd:a5:7b
+
+Frame 76: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30)
+Address Resolution Protocol (reply)
+
+No.     Time           Source                Destination           Protocol Length Info
+     77 104.812203487  172.16.20.1           172.16.21.1           ICMP     98     Echo (ping) request  id=0x57de, seq=1/256, ttl=63 (reply in 78)
+
+Frame 77: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b)
+Internet Protocol Version 4, Src: 172.16.20.1, Dst: 172.16.21.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     78 104.812374346  172.16.21.1           172.16.20.1           ICMP     98     Echo (ping) reply    id=0x57de, seq=1/256, ttl=64 (request in 77)
+
+Frame 78: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 172.16.20.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     79 105.822220192  172.16.20.1           172.16.21.1           ICMP     98     Echo (ping) request  id=0x57de, seq=2/512, ttl=63 (reply in 80)
+
+Frame 79: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b)
+Internet Protocol Version 4, Src: 172.16.20.1, Dst: 172.16.21.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     80 105.822432834  172.16.21.1           172.16.20.1           ICMP     98     Echo (ping) reply    id=0x57de, seq=2/512, ttl=64 (request in 79)
+
+Frame 80: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 172.16.20.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     81 106.112976880  Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 81: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     82 106.846211809  172.16.20.1           172.16.21.1           ICMP     98     Echo (ping) request  id=0x57de, seq=3/768, ttl=63 (reply in 83)
+
+Frame 82: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b)
+Internet Protocol Version 4, Src: 172.16.20.1, Dst: 172.16.21.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     83 106.846423221  172.16.21.1           172.16.20.1           ICMP     98     Echo (ping) reply    id=0x57de, seq=3/768, ttl=64 (request in 82)
+
+Frame 83: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 172.16.20.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     84 107.870205960  172.16.20.1           172.16.21.1           ICMP     98     Echo (ping) request  id=0x57de, seq=4/1024, ttl=63 (reply in 85)
+
+Frame 84: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b)
+Internet Protocol Version 4, Src: 172.16.20.1, Dst: 172.16.21.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     85 107.870420404  172.16.21.1           172.16.20.1           ICMP     98     Echo (ping) reply    id=0x57de, seq=4/1024, ttl=64 (request in 84)
+
+Frame 85: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 172.16.20.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     86 108.115210178  Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 86: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     87 108.407337472  172.16.21.253         239.255.255.250       UDP      649    58001 → 3702 Len=607
+
+Frame 87: 649 bytes on wire (5192 bits), 649 bytes captured (5192 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: IPv4mcast_7f:ff:fa (01:00:5e:7f:ff:fa)
+Internet Protocol Version 4, Src: 172.16.21.253, Dst: 239.255.255.250
+User Datagram Protocol, Src Port: 58001, Dst Port: 3702
+Data (607 bytes)
+
+0000  3c 3f 78 6d 6c 20 76 65 72 73 69 6f 6e 3d 22 31   <?xml version="1
+0010  2e 30 22 3f 3e 3c 73 6f 61 70 3a 45 6e 76 65 6c   .0"?><soap:Envel
+0020  6f 70 65 20 78 6d 6c 6e 73 3a 77 73 61 3d 22 68   ope xmlns:wsa="h
+0030  74 74 70 3a 2f 2f 73 63 68 65 6d 61 73 2e 78 6d   ttp://schemas.xm
+0040  6c 73 6f 61 70 2e 6f 72 67 2f 77 73 2f 32 30 30   lsoap.org/ws/200
+0050  34 2f 30 38 2f 61 64 64 72 65 73 73 69 6e 67 22   4/08/addressing"
+0060  20 78 6d 6c 6e 73 3a 77 73 64 3d 22 68 74 74 70    xmlns:wsd="http
+0070  3a 2f 2f 73 63 68 65 6d 61 73 2e 78 6d 6c 73 6f   ://schemas.xmlso
+0080  61 70 2e 6f 72 67 2f 77 73 2f 32 30 30 35 2f 30   ap.org/ws/2005/0
+0090  34 2f 64 69 73 63 6f 76 65 72 79 22 20 78 6d 6c   4/discovery" xml
+00a0  6e 73 3a 73 6f 61 70 3d 22 68 74 74 70 3a 2f 2f   ns:soap="http://
+00b0  77 77 77 2e 77 33 2e 6f 72 67 2f 32 30 30 33 2f   www.w3.org/2003/
+00c0  30 35 2f 73 6f 61 70 2d 65 6e 76 65 6c 6f 70 65   05/soap-envelope
+00d0  22 20 78 6d 6c 6e 73 3a 77 73 64 70 3d 22 68 74   " xmlns:wsdp="ht
+00e0  74 70 3a 2f 2f 73 63 68 65 6d 61 73 2e 78 6d 6c   tp://schemas.xml
+00f0  73 6f 61 70 2e 6f 72 67 2f 77 73 2f 32 30 30 36   soap.org/ws/2006
+0100  2f 30 32 2f 64 65 76 70 72 6f 66 22 3e 3c 73 6f   /02/devprof"><so
+0110  61 70 3a 48 65 61 64 65 72 3e 3c 77 73 61 3a 41   ap:Header><wsa:A
+0120  63 74 69 6f 6e 3e 68 74 74 70 3a 2f 2f 73 63 68   ction>http://sch
+0130  65 6d 61 73 2e 78 6d 6c 73 6f 61 70 2e 6f 72 67   emas.xmlsoap.org
+0140  2f 77 73 2f 32 30 30 35 2f 30 34 2f 64 69 73 63   /ws/2005/04/disc
+0150  6f 76 65 72 79 2f 50 72 6f 62 65 3c 2f 77 73 61   overy/Probe</wsa
+0160  3a 41 63 74 69 6f 6e 3e 3c 77 73 61 3a 4d 65 73   :Action><wsa:Mes
+0170  73 61 67 65 49 44 3e 75 72 6e 3a 75 75 69 64 3a   sageID>urn:uuid:
+0180  38 36 62 36 33 64 35 34 2d 65 34 39 62 2d 35 62   86b63d54-e49b-5b
+0190  32 30 2d 64 34 34 35 2d 66 64 33 39 65 63 66 61   20-d445-fd39ecfa
+01a0  31 31 37 39 3c 2f 77 73 61 3a 4d 65 73 73 61 67   1179</wsa:Messag
+01b0  65 49 44 3e 3c 77 73 61 3a 54 6f 3e 75 72 6e 3a   eID><wsa:To>urn:
+01c0  73 63 68 65 6d 61 73 2d 78 6d 6c 73 6f 61 70 2d   schemas-xmlsoap-
+01d0  6f 72 67 3a 77 73 3a 32 30 30 35 3a 30 34 3a 64   org:ws:2005:04:d
+01e0  69 73 63 6f 76 65 72 79 3c 2f 77 73 61 3a 54 6f   iscovery</wsa:To
+01f0  3e 3c 2f 73 6f 61 70 3a 48 65 61 64 65 72 3e 3c   ></soap:Header><
+0200  73 6f 61 70 3a 42 6f 64 79 3e 3c 77 73 64 3a 50   soap:Body><wsd:P
+0210  72 6f 62 65 3e 3c 77 73 64 3a 54 79 70 65 73 3e   robe><wsd:Types>
+0220  77 73 64 70 3a 44 65 76 69 63 65 3c 2f 77 73 64   wsdp:Device</wsd
+0230  3a 54 79 70 65 73 3e 3c 2f 77 73 64 3a 50 72 6f   :Types></wsd:Pro
+0240  62 65 3e 3c 2f 73 6f 61 70 3a 42 6f 64 79 3e 3c   be></soap:Body><
+0250  2f 73 6f 61 70 3a 45 6e 76 65 6c 6f 70 65 3e      /soap:Envelope>
+
+No.     Time           Source                Destination           Protocol Length Info
+     88 108.423051787  172.16.21.253         224.0.0.22            IGMPv3   54     Membership Report / Leave group 239.255.255.250
+
+Frame 88: 54 bytes on wire (432 bits), 54 bytes captured (432 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: IPv4mcast_16 (01:00:5e:00:00:16)
+Internet Protocol Version 4, Src: 172.16.21.253, Dst: 224.0.0.22
+Internet Group Management Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     89 108.655013695  172.16.21.253         224.0.0.22            IGMPv3   54     Membership Report / Leave group 239.255.255.250
+
+Frame 89: 54 bytes on wire (432 bits), 54 bytes captured (432 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: IPv4mcast_16 (01:00:5e:00:00:16)
+Internet Protocol Version 4, Src: 172.16.21.253, Dst: 224.0.0.22
+Internet Group Management Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     90 108.894210063  172.16.20.1           172.16.21.1           ICMP     98     Echo (ping) request  id=0x57de, seq=5/1280, ttl=63 (reply in 91)
+
+Frame 90: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b)
+Internet Protocol Version 4, Src: 172.16.20.1, Dst: 172.16.21.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     91 108.894434139  172.16.21.1           172.16.20.1           ICMP     98     Echo (ping) reply    id=0x57de, seq=5/1280, ttl=64 (request in 90)
+
+Frame 91: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 172.16.20.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     92 109.104998562  172.16.21.253         239.255.255.250       UDP      649    45571 → 3702 Len=607
+
+Frame 92: 649 bytes on wire (5192 bits), 649 bytes captured (5192 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: IPv4mcast_7f:ff:fa (01:00:5e:7f:ff:fa)
+Internet Protocol Version 4, Src: 172.16.21.253, Dst: 239.255.255.250
+User Datagram Protocol, Src Port: 45571, Dst Port: 3702
+Data (607 bytes)
+
+0000  3c 3f 78 6d 6c 20 76 65 72 73 69 6f 6e 3d 22 31   <?xml version="1
+0010  2e 30 22 3f 3e 3c 73 6f 61 70 3a 45 6e 76 65 6c   .0"?><soap:Envel
+0020  6f 70 65 20 78 6d 6c 6e 73 3a 77 73 61 3d 22 68   ope xmlns:wsa="h
+0030  74 74 70 3a 2f 2f 73 63 68 65 6d 61 73 2e 78 6d   ttp://schemas.xm
+0040  6c 73 6f 61 70 2e 6f 72 67 2f 77 73 2f 32 30 30   lsoap.org/ws/200
+0050  34 2f 30 38 2f 61 64 64 72 65 73 73 69 6e 67 22   4/08/addressing"
+0060  20 78 6d 6c 6e 73 3a 77 73 64 3d 22 68 74 74 70    xmlns:wsd="http
+0070  3a 2f 2f 73 63 68 65 6d 61 73 2e 78 6d 6c 73 6f   ://schemas.xmlso
+0080  61 70 2e 6f 72 67 2f 77 73 2f 32 30 30 35 2f 30   ap.org/ws/2005/0
+0090  34 2f 64 69 73 63 6f 76 65 72 79 22 20 78 6d 6c   4/discovery" xml
+00a0  6e 73 3a 73 6f 61 70 3d 22 68 74 74 70 3a 2f 2f   ns:soap="http://
+00b0  77 77 77 2e 77 33 2e 6f 72 67 2f 32 30 30 33 2f   www.w3.org/2003/
+00c0  30 35 2f 73 6f 61 70 2d 65 6e 76 65 6c 6f 70 65   05/soap-envelope
+00d0  22 20 78 6d 6c 6e 73 3a 77 73 64 70 3d 22 68 74   " xmlns:wsdp="ht
+00e0  74 70 3a 2f 2f 73 63 68 65 6d 61 73 2e 78 6d 6c   tp://schemas.xml
+00f0  73 6f 61 70 2e 6f 72 67 2f 77 73 2f 32 30 30 36   soap.org/ws/2006
+0100  2f 30 32 2f 64 65 76 70 72 6f 66 22 3e 3c 73 6f   /02/devprof"><so
+0110  61 70 3a 48 65 61 64 65 72 3e 3c 77 73 61 3a 41   ap:Header><wsa:A
+0120  63 74 69 6f 6e 3e 68 74 74 70 3a 2f 2f 73 63 68   ction>http://sch
+0130  65 6d 61 73 2e 78 6d 6c 73 6f 61 70 2e 6f 72 67   emas.xmlsoap.org
+0140  2f 77 73 2f 32 30 30 35 2f 30 34 2f 64 69 73 63   /ws/2005/04/disc
+0150  6f 76 65 72 79 2f 50 72 6f 62 65 3c 2f 77 73 61   overy/Probe</wsa
+0160  3a 41 63 74 69 6f 6e 3e 3c 77 73 61 3a 4d 65 73   :Action><wsa:Mes
+0170  73 61 67 65 49 44 3e 75 72 6e 3a 75 75 69 64 3a   sageID>urn:uuid:
+0180  33 64 63 34 64 35 38 65 2d 38 35 35 64 2d 37 31   3dc4d58e-855d-71
+0190  65 35 2d 33 62 38 39 2d 62 35 35 61 33 37 36 36   e5-3b89-b55a3766
+01a0  34 65 62 30 3c 2f 77 73 61 3a 4d 65 73 73 61 67   4eb0</wsa:Messag
+01b0  65 49 44 3e 3c 77 73 61 3a 54 6f 3e 75 72 6e 3a   eID><wsa:To>urn:
+01c0  73 63 68 65 6d 61 73 2d 78 6d 6c 73 6f 61 70 2d   schemas-xmlsoap-
+01d0  6f 72 67 3a 77 73 3a 32 30 30 35 3a 30 34 3a 64   org:ws:2005:04:d
+01e0  69 73 63 6f 76 65 72 79 3c 2f 77 73 61 3a 54 6f   iscovery</wsa:To
+01f0  3e 3c 2f 73 6f 61 70 3a 48 65 61 64 65 72 3e 3c   ></soap:Header><
+0200  73 6f 61 70 3a 42 6f 64 79 3e 3c 77 73 64 3a 50   soap:Body><wsd:P
+0210  72 6f 62 65 3e 3c 77 73 64 3a 54 79 70 65 73 3e   robe><wsd:Types>
+0220  77 73 64 70 3a 44 65 76 69 63 65 3c 2f 77 73 64   wsdp:Device</wsd
+0230  3a 54 79 70 65 73 3e 3c 2f 77 73 64 3a 50 72 6f   :Types></wsd:Pro
+0240  62 65 3e 3c 2f 73 6f 61 70 3a 42 6f 64 79 3e 3c   be></soap:Body><
+0250  2f 73 6f 61 70 3a 45 6e 76 65 6c 6f 70 65 3e      /soap:Envelope>
+
+No.     Time           Source                Destination           Protocol Length Info
+     93 109.119058135  172.16.21.253         224.0.0.22            IGMPv3   54     Membership Report / Leave group 239.255.255.250
+
+Frame 93: 54 bytes on wire (432 bits), 54 bytes captured (432 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: IPv4mcast_16 (01:00:5e:00:00:16)
+Internet Protocol Version 4, Src: 172.16.21.253, Dst: 224.0.0.22
+Internet Group Management Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     94 109.375044398  172.16.21.253         224.0.0.22            IGMPv3   54     Membership Report / Leave group 239.255.255.250
+
+Frame 94: 54 bytes on wire (432 bits), 54 bytes captured (432 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: IPv4mcast_16 (01:00:5e:00:00:16)
+Internet Protocol Version 4, Src: 172.16.21.253, Dst: 224.0.0.22
+Internet Group Management Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     95 109.886558312  8c:90:2d:fd:a5:7b     ec:75:0c:c2:26:30     ARP      60     Who has 172.16.21.253? Tell 172.16.21.1
+
+Frame 95: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30)
+Address Resolution Protocol (request)
+
+No.     Time           Source                Destination           Protocol Length Info
+     96 109.886577829  ec:75:0c:c2:26:30     8c:90:2d:fd:a5:7b     ARP      42     172.16.21.253 is at ec:75:0c:c2:26:30
+
+Frame 96: 42 bytes on wire (336 bits), 42 bytes captured (336 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b)
+Address Resolution Protocol (reply)
+
+No.     Time           Source                Destination           Protocol Length Info
+     97 109.918185825  172.16.20.1           172.16.21.1           ICMP     98     Echo (ping) request  id=0x57de, seq=6/1536, ttl=63 (reply in 98)
+
+Frame 97: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b)
+Internet Protocol Version 4, Src: 172.16.20.1, Dst: 172.16.21.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     98 109.918390361  172.16.21.1           172.16.20.1           ICMP     98     Echo (ping) reply    id=0x57de, seq=6/1536, ttl=64 (request in 97)
+
+Frame 98: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 172.16.20.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+     99 110.117418903  Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 99: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    100 110.729307735  172.16.21.253         239.255.255.250       UDP      649    47654 → 3702 Len=607
+
+Frame 100: 649 bytes on wire (5192 bits), 649 bytes captured (5192 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: IPv4mcast_7f:ff:fa (01:00:5e:7f:ff:fa)
+Internet Protocol Version 4, Src: 172.16.21.253, Dst: 239.255.255.250
+User Datagram Protocol, Src Port: 47654, Dst Port: 3702
+Data (607 bytes)
+
+0000  3c 3f 78 6d 6c 20 76 65 72 73 69 6f 6e 3d 22 31   <?xml version="1
+0010  2e 30 22 3f 3e 3c 73 6f 61 70 3a 45 6e 76 65 6c   .0"?><soap:Envel
+0020  6f 70 65 20 78 6d 6c 6e 73 3a 77 73 61 3d 22 68   ope xmlns:wsa="h
+0030  74 74 70 3a 2f 2f 73 63 68 65 6d 61 73 2e 78 6d   ttp://schemas.xm
+0040  6c 73 6f 61 70 2e 6f 72 67 2f 77 73 2f 32 30 30   lsoap.org/ws/200
+0050  34 2f 30 38 2f 61 64 64 72 65 73 73 69 6e 67 22   4/08/addressing"
+0060  20 78 6d 6c 6e 73 3a 77 73 64 3d 22 68 74 74 70    xmlns:wsd="http
+0070  3a 2f 2f 73 63 68 65 6d 61 73 2e 78 6d 6c 73 6f   ://schemas.xmlso
+0080  61 70 2e 6f 72 67 2f 77 73 2f 32 30 30 35 2f 30   ap.org/ws/2005/0
+0090  34 2f 64 69 73 63 6f 76 65 72 79 22 20 78 6d 6c   4/discovery" xml
+00a0  6e 73 3a 73 6f 61 70 3d 22 68 74 74 70 3a 2f 2f   ns:soap="http://
+00b0  77 77 77 2e 77 33 2e 6f 72 67 2f 32 30 30 33 2f   www.w3.org/2003/
+00c0  30 35 2f 73 6f 61 70 2d 65 6e 76 65 6c 6f 70 65   05/soap-envelope
+00d0  22 20 78 6d 6c 6e 73 3a 77 73 64 70 3d 22 68 74   " xmlns:wsdp="ht
+00e0  74 70 3a 2f 2f 73 63 68 65 6d 61 73 2e 78 6d 6c   tp://schemas.xml
+00f0  73 6f 61 70 2e 6f 72 67 2f 77 73 2f 32 30 30 36   soap.org/ws/2006
+0100  2f 30 32 2f 64 65 76 70 72 6f 66 22 3e 3c 73 6f   /02/devprof"><so
+0110  61 70 3a 48 65 61 64 65 72 3e 3c 77 73 61 3a 41   ap:Header><wsa:A
+0120  63 74 69 6f 6e 3e 68 74 74 70 3a 2f 2f 73 63 68   ction>http://sch
+0130  65 6d 61 73 2e 78 6d 6c 73 6f 61 70 2e 6f 72 67   emas.xmlsoap.org
+0140  2f 77 73 2f 32 30 30 35 2f 30 34 2f 64 69 73 63   /ws/2005/04/disc
+0150  6f 76 65 72 79 2f 50 72 6f 62 65 3c 2f 77 73 61   overy/Probe</wsa
+0160  3a 41 63 74 69 6f 6e 3e 3c 77 73 61 3a 4d 65 73   :Action><wsa:Mes
+0170  73 61 67 65 49 44 3e 75 72 6e 3a 75 75 69 64 3a   sageID>urn:uuid:
+0180  61 36 36 65 64 39 38 61 2d 34 30 62 30 2d 66 64   a66ed98a-40b0-fd
+0190  61 66 2d 62 61 64 30 2d 34 34 63 30 62 65 63 64   af-bad0-44c0becd
+01a0  30 39 39 30 3c 2f 77 73 61 3a 4d 65 73 73 61 67   0990</wsa:Messag
+01b0  65 49 44 3e 3c 77 73 61 3a 54 6f 3e 75 72 6e 3a   eID><wsa:To>urn:
+01c0  73 63 68 65 6d 61 73 2d 78 6d 6c 73 6f 61 70 2d   schemas-xmlsoap-
+01d0  6f 72 67 3a 77 73 3a 32 30 30 35 3a 30 34 3a 64   org:ws:2005:04:d
+01e0  69 73 63 6f 76 65 72 79 3c 2f 77 73 61 3a 54 6f   iscovery</wsa:To
+01f0  3e 3c 2f 73 6f 61 70 3a 48 65 61 64 65 72 3e 3c   ></soap:Header><
+0200  73 6f 61 70 3a 42 6f 64 79 3e 3c 77 73 64 3a 50   soap:Body><wsd:P
+0210  72 6f 62 65 3e 3c 77 73 64 3a 54 79 70 65 73 3e   robe><wsd:Types>
+0220  77 73 64 70 3a 44 65 76 69 63 65 3c 2f 77 73 64   wsdp:Device</wsd
+0230  3a 54 79 70 65 73 3e 3c 2f 77 73 64 3a 50 72 6f   :Types></wsd:Pro
+0240  62 65 3e 3c 2f 73 6f 61 70 3a 42 6f 64 79 3e 3c   be></soap:Body><
+0250  2f 73 6f 61 70 3a 45 6e 76 65 6c 6f 70 65 3e      /soap:Envelope>
+
+No.     Time           Source                Destination           Protocol Length Info
+    101 110.743052095  172.16.21.253         224.0.0.22            IGMPv3   54     Membership Report / Leave group 239.255.255.250
+
+Frame 101: 54 bytes on wire (432 bits), 54 bytes captured (432 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: IPv4mcast_16 (01:00:5e:00:00:16)
+Internet Protocol Version 4, Src: 172.16.21.253, Dst: 224.0.0.22
+Internet Group Management Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    102 110.931030716  172.16.21.253         224.0.0.22            IGMPv3   54     Membership Report / Leave group 239.255.255.250
+
+Frame 102: 54 bytes on wire (432 bits), 54 bytes captured (432 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: IPv4mcast_16 (01:00:5e:00:00:16)
+Internet Protocol Version 4, Src: 172.16.21.253, Dst: 224.0.0.22
+Internet Group Management Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    103 110.942164669  172.16.20.1           172.16.21.1           ICMP     98     Echo (ping) request  id=0x57de, seq=7/1792, ttl=63 (reply in 104)
+
+Frame 103: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b)
+Internet Protocol Version 4, Src: 172.16.20.1, Dst: 172.16.21.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    104 110.942373595  172.16.21.1           172.16.20.1           ICMP     98     Echo (ping) reply    id=0x57de, seq=7/1792, ttl=64 (request in 103)
+
+Frame 104: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 172.16.20.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    105 111.966196769  172.16.20.1           172.16.21.1           ICMP     98     Echo (ping) request  id=0x57de, seq=8/2048, ttl=63 (reply in 106)
+
+Frame 105: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b)
+Internet Protocol Version 4, Src: 172.16.20.1, Dst: 172.16.21.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    106 111.966412398  172.16.21.1           172.16.20.1           ICMP     98     Echo (ping) reply    id=0x57de, seq=8/2048, ttl=64 (request in 105)
+
+Frame 106: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 172.16.20.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    107 112.119694848  Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 107: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    108 112.990188872  172.16.20.1           172.16.21.1           ICMP     98     Echo (ping) request  id=0x57de, seq=9/2304, ttl=63 (reply in 109)
+
+Frame 108: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b)
+Internet Protocol Version 4, Src: 172.16.20.1, Dst: 172.16.21.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    109 112.990397300  172.16.21.1           172.16.20.1           ICMP     98     Echo (ping) reply    id=0x57de, seq=9/2304, ttl=64 (request in 108)
+
+Frame 109: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 172.16.20.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    110 114.014190274  172.16.20.1           172.16.21.1           ICMP     98     Echo (ping) request  id=0x57de, seq=10/2560, ttl=63 (reply in 111)
+
+Frame 110: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b)
+Internet Protocol Version 4, Src: 172.16.20.1, Dst: 172.16.21.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    111 114.014402659  172.16.21.1           172.16.20.1           ICMP     98     Echo (ping) reply    id=0x57de, seq=10/2560, ttl=64 (request in 110)
+
+Frame 111: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 172.16.20.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    112 114.121871801  Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 112: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    113 115.038139898  172.16.20.1           172.16.21.1           ICMP     98     Echo (ping) request  id=0x57de, seq=11/2816, ttl=63 (reply in 114)
+
+Frame 113: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b)
+Internet Protocol Version 4, Src: 172.16.20.1, Dst: 172.16.21.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    114 115.038361523  172.16.21.1           172.16.20.1           ICMP     98     Echo (ping) reply    id=0x57de, seq=11/2816, ttl=64 (request in 113)
+
+Frame 114: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 172.16.20.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    115 116.062175742  172.16.20.1           172.16.21.1           ICMP     98     Echo (ping) request  id=0x57de, seq=12/3072, ttl=63 (reply in 116)
+
+Frame 115: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b)
+Internet Protocol Version 4, Src: 172.16.20.1, Dst: 172.16.21.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    116 116.062388838  172.16.21.1           172.16.20.1           ICMP     98     Echo (ping) reply    id=0x57de, seq=12/3072, ttl=64 (request in 115)
+
+Frame 116: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 172.16.20.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    117 116.124117173  Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 117: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    118 117.086137931  172.16.20.1           172.16.21.1           ICMP     98     Echo (ping) request  id=0x57de, seq=13/3328, ttl=63 (reply in 119)
+
+Frame 118: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b)
+Internet Protocol Version 4, Src: 172.16.20.1, Dst: 172.16.21.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    119 117.086326611  172.16.21.1           172.16.20.1           ICMP     98     Echo (ping) reply    id=0x57de, seq=13/3328, ttl=64 (request in 118)
+
+Frame 119: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 172.16.20.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    120 118.110124510  172.16.20.1           172.16.21.1           ICMP     98     Echo (ping) request  id=0x57de, seq=14/3584, ttl=63 (reply in 121)
+
+Frame 120: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b)
+Internet Protocol Version 4, Src: 172.16.20.1, Dst: 172.16.21.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    121 118.110300866  172.16.21.1           172.16.20.1           ICMP     98     Echo (ping) reply    id=0x57de, seq=14/3584, ttl=64 (request in 120)
+
+Frame 121: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 172.16.20.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    122 118.126328358  Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 122: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    123 119.134151244  172.16.20.1           172.16.21.1           ICMP     98     Echo (ping) request  id=0x57de, seq=15/3840, ttl=63 (reply in 124)
+
+Frame 123: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b)
+Internet Protocol Version 4, Src: 172.16.20.1, Dst: 172.16.21.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    124 119.134377959  172.16.21.1           172.16.20.1           ICMP     98     Echo (ping) reply    id=0x57de, seq=15/3840, ttl=64 (request in 123)
+
+Frame 124: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 172.16.20.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    125 120.128618079  Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 125: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    126 120.158148146  172.16.20.1           172.16.21.1           ICMP     98     Echo (ping) request  id=0x57de, seq=16/4096, ttl=63 (reply in 127)
+
+Frame 126: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b)
+Internet Protocol Version 4, Src: 172.16.20.1, Dst: 172.16.21.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    127 120.158360129  172.16.21.1           172.16.20.1           ICMP     98     Echo (ping) reply    id=0x57de, seq=16/4096, ttl=64 (request in 126)
+
+Frame 127: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 172.16.20.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    128 121.182098266  172.16.20.1           172.16.21.1           ICMP     98     Echo (ping) request  id=0x57de, seq=17/4352, ttl=63 (reply in 129)
+
+Frame 128: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b)
+Internet Protocol Version 4, Src: 172.16.20.1, Dst: 172.16.21.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    129 121.182263914  172.16.21.1           172.16.20.1           ICMP     98     Echo (ping) reply    id=0x57de, seq=17/4352, ttl=64 (request in 128)
+
+Frame 129: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 172.16.20.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    130 122.130702085  Routerbo_1c:8c:2c     Spanning-tree-(for-bridges)_00 STP      60     RST. Root = 32768/0/c4:ad:34:1c:8c:2b  Cost = 0  Port = 0x8002
+
+Frame 130: 60 bytes on wire (480 bits), 60 bytes captured (480 bits) on interface if_e2, id 0
+IEEE 802.3 Ethernet 
+Logical-Link Control
+Spanning Tree Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    131 122.206093206  172.16.20.1           172.16.21.1           ICMP     98     Echo (ping) request  id=0x57de, seq=18/4608, ttl=63 (reply in 132)
+
+Frame 131: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30), Dst: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b)
+Internet Protocol Version 4, Src: 172.16.20.1, Dst: 172.16.21.1
+Internet Control Message Protocol
+
+No.     Time           Source                Destination           Protocol Length Info
+    132 122.206282751  172.16.21.1           172.16.20.1           ICMP     98     Echo (ping) reply    id=0x57de, seq=18/4608, ttl=64 (request in 131)
+
+Frame 132: 98 bytes on wire (784 bits), 98 bytes captured (784 bits) on interface if_e2, id 0
+Ethernet II, Src: 8c:90:2d:fd:a5:7b (8c:90:2d:fd:a5:7b), Dst: ec:75:0c:c2:26:30 (ec:75:0c:c2:26:30)
+Internet Protocol Version 4, Src: 172.16.21.1, Dst: 172.16.20.1
+Internet Control Message Protocol
