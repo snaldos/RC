@@ -6,9 +6,9 @@ No.     Time           Source                Destination           Protocol Leng
       5 0.009924043    172.16.20.1           172.16.1.10           TCP      66     37060 → 21 [ACK] Seq=1 Ack=1 Win=64512 Len=0 TSval=2300449008 TSecr=931476076
       6 0.045906919    172.16.1.10           172.16.20.1           FTP      114    Response: 220 Welcome to ftp.netlab.fe.up.pt service.
       7 0.046960732    172.16.20.1           172.16.1.10           TCP      66     37060 → 21 [ACK] Seq=1 Ack=49 Win=64512 Len=0 TSval=2300449072 TSecr=931476140
-      8 0.048131580    172.16.20.1           172.16.1.10           FTP      76     Request: USER anonymous
+      8 0.048131580    172.16.20.1           172.16.1.10           FTP      76     Request: USER rcom
       9 0.072460748    172.16.1.10           172.16.20.1           FTP      96     Response: 331 Please specify the password.
-     10 0.073667206    172.16.20.1           172.16.1.10           FTP      80     Request: PASS user@
+     10 0.073667206    172.16.20.1           172.16.1.10           FTP      80     Request: PASS rcom
      11 0.107103187    172.16.1.10           172.16.20.1           FTP      89     Response: 230 Login successful.
      12 0.108171951    172.16.20.1           172.16.1.10           FTP      70     Request: PASV
      13 0.141271906    172.16.1.10           172.16.20.1           FTP      113    Response: 227 Entering Passive Mode (172,16,1,10,4,26).
